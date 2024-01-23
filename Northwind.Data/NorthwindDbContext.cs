@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Runtime.CompilerServices;
 
 namespace Northwind.Data
 {
@@ -11,7 +10,7 @@ namespace Northwind.Data
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-        { 
+        {
         }
     }
 }
