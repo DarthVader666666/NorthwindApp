@@ -9,8 +9,9 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["NorthwindApp.csproj", "."]
-RUN dotnet restore "./././NorthwindApp.csproj"
+COPY ["Northwind.Application/NorthwindApp.csproj", "./Northwind.Application/"]
+COPY ["Northwind.Data/Northwind.Data.csproj", "./Northwind.Data/"]
+RUN dotnet restore "Northwind.Application/NorthwindApp.csproj"
 COPY . .
 WORKDIR "/src/."
 RUN dotnet build "./NorthwindApp.csproj" -c $BUILD_CONFIGURATION -o /app/build
