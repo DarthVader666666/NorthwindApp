@@ -1,0 +1,27 @@
+version: '3.7'
+
+networks:
+ dev:
+  driver: bridge
+
+services:
+  northwindapp:
+    image: ${DOCKER_REGISTRY-}northwindapp
+    build:
+      context: .
+      dockerfile: Northwind.Application/Dockerfile
+    container_name: northwindapp-container
+    networks: 
+        - dev
+
+  sql-server:
+    image: mcr.microsoft.com/mssql/server:latest
+    environment:
+        - ACCEPT_EULA=Y
+        - SA_PASSWORD=Haemorr_8421
+    container_name: sql-server-container
+    restart: always
+    ports: 
+        - 8082:1433
+    networks: 
+        - dev
