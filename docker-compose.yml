@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.4'
 
 networks:
  dev:
@@ -20,7 +20,6 @@ services:
         - ACCEPT_EULA=Y
         - SA_PASSWORD=Haemorr_8421
     container_name: sql-server-container
-    restart: always
     ports: 
         - 8082:1433
     networks: 
