@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "type": "mssql",
+      "connectionId": "ConnectionStrings:Azure_SQL_Server",
+      "dynamicId": null
+    }
+  }
+}

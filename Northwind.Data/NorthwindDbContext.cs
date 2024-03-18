@@ -12,6 +12,7 @@ namespace Northwind.Data
         public NorthwindDbContext(DbContextOptions<NorthwindDbContext> options)
             : base(options)
         {
+
         }
 
         public virtual DbSet<AlphabeticalListOfProduct> AlphabeticalListOfProducts { get; set; }
@@ -70,7 +71,7 @@ namespace Northwind.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB; Database=NorthwindDB;Integrated Security=true;");
+            //optionsBuilder.UseInMemoryDatabase("NorthwindInMemoryDB");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
