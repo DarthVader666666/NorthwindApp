@@ -24,4 +24,4 @@ RUN dotnet publish "./NorthwindApp.csproj" -c $BUILD_CONFIGURATION -o /app/publi
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "NorthwindApp.dll", "--environment=Docker"]
+ENTRYPOINT ["dotnet", "NorthwindApp.dll"]

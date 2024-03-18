@@ -4,7 +4,7 @@
     <ProjectVersion>2.1</ProjectVersion>
     <DockerTargetOS>Linux</DockerTargetOS>
     <DockerPublishLocally>False</DockerPublishLocally>
-    <ProjectGuid>a1871c0c-aab2-425f-9b47-5635759a643b</ProjectGuid>
+    <ProjectGuid>a2e1ff7f-e606-4823-b8bd-146f39746700</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
     <DockerServiceUrl>{Scheme}://localhost:{ServicePort}</DockerServiceUrl>
     <DockerServiceName>northwindapp</DockerServiceName>

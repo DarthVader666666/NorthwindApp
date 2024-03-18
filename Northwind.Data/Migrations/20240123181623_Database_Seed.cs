@@ -12,11 +12,11 @@ namespace Northwind.Data.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Docker")
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
             {
                 migrationBuilder.Sql(File.ReadAllText("../src/Northwind.Data/SQL_Scripts/DB_Create_Script.sql"));
             }
-            else 
+            else
             {
                 migrationBuilder.Sql(File.ReadAllText("..\\Northwind.Data\\SQL_Scripts\\DB_Create_Script.sql"));
             }
