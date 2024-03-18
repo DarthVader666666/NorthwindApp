@@ -11,6 +11,7 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Northwind.Application/NorthwindApp.csproj", "Northwind.Application/"]
 COPY ["Northwind.Data/Northwind.Data.csproj", "Northwind.Data/"]
+COPY ["Northwind.Bll/Northwind.Bll.csproj", "Northwind.Bll/"]
 
 RUN dotnet restore "./Northwind.Application/./NorthwindApp.csproj"
 COPY . .
