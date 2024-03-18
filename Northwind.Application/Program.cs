@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Northwind.Data;
-using NorthwindApp.Identity;
 using System.Security.Claims;
 using System.Text;
 
@@ -12,10 +11,12 @@ var config = builder.Configuration;
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-var connectionString = config["ConnectionStrings:SQL_Server"];
+var connectionString = config["ConnectionStrings:Azure_SQL_Server"];
 
-builder.Services.AddDbContext<NorthwindDbContext>(dbContextOptionsBuilder => 
-    dbContextOptionsBuilder.UseSqlServer(connectionString));
+//builder.Services.AddDbContext<NorthwindDbContext>();
+builder.Services.AddDbContext<NorthwindDbContext>(options => options.UseSqlServer(connectionString));
+
+
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(jwtBearerOptions =>
     jwtBearerOptions.TokenValidationParameters = new TokenValidationParameters
@@ -42,6 +43,8 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
 
     var context = services.GetRequiredService<NorthwindDbContext>();
+
+    //context.Database.EnsureCreated();
 
     context.Database.Migrate();
 }
