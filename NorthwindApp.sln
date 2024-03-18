@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Northwind.Application", "No
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Northwind.Data", "Northwind.Data\Northwind.Data.csproj", "{D5EEA2AF-82A1-4BBB-AB9C-1824CFAE9A5D}"
 EndProject
-Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{A2E1FF7F-E606-4823-B8BD-146F39746700}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Northwind.Bll", "Northwind.Bll\Northwind.Bll.csproj", "{E2DF8AA5-A23F-440F-89FA-C5B055AF0D73}"
 EndProject
 Global
@@ -25,10 +23,6 @@ Global
 		{D5EEA2AF-82A1-4BBB-AB9C-1824CFAE9A5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D5EEA2AF-82A1-4BBB-AB9C-1824CFAE9A5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D5EEA2AF-82A1-4BBB-AB9C-1824CFAE9A5D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A2E1FF7F-E606-4823-B8BD-146F39746700}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A2E1FF7F-E606-4823-B8BD-146F39746700}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A2E1FF7F-E606-4823-B8BD-146F39746700}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A2E1FF7F-E606-4823-B8BD-146F39746700}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E2DF8AA5-A23F-440F-89FA-C5B055AF0D73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E2DF8AA5-A23F-440F-89FA-C5B055AF0D73}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E2DF8AA5-A23F-440F-89FA-C5B055AF0D73}.Release|Any CPU.ActiveCfg = Release|Any CPU
