@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Northwind.Data;
+using NorthwindApp.ConfigureServices;
 using System.Security.Claims;
 using System.Text;
 
@@ -13,10 +14,7 @@ builder.Services.AddControllersWithViews();
 
 var connectionString = config["ConnectionStrings:Azure_SQL_Server"];
 
-//builder.Services.AddDbContext<NorthwindDbContext>();
 builder.Services.AddDbContext<NorthwindDbContext>(options => options.UseSqlServer(connectionString));
-
-
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(jwtBearerOptions =>
     jwtBearerOptions.TokenValidationParameters = new TokenValidationParameters
@@ -33,18 +31,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 builder.Services.AddAuthorization(authOptions => 
     authOptions.AddPolicy("Admin", policy =>
-        policy.RequireClaim(ClaimTypes.Role, "admin"))    
-    );
+        policy.RequireClaim(ClaimTypes.Role, "admin"))
+);
 
+builder.Services.ConfigureAutoMapper();
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-
     var context = services.GetRequiredService<NorthwindDbContext>();
-
-    //context.Database.EnsureCreated();
 
     context.Database.Migrate();
 }
@@ -68,7 +64,5 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
-
 
 app.Run();
