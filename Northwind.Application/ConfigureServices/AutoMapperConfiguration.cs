@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Northwind.Application.Models.Category;
 using Northwind.Application.Models.Employee;
+using Northwind.Bll.Services;
 using Northwind.Data.Entities;
 
 namespace NorthwindApp.ConfigureServices
@@ -15,22 +17,17 @@ namespace NorthwindApp.ConfigureServices
                     autoMapperConfig.CreateMap<Employee, EmployeeEditModel>();
 
                     autoMapperConfig.CreateMap<EmployeeEditModel, Employee>()
-                        .ForMember(dest => dest.Photo, opts => opts.MapFrom(src => ConvertFormFileToByteArray(src.FormFile!)));
+                        .ForMember(dest => dest.Photo, opts => opts.MapFrom(src => ImageConverter.ConvertFormFileToByteArray(src.FormFile!)));
+
+                    autoMapperConfig.CreateMap<Category, CategoryEditModel>();
+
+                    autoMapperConfig.CreateMap<CategoryEditModel, Category>()
+                        .ForMember(dest => dest.Picture, opts => opts.MapFrom(src => ImageConverter.ConvertFormFileToByteArray(src.FormFile!)));
+
                 });
 
                 return config.CreateMapper();
             });
-        }
-
-        private static byte[]? ConvertFormFileToByteArray(IFormFile formFile)
-        {
-            if (formFile == null)
-            {
-                return null;
-            }
-
-            using var reader = new BinaryReader(formFile.OpenReadStream());
-            return reader.ReadBytes((int)formFile.Length);
         }
     }
 }

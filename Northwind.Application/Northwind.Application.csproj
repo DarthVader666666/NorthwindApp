@@ -30,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Northwind.Bll\Northwind.Bll.csproj" />
     <ProjectReference Include="..\Northwind.Data\Northwind.Data.csproj" />
   </ItemGroup>
 

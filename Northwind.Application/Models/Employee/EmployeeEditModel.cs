@@ -32,7 +32,6 @@ namespace Northwind.Application.Models.Employee
 
         public string? Extension { get; set; }
 
-
         public IFormFile? FormFile { get; set; }
 
         public byte[]? Photo { get; set; }
