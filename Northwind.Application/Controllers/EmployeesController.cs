@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Northwind.Application.Models.Employee;
+using Northwind.Bll.Enums;
+using Northwind.Bll.Services;
 using Northwind.Data;
 using Northwind.Data.Entities;
 
@@ -12,10 +14,6 @@ namespace Northwind.Application.Controllers
     {
         private readonly NorthwindDbContext _context;
         private readonly IMapper _mapper;   
-        private static byte[] OleHeader = new byte[] { 21, 28, 47, 0, 2, 0, 0, 0, 13, 0, 14, 0, 20,
-            0, 33, 0, 255, 255, 255, 255, 66, 105, 116, 109, 97, 112, 32, 73, 109, 97, 103, 101, 0, 80, 97,
-            105, 110, 116, 46, 80, 105, 99, 116, 117, 114, 101, 0, 1, 5, 0, 0, 2, 0, 0, 0, 7, 0, 0, 0, 80,
-            66, 114, 117, 115, 104, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 84, 0, 0 };
 
         public EmployeesController(NorthwindDbContext context, IMapper mapper)
         {
@@ -27,7 +25,7 @@ namespace Northwind.Application.Controllers
         public async Task<IActionResult> Index()
         {
             var northwindDbContext = _context.Employees.Include(e => e.ReportsToNavigation);
-            await northwindDbContext.ForEachAsync(x => x.Photo = ConvertNorthwindPhoto(x.Photo!));
+            await northwindDbContext.ForEachAsync(x => x.Photo = ImageConverter.ConvertNorthwindPhoto(x.Photo!, ImageHeaders.EmployeeHeader));
 
             return View(await northwindDbContext.ToListAsync());
         }
@@ -43,6 +41,9 @@ namespace Northwind.Application.Controllers
             var employee = await _context.Employees
                 .Include(e => e.ReportsToNavigation)
                 .FirstOrDefaultAsync(m => m.EmployeeId == id);
+
+            employee!.Photo = ImageConverter.ConvertNorthwindPhoto(employee.Photo!, ImageHeaders.EmployeeHeader);
+
             if (employee == null)
             {
                 return NotFound();
@@ -86,14 +87,14 @@ namespace Northwind.Application.Controllers
                 return NotFound();
             }
 
-            var employee = _mapper.Map<EmployeeEditModel>(await _context.Employees.FindAsync(id));
+            var employeeEditModel = _mapper.Map<EmployeeEditModel>(await _context.Employees.FindAsync(id));
 
-            if (employee == null)
+            if (employeeEditModel == null)
             {
                 return NotFound();
             }
-            ViewData["ReportsTo"] = new SelectList(_context.Employees, "EmployeeId", "FirstName", employee.ReportsTo);
-            return View(employee);
+            ViewData["ReportsTo"] = new SelectList(_context.Employees, "EmployeeId", "FirstName", employeeEditModel.ReportsTo);
+            return View(employeeEditModel);
         }
 
         // POST: Employees/Edit/5
@@ -144,6 +145,9 @@ namespace Northwind.Application.Controllers
             var employee = await _context.Employees
                 .Include(e => e.ReportsToNavigation)
                 .FirstOrDefaultAsync(m => m.EmployeeId == id);
+
+            employee!.Photo = ImageConverter.ConvertNorthwindPhoto(employee.Photo, ImageHeaders.EmployeeHeader);
+
             if (employee == null)
             {
                 return NotFound();
@@ -166,27 +170,6 @@ namespace Northwind.Application.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-
-        private static bool HasHeader(byte[] source, byte[] header)
-        {
-            if (source.Length < header.Length)
-            {
-                return false;
-            }
-
-            for (int i = 0; i < header.Length; i++)
-            {
-                if (source[i] != header[i])
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        private static byte[] ConvertNorthwindPhoto(byte[] source) =>
-            HasHeader(source, OleHeader) ? source[OleHeader.Length..] : source;
 
         private bool EmployeeExists(int id)
         {
