@@ -71,7 +71,7 @@ namespace Northwind.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //optionsBuilder.UseInMemoryDatabase("NorthwindInMemoryDB");
+            //optionsBuilder.UseSqlServer();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

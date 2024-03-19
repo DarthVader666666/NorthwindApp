@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Northwind.Data.Entities;
+﻿namespace Northwind.Data.Entities;
 
 public partial class Employee
 {
