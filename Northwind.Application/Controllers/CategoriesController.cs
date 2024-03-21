@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Northwind.Application.Models.Category;
 using Northwind.Bll.Enums;
@@ -14,6 +10,7 @@ using Northwind.Data.Entities;
 
 namespace Northwind.Application.Controllers
 {
+    [Authorize]
     public class CategoriesController : Controller
     {
         private readonly NorthwindDbContext _context;

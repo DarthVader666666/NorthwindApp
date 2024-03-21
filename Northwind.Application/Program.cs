@@ -1,10 +1,7 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Northwind.Data;
 using NorthwindApp.ConfigureServices;
-using System.Security.Claims;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -15,24 +12,11 @@ builder.Services.AddControllersWithViews();
 var connectionString = config["ConnectionStrings:Azure_SQL_Server"];
 
 builder.Services.AddDbContext<NorthwindDbContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<NorthwindIdentityDbContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<NorthwindIdentityDbContext>();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(jwtBearerOptions =>
-    jwtBearerOptions.TokenValidationParameters = new TokenValidationParameters
-    { 
-        ValidIssuer = config["Issuer"],
-        ValidAudience = config["Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["SecretKey"]!)),
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateIssuerSigningKey = true,
-        ValidateLifetime = true
-    }
-);
-
-builder.Services.AddAuthorization(authOptions => 
-    authOptions.AddPolicy("Admin", policy =>
-        policy.RequireClaim(ClaimTypes.Role, "admin"))
-);
+builder.Services.AddAuthentication();
+builder.Services.AddAuthorization();
 
 builder.Services.ConfigureAutoMapper();
 var app = builder.Build();
@@ -61,6 +45,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapRazorPages();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
