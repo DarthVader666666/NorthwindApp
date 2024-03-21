@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using Northwind.Data.Entities;
 
 namespace Northwind.Application.Controllers
 {
+    [Authorize]
     public class EmployeesController : Controller
     {
         private readonly NorthwindDbContext _context;
