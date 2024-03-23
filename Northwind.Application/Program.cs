@@ -24,8 +24,11 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    var context = services.GetRequiredService<NorthwindDbContext>();
 
+    DbContext context = services.GetRequiredService<NorthwindDbContext>();
+    context.Database.Migrate();
+
+    context = services.GetRequiredService<NorthwindIdentityDbContext>();
     context.Database.Migrate();
 }
 
