@@ -37,6 +37,11 @@ namespace Northwind.Bll.Services
 
         private static bool HasHeader(byte[] source, byte[] header)
         {
+            if (source == null)
+            {
+                return false;
+            }
+
             if (source.Length < header.Length)
             {
                 return false;
