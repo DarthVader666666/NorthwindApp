@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Northwind.Bll.Interfaces;
 using Northwind.Bll.Services;
 using Northwind.Data;
 using NorthwindApp.ConfigureServices;
@@ -10,7 +9,6 @@ var config = builder.Configuration;
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddScoped<IFileDownloader, FileDownloader>();
 builder.Services.AddLogging(builder => builder.AddConsole());
 
 var connectionString = config["ConnectionStrings:SQL_Server"];
@@ -29,9 +27,9 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var path = app.Configuration["ScriptPath"];
+    var url = app.Configuration["ScriptUrl"];
 
-    var fileDownloader = services.GetRequiredService<IFileDownloader>();
-    //await fileDownloader.DownloadScriptFileAsync();
+    await FileDownloader.DownloadScriptFileAsync(url, path);
 
     DbContext context = services.GetRequiredService<NorthwindDbContext>();
     context.Database.Migrate();
