@@ -24,25 +24,25 @@ builder.Services.AddAuthorization();
 builder.Services.ConfigureAutoMapper();
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    var path = app.Configuration["ScriptPath"];
+//using (var scope = app.Services.CreateScope())
+//{
+//    var services = scope.ServiceProvider;
+//    var path = app.Configuration["ScriptPath"];
 
-    var fileDownloader = services.GetRequiredService<IFileDownloader>();
-    await fileDownloader.DownloadScriptFileAsync();
+//    var fileDownloader = services.GetRequiredService<IFileDownloader>();
+//    await fileDownloader.DownloadScriptFileAsync();
 
-    DbContext context = services.GetRequiredService<NorthwindDbContext>();
-    context.Database.Migrate();
+//    DbContext context = services.GetRequiredService<NorthwindDbContext>();
+//    context.Database.Migrate();
 
-    context = services.GetRequiredService<NorthwindIdentityDbContext>();
-    context.Database.Migrate();
+//    context = services.GetRequiredService<NorthwindIdentityDbContext>();
+//    context.Database.Migrate();
 
-    if (File.Exists(path))
-    {
-        File.Delete(path);
-    }    
-}
+//    if (File.Exists(path))
+//    {
+//        File.Delete(path);
+//    }    
+//}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
