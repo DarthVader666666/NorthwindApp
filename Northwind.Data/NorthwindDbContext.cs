@@ -12,7 +12,6 @@ namespace Northwind.Data
         public NorthwindDbContext(DbContextOptions<NorthwindDbContext> options)
             : base(options)
         {
-
         }
 
         public virtual DbSet<AlphabeticalListOfProduct> AlphabeticalListOfProducts { get; set; }
