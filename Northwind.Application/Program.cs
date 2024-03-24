@@ -29,8 +29,7 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     
-    try
-    { 
+    
         var path = app.Configuration["ScriptPath"];
 
         var fileDownloader = services.GetRequiredService<IFileDownloader>();
@@ -41,7 +40,8 @@ using (var scope = app.Services.CreateScope())
 
         context = services.GetRequiredService<NorthwindIdentityDbContext>();
         context.Database.Migrate();
-
+    try
+    {
         if (File.Exists(path))
         {
             File.Delete(path);
