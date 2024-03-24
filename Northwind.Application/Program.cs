@@ -28,30 +28,21 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    
-    
-        var path = app.Configuration["ScriptPath"];
+    var path = app.Configuration["ScriptPath"];
 
-        //var fileDownloader = services.GetRequiredService<IFileDownloader>();
-        //await fileDownloader.DownloadScriptFileAsync();
+    var fileDownloader = services.GetRequiredService<IFileDownloader>();
+    //await fileDownloader.DownloadScriptFileAsync();
 
-        DbContext context = services.GetRequiredService<NorthwindDbContext>();
-        context.Database.Migrate();
+    DbContext context = services.GetRequiredService<NorthwindDbContext>();
+    context.Database.Migrate();
 
-        context = services.GetRequiredService<NorthwindIdentityDbContext>();
-        context.Database.Migrate();
-    try
+    context = services.GetRequiredService<NorthwindIdentityDbContext>();
+    context.Database.Migrate();
+
+    if (File.Exists(path))
     {
-        if (File.Exists(path))
-        {
-            File.Delete(path);
-        }
+        File.Delete(path);
     }
-    catch (Exception ex) 
-    {
-        Console.WriteLine(ex.Message);
-        app.Logger.Log(LogLevel.Error, ex.Message);
-    }    
 }
 
 // Configure the HTTP request pipeline.
