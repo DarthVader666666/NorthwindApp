@@ -17,19 +17,12 @@ namespace Northwind.Data.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            var path = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") switch
-            {
-                "Local" => "..\\Northwind.Data\\SQL_Scripts\\Downloaded_Script.sql",
-                _ => "../src/Northwind.Data/SQL_Scripts/Downloaded_Script.sql",
-            };
-
-            migrationBuilder.Sql(File.ReadAllText(path));
+            migrationBuilder.Sql(File.ReadAllText("Downloaded_Script.sql"));
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-
         }
     }
 }
