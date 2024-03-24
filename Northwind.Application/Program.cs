@@ -32,8 +32,8 @@ using (var scope = app.Services.CreateScope())
     
         var path = app.Configuration["ScriptPath"];
 
-        var fileDownloader = services.GetRequiredService<IFileDownloader>();
-        await fileDownloader.DownloadScriptFileAsync();
+        //var fileDownloader = services.GetRequiredService<IFileDownloader>();
+        //await fileDownloader.DownloadScriptFileAsync();
 
         DbContext context = services.GetRequiredService<NorthwindDbContext>();
         context.Database.Migrate();
