@@ -34,7 +34,7 @@
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
             <td>
-                <img src="data:image/bmp;base64,@Convert.ToBase64String(item.Picture!)" style="height:60px;width:60px;" />
+                <img src="data:image/bmp;base64,@Convert.ToBase64String(item.Picture! ?? new byte[0])" style="height:60px;width:60px;" />
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.CategoryId">Edit</a> |
