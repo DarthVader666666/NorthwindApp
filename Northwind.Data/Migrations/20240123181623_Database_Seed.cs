@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Extensions.Configuration;
 using System.Diagnostics.CodeAnalysis;
 
 #nullable disable
@@ -9,17 +10,20 @@ namespace Northwind.Data.Migrations
     /// <inheritdoc />
     public partial class Database_Seed : Migration
     {
+        public Database_Seed()
+        {
+        }
+
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+            var path = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") switch
             {
-                migrationBuilder.Sql(File.ReadAllText("../src/Northwind.Data/SQL_Scripts/DB_Create_Script.sql"));
-            }
-            else
-            {
-                migrationBuilder.Sql(File.ReadAllText("..\\Northwind.Data\\SQL_Scripts\\DB_Create_Script.sql"));
-            }
+                "Local" => "..\\Northwind.Data\\SQL_Scripts\\Downloaded_Script.sql",
+                _ => "../src/Northwind.Data/SQL_Scripts/Downloaded_Script.sql",
+            };
+
+            migrationBuilder.Sql(File.ReadAllText(path));
         }
 
         /// <inheritdoc />

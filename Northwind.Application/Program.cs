@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Northwind.Bll.Interfaces;
+using Northwind.Bll.Services;
 using Northwind.Data;
 using NorthwindApp.ConfigureServices;
 
@@ -8,8 +10,9 @@ var config = builder.Configuration;
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IFileDownloader, FileDownloader>();
 
-var connectionString = config["ConnectionStrings:Azure_SQL_Server"];
+var connectionString = config["ConnectionStrings:SQL_Server"];
 
 builder.Services.AddDbContext<NorthwindDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<NorthwindIdentityDbContext>(options => options.UseSqlServer(connectionString));
@@ -24,12 +27,21 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+    var path = app.Configuration["ScriptPath"];
+
+    var fileDownloader = services.GetRequiredService<IFileDownloader>();
+    await fileDownloader.DownloadScriptFileAsync();
 
     DbContext context = services.GetRequiredService<NorthwindDbContext>();
     context.Database.Migrate();
 
     context = services.GetRequiredService<NorthwindIdentityDbContext>();
     context.Database.Migrate();
+
+    if (File.Exists(path))
+    {
+        File.Delete(path);
+    }    
 }
 
 // Configure the HTTP request pipeline.
