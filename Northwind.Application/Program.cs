@@ -11,6 +11,7 @@ var config = builder.Configuration;
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IFileDownloader, FileDownloader>();
+builder.Services.AddLogging(builder => builder.AddConsole());
 
 var connectionString = config["ConnectionStrings:SQL_Server"];
 
@@ -24,33 +25,42 @@ builder.Services.AddAuthorization();
 builder.Services.ConfigureAutoMapper();
 var app = builder.Build();
 
-//using (var scope = app.Services.CreateScope())
-//{
-//    var services = scope.ServiceProvider;
-//    var path = app.Configuration["ScriptPath"];
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    
+    try
+    { 
+        var path = app.Configuration["ScriptPath"];
 
-//    var fileDownloader = services.GetRequiredService<IFileDownloader>();
-//    await fileDownloader.DownloadScriptFileAsync();
+        var fileDownloader = services.GetRequiredService<IFileDownloader>();
+        await fileDownloader.DownloadScriptFileAsync();
 
-//    DbContext context = services.GetRequiredService<NorthwindDbContext>();
-//    context.Database.Migrate();
+        DbContext context = services.GetRequiredService<NorthwindDbContext>();
+        context.Database.Migrate();
 
-//    context = services.GetRequiredService<NorthwindIdentityDbContext>();
-//    context.Database.Migrate();
+        context = services.GetRequiredService<NorthwindIdentityDbContext>();
+        context.Database.Migrate();
 
-//    if (File.Exists(path))
-//    {
-//        File.Delete(path);
-//    }    
-//}
+        if (File.Exists(path))
+        {
+            File.Delete(path);
+        }
+    }
+    catch (Exception ex) 
+    {
+        Console.WriteLine(ex.Message);
+        app.Logger.Log(LogLevel.Error, ex.Message);
+    }    
+}
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
+//if (!app.Environment.IsDevelopment())
+//{
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
-}
+//}
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
