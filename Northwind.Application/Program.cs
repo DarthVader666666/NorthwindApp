@@ -26,8 +26,8 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    var path = app.Configuration["ScriptPath"];
-    var url = app.Configuration["ScriptUrl"];
+    var path = config["ScriptPath"];
+    var url = config["ScriptUrl"];
 
     await FileDownloader.DownloadScriptFileAsync(url, path);
 

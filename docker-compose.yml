@@ -9,8 +9,13 @@ services:
     image: ${DOCKER_REGISTRY-}northwindapp
     build:
       context: .
-      dockerfile: Northwind.Application/Dockerfile
+      dockerfile: Dockerfile
     container_name: northwindapp-container
+    ports:
+        - 8080:80
+        - 8081:443
+    environment: 
+        - ASPNETCORE_URLS=https://+;http://+
     networks: 
         - dev
 
