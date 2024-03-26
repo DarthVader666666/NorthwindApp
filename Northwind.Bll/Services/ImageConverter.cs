@@ -30,7 +30,7 @@ namespace Northwind.Bll.Services
 
         public static byte[] ConvertNorthwindPhoto(byte[] source, ImageHeaders headerType)
         {
-            var header = headerType == ImageHeaders.EmployeeHeader ? OleEmployeeHeader : OleCategoryHeader;
+            var header = headerType == ImageHeaders.Employee ? OleEmployeeHeader : OleCategoryHeader;
             var result = HasHeader(source, header) ? source[headerLength..] : source;
             return result;
         }

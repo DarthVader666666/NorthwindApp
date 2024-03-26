@@ -1,12 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Northwind.Application.Models.Employee;
-using Northwind.Bll.Enums;
-using Northwind.Bll.Services;
-using Northwind.Data;
+using Northwind.Bll.Interfaces;
 using Northwind.Data.Entities;
 
 namespace Northwind.Application.Controllers
@@ -14,22 +11,22 @@ namespace Northwind.Application.Controllers
     [Authorize]
     public class EmployeesController : Controller
     {
-        private readonly NorthwindDbContext _context;
-        private readonly IMapper _mapper;   
+        private readonly IMapper _mapper;
+        private readonly IRepository<Employee> _employeeRepository;
 
-        public EmployeesController(NorthwindDbContext context, IMapper mapper)
+        public EmployeesController(IRepository<Employee> employeeRepository, IMapper mapper)
         {
-            _context = context;
             _mapper = mapper;
+            _employeeRepository = employeeRepository;
         }
 
         // GET: Employees
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var northwindDbContext = _context.Employees.Include(e => e.ReportsToNavigation);
-            await northwindDbContext.ForEachAsync(x => x.Photo = ImageConverter.ConvertNorthwindPhoto(x.Photo!, ImageHeaders.EmployeeHeader));
+            var employees = _employeeRepository.GetList();
+            var employeeModels = _mapper.Map<IEnumerable<EmployeeIndexModel>>(employees);
 
-            return View(await northwindDbContext.ToListAsync());
+            return View(employeeModels);
         }
 
         // GET: Employees/Details/5
@@ -40,11 +37,7 @@ namespace Northwind.Application.Controllers
                 return NotFound();
             }
 
-            var employee = await _context.Employees
-                .Include(e => e.ReportsToNavigation)
-                .FirstOrDefaultAsync(m => m.EmployeeId == id);
-
-            employee!.Photo = ImageConverter.ConvertNorthwindPhoto(employee.Photo!, ImageHeaders.EmployeeHeader);
+            var employee = await _employeeRepository.Get(id);
 
             if (employee == null)
             {
@@ -57,27 +50,23 @@ namespace Northwind.Application.Controllers
         // GET: Employees/Create
         public IActionResult Create()
         {
-            ViewData["ReportsTo"] = new SelectList(_context.Employees, "EmployeeId", "FirstName");
             return View();
         }
 
         // POST: Employees/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("EmployeeId,LastName,FirstName,Title,TitleOfCourtesy,BirthDate,HireDate,Address,City,Region,PostalCode," +
-            "Country,HomePhone,Extension,Photo,Notes,ReportsTo,PhotoPath,FormFile")] EmployeeEditModel employeeEditModel)
+        public async Task<IActionResult> Create(EmployeeCreateEditModel employeeEditModel)
         {
             if (ModelState.IsValid)
             {
                 var employee = _mapper.Map<Employee>(employeeEditModel);
+                await _employeeRepository.Create(employee);
 
-                _context.Add(employee);
-                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ReportsTo"] = new SelectList(_context.Employees, "EmployeeId", "FirstName", employeeEditModel.ReportsTo);
+
             return View(employeeEditModel);
         }
 
@@ -89,22 +78,21 @@ namespace Northwind.Application.Controllers
                 return NotFound();
             }
 
-            var employeeEditModel = _mapper.Map<EmployeeEditModel>(await _context.Employees.FindAsync(id));
+            var employeeEditModel = _mapper.Map<EmployeeCreateEditModel>(await _employeeRepository.Get(id));
 
             if (employeeEditModel == null)
             {
                 return NotFound();
             }
-            ViewData["ReportsTo"] = new SelectList(_context.Employees, "EmployeeId", "FirstName", employeeEditModel.ReportsTo);
+
             return View(employeeEditModel);
         }
 
         // POST: Employees/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, EmployeeEditModel employeeEditModel)
+        public async Task<IActionResult> Edit(int id, EmployeeCreateEditModel employeeEditModel)
         {
             if (id != employeeEditModel.EmployeeId)
             {
@@ -116,8 +104,7 @@ namespace Northwind.Application.Controllers
                 try
                 {
                     var employee = _mapper.Map<Employee>(employeeEditModel);
-                    _context.Update(employee);
-                    await _context.SaveChangesAsync();
+                    await _employeeRepository.Update(employee);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -130,32 +117,17 @@ namespace Northwind.Application.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ReportsTo"] = new SelectList(_context.Employees, "EmployeeId", "FirstName", employeeEditModel.ReportsTo);
+
             return View(employeeEditModel);
         }
 
         // GET: Employees/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var employee = await _context.Employees
-                .Include(e => e.ReportsToNavigation)
-                .FirstOrDefaultAsync(m => m.EmployeeId == id);
-
-            employee!.Photo = ImageConverter.ConvertNorthwindPhoto(employee.Photo, ImageHeaders.EmployeeHeader);
-
-            if (employee == null)
-            {
-                return NotFound();
-            }
-
-            return View(employee);
+            return await Details(id);
         }
 
         // POST: Employees/Delete/5
@@ -163,19 +135,19 @@ namespace Northwind.Application.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var employee = await _context.Employees.FindAsync(id);
+            var employee = await _employeeRepository.Get(id);
+
             if (employee != null)
             {
-                _context.Employees.Remove(employee);
+                await _employeeRepository.Delete(id);
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool EmployeeExists(int id)
         {
-            return _context.Employees.Any(e => e.EmployeeId == id);
+            return _employeeRepository.GetList().Any(e => e.EmployeeId == id);
         }
     }
 }
