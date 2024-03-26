@@ -1,5 +1,4 @@
-﻿@model Northwind.Application.Models.Employee.EmployeeEditModel
-
+﻿@model Northwind.Application.Models.Employee.EmployeeCreateEditModel
 @{
     ViewData["Title"] = "Create";
 }
@@ -13,15 +12,15 @@
         <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
+                <label asp-for="FirstName" class="control-label"></label>
+                <input asp-for="FirstName" class="form-control"/>
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="LastName" class="control-label"></label>
                 <input asp-for="LastName" class="form-control" />
                 <span asp-validation-for="LastName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FirstName" class="control-label"></label>
-                <input asp-for="FirstName" class="form-control" />
-                <span asp-validation-for="FirstName" class="text-danger"></span>
-            </div>
+            </div>            
             <div class="form-group">
                 <label asp-for="Title" class="control-label"></label>
                 <input asp-for="Title" class="form-control" />
@@ -73,28 +72,18 @@
                 <span asp-validation-for="HomePhone" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Extension" class="control-label"></label>
-                <input asp-for="Extension" class="form-control" />
-                <span asp-validation-for="Extension" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FormFile" class="control-label"></label>
+                <label asp-for="FormFile" class="control-label">Picture</label>
                 <input asp-for="FormFile" class="form-control" />
                 <span asp-validation-for="FormFile" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Notes" class="control-label"></label>
-                <input asp-for="Notes" class="form-control" />
+                <textarea asp-for="Notes" class="form-control"></textarea>
                 <span asp-validation-for="Notes" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="ReportsTo" class="control-label"></label>
                 <select asp-for="ReportsTo" class ="form-control" asp-items="ViewBag.ReportsTo"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="PhotoPath" class="control-label"></label>
-                <input asp-for="PhotoPath" class="form-control" />
-                <span asp-validation-for="PhotoPath" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
@@ -106,4 +95,3 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
-

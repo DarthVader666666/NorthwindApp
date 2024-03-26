@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Northwind.Bll.Interfaces;
 using Northwind.Bll.Services;
 using Northwind.Data;
+using Northwind.Data.Entities;
 using NorthwindApp.ConfigureServices;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +18,8 @@ var connectionString = config["ConnectionStrings:SQL_Server"];
 builder.Services.AddDbContext<NorthwindDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<NorthwindIdentityDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<NorthwindIdentityDbContext>();
+
+builder.Services.AddScoped<IRepository<Employee>, EmployeeRepository>();
 
 builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
@@ -47,11 +51,10 @@ using (var scope = app.Services.CreateScope())
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();

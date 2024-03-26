@@ -1,4 +1,4 @@
-﻿@model Northwind.Application.Models.Employee.EmployeeEditModel
+﻿@model Northwind.Application.Models.Employee.EmployeeCreateEditModel
 @{
     ViewData["Title"] = "Edit";
 }
@@ -73,11 +73,6 @@
                 <span asp-validation-for="HomePhone" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Extension" class="control-label"></label>
-                <input asp-for="Extension" class="form-control" />
-                <span asp-validation-for="Extension" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="FormFile" class="control-label"></label>
                 <input asp-for="FormFile" class="form-control" />
                 <span asp-validation-for="FormFile" class="text-danger"></span>
@@ -91,11 +86,6 @@
                 <label asp-for="ReportsTo" class="control-label"></label>
                 <select asp-for="ReportsTo" class="form-control" asp-items="ViewBag.ReportsTo"></select>
                 <span asp-validation-for="ReportsTo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PhotoPath" class="control-label"></label>
-                <input asp-for="PhotoPath" class="form-control" />
-                <span asp-validation-for="PhotoPath" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

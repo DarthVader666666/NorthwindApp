@@ -26,7 +26,7 @@ namespace Northwind.Application.Controllers
         public async Task<IActionResult> Index()
         {
             var categories = await _context.Categories.ToListAsync();
-            categories.ForEach(category => category.Picture = ImageConverter.ConvertNorthwindPhoto(category.Picture!, ImageHeaders.CategoryHeader));
+            categories.ForEach(category => category.Picture = ImageConverter.ConvertNorthwindPhoto(category.Picture!, ImageHeaders.Category));
 
             return View(categories);
         }
@@ -42,7 +42,7 @@ namespace Northwind.Application.Controllers
             var category = await _context.Categories
                 .FirstOrDefaultAsync(m => m.CategoryId == id);
 
-            category!.Picture = ImageConverter.ConvertNorthwindPhoto(category.Picture!, ImageHeaders.CategoryHeader);
+            category!.Picture = ImageConverter.ConvertNorthwindPhoto(category.Picture!, ImageHeaders.Category);
 
             if (category == null)
             {
@@ -139,7 +139,7 @@ namespace Northwind.Application.Controllers
             var category = await _context.Categories
                 .FirstOrDefaultAsync(m => m.CategoryId == id);
 
-            category!.Picture = ImageConverter.ConvertNorthwindPhoto(category.Picture!, ImageHeaders.CategoryHeader);
+            category!.Picture = ImageConverter.ConvertNorthwindPhoto(category.Picture!, ImageHeaders.Category);
 
             if (category == null)
             {
