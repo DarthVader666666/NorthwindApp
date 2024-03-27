@@ -1,8 +1,10 @@
 ﻿@{
+    var email = ViewData["Email"];
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
     <h1 class="display-4">Darth Vader</h1>
     <h1>Environment: @Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")</h1>
+    <h1>Email: @email</h1>
 </div>

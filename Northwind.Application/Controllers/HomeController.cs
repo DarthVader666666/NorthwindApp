@@ -21,6 +21,7 @@ namespace NorthwindApp.Controllers
 
         public IActionResult Index()
         {
+            ViewData["Email"] = _config["Email"];
             return View();
         }
 
