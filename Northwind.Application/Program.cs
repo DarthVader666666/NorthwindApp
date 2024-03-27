@@ -21,6 +21,8 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 
 builder.Services.AddScoped<IRepository<Employee>, EmployeeRepository>();
 
+builder.Services.AddTransient<IEmailSender, EmailSender>();
+
 builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
 
