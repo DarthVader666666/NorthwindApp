@@ -1,14 +1,14 @@
-﻿@model IEnumerable<Northwind.Data.Entities.Category>
+﻿@model IEnumerable<Northwind.Application.Models.Category.CategoryIndexModel>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Categories</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<button class="btn btn-primary" onclick="location.href = '@Url.ActionLink("Create", "Categories")'">
+    Create New
+</button>
 <table class="table">
     <thead>
         <tr>
@@ -26,7 +26,7 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr>
+        <tr onclick="location.href = '@Url.ActionLink("Details", "Categories", new { id = item.CategoryId })'" style="cursor:pointer">
             <td>
                 @Html.DisplayFor(modelItem => item.CategoryName)
             </td>
@@ -37,9 +37,14 @@
                 <img src="data:image/bmp;base64,@Convert.ToBase64String(item.Picture! ?? new byte[0])" style="height:60px;width:60px;" />
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.CategoryId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.CategoryId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.CategoryId">Delete</a>
+                <ul style="list-style-type: none;">
+                    <li class="mb-1">
+                        <a asp-action="Edit" asp-route-id="@item.CategoryId">Edit</a>
+                    </li>
+                    <li>
+                        <a asp-action="Delete" asp-route-id="@item.CategoryId">Delete</a>
+                    </li>
+                </ul>
             </td>
         </tr>
 }

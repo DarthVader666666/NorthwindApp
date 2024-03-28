@@ -2,9 +2,8 @@
 
 namespace Northwind.Application.Models.Employee
 {
-    public class EmployeeCreateEditModel
+    public class EmployeeCreateModel
     {
-        public int EmployeeId { get; set; }
         [Required]
         public string LastName { get; set; } = null!;
         [Required]

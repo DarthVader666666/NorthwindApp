@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Northwind.Application.Models.Category;
 using Northwind.Bll.Enums;
+using Northwind.Bll.Interfaces;
 using Northwind.Bll.Services;
 using Northwind.Data;
 using Northwind.Data.Entities;
@@ -13,22 +14,22 @@ namespace Northwind.Application.Controllers
     [Authorize]
     public class CategoriesController : Controller
     {
-        private readonly NorthwindDbContext _context;
+        private readonly IRepository<Category> _categoryRepository;
         private readonly IMapper _mapper;
 
-        public CategoriesController(NorthwindDbContext context, IMapper mapper)
+        public CategoriesController(IRepository<Category> categoryRepository, IMapper mapper)
         {
-            _context = context;
+            _categoryRepository = categoryRepository;
             _mapper = mapper;
         }
 
         // GET: Categories
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var categories = await _context.Categories.ToListAsync();
-            categories.ForEach(category => category.Picture = ImageConverter.ConvertNorthwindPhoto(category.Picture!, ImageHeaders.Category));
+            var categories = _categoryRepository.GetList();
+            var categoryModels = _mapper.Map<IEnumerable<CategoryIndexModel>>(categories);
 
-            return View(categories);
+            return View(categoryModels);
         }
 
         // GET: Categories/Details/5
@@ -39,10 +40,7 @@ namespace Northwind.Application.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Categories
-                .FirstOrDefaultAsync(m => m.CategoryId == id);
-
-            category!.Picture = ImageConverter.ConvertNorthwindPhoto(category.Picture!, ImageHeaders.Category);
+            var category = await _categoryRepository.Get(id);
 
             if (category == null)
             {
@@ -60,18 +58,19 @@ namespace Northwind.Application.Controllers
 
         // POST: Categories/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CategoryId,CategoryName,Description,Picture")] Category category)
+        public async Task<IActionResult> Create(CategoryCreateModel categoryCreateModel)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(category);
-                await _context.SaveChangesAsync();
+                var category = _mapper.Map<Category>(categoryCreateModel);
+                await _categoryRepository.Create(category);
+
                 return RedirectToAction(nameof(Index));
             }
-            return View(category);
+
+            return View(categoryCreateModel);
         }
 
         // GET: Categories/Edit/5
@@ -82,12 +81,13 @@ namespace Northwind.Application.Controllers
                 return NotFound();
             }
 
-            var categoryEditModel = _mapper.Map<CategoryEditModel>(await _context.Categories.FindAsync(id));
+            var categoryEditModel = _mapper.Map<CategoryEditModel>(await _categoryRepository.Get(id));
 
             if (categoryEditModel == null)
             {
                 return NotFound();
             }
+
             return View(categoryEditModel);
         }
 
@@ -96,7 +96,7 @@ namespace Northwind.Application.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CategoryId,CategoryName,Description,Picture,FormFile")] CategoryEditModel categoryEditModel)
+        public async Task<IActionResult> Edit(int id, CategoryEditModel categoryEditModel)
         {
             if (id != categoryEditModel.CategoryId)
             {
@@ -109,12 +109,11 @@ namespace Northwind.Application.Controllers
                 {
                     var category = _mapper.Map<Category>(categoryEditModel);
 
-                    _context.Update(category);
-                    await _context.SaveChangesAsync();
+                    await _categoryRepository.Update(category);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CategoryExists(categoryEditModel.CategoryId))
+                    if (!await CategoryExists(categoryEditModel.CategoryId))
                     {
                         return NotFound();
                     }
@@ -131,22 +130,7 @@ namespace Northwind.Application.Controllers
         // GET: Categories/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var category = await _context.Categories
-                .FirstOrDefaultAsync(m => m.CategoryId == id);
-
-            category!.Picture = ImageConverter.ConvertNorthwindPhoto(category.Picture!, ImageHeaders.Category);
-
-            if (category == null)
-            {
-                return NotFound();
-            }
-
-            return View(category);
+            return await Details(id);
         }
 
         // POST: Categories/Delete/5
@@ -154,20 +138,14 @@ namespace Northwind.Application.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
-
-            if (category != null)
-            {
-                _context.Categories.Remove(category);
-            }
-
-            await _context.SaveChangesAsync();
+            await _categoryRepository.Delete(id);
+            
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CategoryExists(int id)
+        private async Task<bool> CategoryExists(int id)
         {
-            return _context.Categories.Any(e => e.CategoryId == id);
+            return (await _categoryRepository.Get(id)) != null;
         }
     }
 }
