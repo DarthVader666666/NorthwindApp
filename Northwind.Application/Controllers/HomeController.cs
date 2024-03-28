@@ -10,18 +10,15 @@ namespace NorthwindApp.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly NorthwindDbContext _db;
-        private readonly IConfiguration _config;
 
-        public HomeController(ILogger<HomeController> logger, NorthwindDbContext db, IConfiguration config)
+        public HomeController(ILogger<HomeController> logger, NorthwindDbContext db)
         {
             _logger = logger;
             _db = db;
-            _config = config;
         }
 
         public IActionResult Index()
         {
-            ViewData["Email"] = _config["Email"];
             return View();
         }
 
