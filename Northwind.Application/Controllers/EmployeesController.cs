@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Northwind.Application.Models.Employee;
 using Northwind.Bll.Interfaces;
+using Northwind.Bll.Services;
 using Northwind.Data.Entities;
 
 namespace Northwind.Application.Controllers
@@ -57,17 +58,17 @@ namespace Northwind.Application.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(EmployeeCreateEditModel employeeEditModel)
+        public async Task<IActionResult> Create(EmployeeCreateModel employeeCreateModel)
         {
             if (ModelState.IsValid)
             {
-                var employee = _mapper.Map<Employee>(employeeEditModel);
+                var employee = _mapper.Map<Employee>(employeeCreateModel);
                 await _employeeRepository.Create(employee);
 
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(employeeEditModel);
+            return View(employeeCreateModel);
         }
 
         // GET: Employees/Edit/5
@@ -78,7 +79,7 @@ namespace Northwind.Application.Controllers
                 return NotFound();
             }
 
-            var employeeEditModel = _mapper.Map<EmployeeCreateEditModel>(await _employeeRepository.Get(id));
+            var employeeEditModel = _mapper.Map<EmployeeEditModel>(await _employeeRepository.Get(id));
 
             if (employeeEditModel == null)
             {
@@ -92,7 +93,7 @@ namespace Northwind.Application.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, EmployeeCreateEditModel employeeEditModel)
+        public async Task<IActionResult> Edit(int id, EmployeeEditModel employeeEditModel)
         {
             if (id != employeeEditModel.EmployeeId)
             {
@@ -108,7 +109,7 @@ namespace Northwind.Application.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!EmployeeExists(employeeEditModel.EmployeeId))
+                    if (!await EmployeeExists(employeeEditModel.EmployeeId))
                     {
                         return NotFound();
                     }
@@ -135,19 +136,14 @@ namespace Northwind.Application.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var employee = await _employeeRepository.Get(id);
-
-            if (employee != null)
-            {
-                await _employeeRepository.Delete(id);
-            }
+            await _employeeRepository.Delete(id);
 
             return RedirectToAction(nameof(Index));
         }
 
-        private bool EmployeeExists(int id)
+        private async Task<bool> EmployeeExists(int id)
         {
-            return _employeeRepository.GetList().Any(e => e.EmployeeId == id);
+            return (await _employeeRepository.Get(id)) != null;
         }
     }
 }

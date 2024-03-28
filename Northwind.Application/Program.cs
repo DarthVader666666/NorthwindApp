@@ -20,6 +20,7 @@ builder.Services.AddDbContext<NorthwindIdentityDbContext>(options => options.Use
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<NorthwindIdentityDbContext>();
 
 builder.Services.AddScoped<IRepository<Employee>, EmployeeRepository>();
+builder.Services.AddScoped<IRepository<Category>, CategoryRepository>();
 
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
