@@ -24,6 +24,13 @@ builder.Services.AddScoped<IRepository<Category>, CategoryRepository>();
 
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.Name = "AspNetCore.Identity.Application";
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+    options.SlidingExpiration = true;
+});
+
 builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
 
