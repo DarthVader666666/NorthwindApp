@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Northwind.Bll.Validation;
+using System.ComponentModel.DataAnnotations;
 
 namespace Northwind.Application.Models.Employee
 {
@@ -13,8 +14,10 @@ namespace Northwind.Application.Models.Employee
 
         public string? TitleOfCourtesy { get; set; }
         [Required]
+        [DateValidation(MinYears = 18, MaxYears = 60)]
         public DateTime? BirthDate { get; set; }
         [Required]
+        [DateValidation(MinYears = 0, MaxYears = 60)]
         public DateTime? HireDate { get; set; }
 
         public string? Address { get; set; }
