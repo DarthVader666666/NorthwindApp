@@ -17,7 +17,9 @@ var connectionString = config["ConnectionStrings:SQL_Server"];
 
 builder.Services.AddDbContext<NorthwindDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<NorthwindIdentityDbContext>(options => options.UseSqlServer(connectionString));
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<NorthwindIdentityDbContext>();
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<NorthwindIdentityDbContext>();
 
 builder.Services.AddScoped<IRepository<Employee>, EmployeeRepository>();
 builder.Services.AddScoped<IRepository<Category>, CategoryRepository>();
