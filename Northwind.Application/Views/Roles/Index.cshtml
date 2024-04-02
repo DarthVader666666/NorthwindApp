@@ -9,7 +9,7 @@
             <td>
                 <form asp-action="Delete" asp-route-id="@role.Id" method="post">
                     <button type="submit" class="btn btn-sm btn-danger">
-                        Удалить
+                        Delete
                     </button>
                 </form>
             </td>
@@ -17,6 +17,3 @@
     }
 </table>
 <button class="btn btn-primary" onclick="location.href = '@Url.ActionLink("Create", "Roles")'">Add role</button>
-@* <button class="btn btn-primary" onclick="location.href = '@Url.ActionLink("Index", "Roles")'">Roles list</button>
-<a asp-action="Create">Add role</a>
-<a asp-action="UserList">Roles list</a> *@
