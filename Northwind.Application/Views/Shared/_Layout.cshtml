@@ -1,9 +1,13 @@
-﻿<!DOCTYPE html>
+﻿@{
+    ViewData["Title"] = "Northwind";
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - NorthwindApp</title>
+    <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Northwind.Application.styles.css" asp-append-version="true" />
@@ -25,16 +29,13 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Categories" asp-action="Index">Categories</a>
                         </li class="nav-item">
-                        <li>
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Roles" asp-action="UserList">Users</a>
-                        </li>
-                        <li>
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Roles" asp-action="Index">Roles</a>
-                        </li>
                     </ul>
-                    <ul class="align-content-end">
+                    <div class="text-text-middle">
+                        <partial name="_AdminPartial" />
+                    </div>
+                    <div class="align-content-end">
                         <partial name="_LoginPartial" />
-                    </ul>
+                    </div>
                 </div>
             </div>
         </nav>

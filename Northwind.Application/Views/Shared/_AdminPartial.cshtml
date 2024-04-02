@@ -1,0 +1,11 @@
+﻿<ul class="navbar-nav align-content-center">
+    @if (User.IsInRole("admin"))
+    {
+        <li>
+            <a class="nav-link text-dark fw-bold" asp-area="" asp-controller="Roles" asp-action="UserList">Users</a>
+        </li>
+        <li>
+            <a class="nav-link text-dark fw-bold" asp-area="" asp-controller="Roles" asp-action="Index">Roles</a>
+        </li>
+    }
+</ul>
