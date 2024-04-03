@@ -22,13 +22,11 @@ namespace Northwind.Application.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
-        private readonly IDatabaseSeeder _dataSeeder;
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger, IDatabaseSeeder dataSeeder)
+        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger)
         {
             _signInManager = signInManager;
             _logger = logger;
-            _dataSeeder = dataSeeder;
         }
 
         /// <summary>
