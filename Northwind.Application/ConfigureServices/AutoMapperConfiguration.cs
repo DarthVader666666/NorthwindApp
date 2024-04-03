@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Northwind.Application.Models.Category;
 using Northwind.Application.Models.Employee;
+using Northwind.Bll.Enums;
 using Northwind.Bll.Services;
 using Northwind.Data.Entities;
 
@@ -21,7 +22,8 @@ namespace NorthwindApp.ConfigureServices
                             src => src.FormFile != null ? ImageConverter.ConvertFormFileToByteArray(src.FormFile!) : src.Photo));
 
                     autoMapperConfig.CreateMap<Employee, EmployeeIndexModel>()
-                        .ForMember(dest => dest.HireDate, opts => opts.MapFrom(src => ((DateTime)src.HireDate!).ToShortDateString()));
+                        .ForMember(dest => dest.HireDate, opts => opts.MapFrom(src => ((DateTime)src.HireDate!).ToShortDateString()))
+                        .ForMember(dest => dest.Photo, opts => opts.MapFrom(src => ImageConverter.ConvertNorthwindPhoto(src.Photo!, ImageHeaders.Employee)));                        
 
                     autoMapperConfig.CreateMap<EmployeeIndexModel, Employee>();
 
@@ -30,7 +32,8 @@ namespace NorthwindApp.ConfigureServices
 
 
 
-                    autoMapperConfig.CreateMap<Category, CategoryIndexModel>();
+                    autoMapperConfig.CreateMap<Category, CategoryIndexModel>()
+                        .ForMember(dest => dest.Picture, opts => opts.MapFrom(src => ImageConverter.ConvertNorthwindPhoto(src.Picture!, ImageHeaders.Category)));
 
                     autoMapperConfig.CreateMap<Category, CategoryEditModel>();
 

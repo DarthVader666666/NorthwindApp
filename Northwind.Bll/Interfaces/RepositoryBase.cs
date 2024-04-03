@@ -1,57 +1,59 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Northwind.Data;
 
 namespace Northwind.Bll.Interfaces
 {
-    public abstract class RepositoryBase<TEntity> : IRepository<TEntity> where TEntity : class
+    public abstract class RepositoryBase<TEntity, TDbContext> : IGuestRepository<TEntity>
+        where TEntity : class 
+        where TDbContext : NorthwindDbContext
     {
-        protected readonly DbContext _dbContext;
-
-        protected RepositoryBase(DbContext dbContext)
+        protected RepositoryBase(TDbContext dbContext)
         {
-            _dbContext = dbContext;
+            DbContext = dbContext;
         }
+
+        public NorthwindDbContext DbContext { get; }
 
         public async Task<TEntity?> Create(TEntity item)
         {
-            var entity = (await _dbContext.AddAsync(item)).Entity;
+            var entity = (await DbContext.AddAsync(item)).Entity;
 
             return await SaveAsync(entity);
         }
 
         public async Task<TEntity?> Delete(int? id)
         {
-            var item = await _dbContext.FindAsync<TEntity>(id);
+            var item = await DbContext.FindAsync<TEntity>(id);
 
             if (item == null)
             {
                 return item;
             }
 
-            var entity = _dbContext.Remove(item).Entity;
+            var entity = DbContext.Remove(item).Entity;
 
             return await SaveAsync(entity);
         }
 
         public virtual async Task<TEntity?> Get(int? id)
         {
-            return await _dbContext.FindAsync<TEntity>(id);
+            return await DbContext.FindAsync<TEntity>(id);
         }
 
         public virtual IEnumerable<TEntity> GetList()
         {
-            return _dbContext.Set<TEntity>().AsEnumerable();
+            return DbContext.Set<TEntity>().AsEnumerable();
         }
 
         public async Task<TEntity?> Update(TEntity item)
         {
-            _dbContext.Update(item);
+            DbContext.Update(item);
 
             return await SaveAsync(item);
         }
 
         protected async Task<TEntity?> SaveAsync(TEntity? item)
         {
-            return await _dbContext.SaveChangesAsync() > 0 ? item : null; 
+            return await DbContext.SaveChangesAsync() > 0 ? item : null; 
         }
     }
 }
