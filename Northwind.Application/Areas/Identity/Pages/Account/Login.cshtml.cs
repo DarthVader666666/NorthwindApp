@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using Northwind.Bll.Interfaces;
 
 namespace Northwind.Application.Areas.Identity.Pages.Account
 {
@@ -21,11 +22,13 @@ namespace Northwind.Application.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
+        private readonly IDatabaseSeeder _dataSeeder;
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger, IDatabaseSeeder dataSeeder)
         {
             _signInManager = signInManager;
             _logger = logger;
+            _dataSeeder = dataSeeder;
         }
 
         /// <summary>
