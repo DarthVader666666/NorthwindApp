@@ -4,6 +4,11 @@
     {
         public static void GenerateAdminScript(string path, string email, string password, string securityStamp, string concurrencyStamp)
         {
+            if (path == null || email == null || password == null || securityStamp == null || concurrencyStamp == null)
+            { 
+                throw new ArgumentNullException();
+            }
+
             var sqlScript = 
                 $"INSERT INTO [dbo].[AspNetUsers] ([Id],[UserName],[NormalizedUserName],[Email],[NormalizedEmail],[EmailConfirmed],[PasswordHash]," +
                 $"[SecurityStamp],[ConcurrencyStamp],[PhoneNumber],[PhoneNumberConfirmed],[TwoFactorEnabled],[LockoutEnd],[LockoutEnabled],[AccessFailedCount]) " +
