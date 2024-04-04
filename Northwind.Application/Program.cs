@@ -45,10 +45,17 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    var path = config["ScriptPath"];
+    var seedScriptPath = config["SeedScriptPath"];
+    var adminScriptPath = config["AdminScriptPath"];
     var url = config["ScriptUrl"];
 
-    await FileDownloader.DownloadScriptFileAsync(url, path);
+    var adminEmail = config["AdminEmail"];
+    var adminPasswordHash = config["AdminPasswordHash"];
+    var adminSecurityStamp = config["AdminSecurityStamp"];
+    var adminConcurrencyStamp = config["AdminConcurrencyStamp"];
+
+    await FileDownloader.DownloadScriptFileAsync(url, seedScriptPath);
+    SqlScriptGenerator.GenerateAdminScript(adminScriptPath, adminEmail, adminPasswordHash, adminSecurityStamp, adminConcurrencyStamp);
 
     DbContext context = services.GetRequiredService<NorthwindDbContext>();
     context.Database.Migrate();
@@ -56,9 +63,14 @@ using (var scope = app.Services.CreateScope())
     context = services.GetRequiredService<NorthwindIdentityDbContext>();
     context.Database.Migrate();
 
-    if (File.Exists(path))
+    if (File.Exists(seedScriptPath))
     {
-        File.Delete(path);
+        File.Delete(seedScriptPath);
+    }
+
+    if (File.Exists(adminScriptPath))
+    {
+        File.Delete(adminScriptPath);
     }
 }
 
