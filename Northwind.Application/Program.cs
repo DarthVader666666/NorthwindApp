@@ -57,11 +57,14 @@ using (var scope = app.Services.CreateScope())
     await FileDownloader.DownloadScriptFileAsync(url, seedScriptPath);
     SqlScriptGenerator.GenerateAdminScript(adminScriptPath, adminEmail, adminPasswordHash, adminSecurityStamp, adminConcurrencyStamp);
 
-    DbContext context = services.GetRequiredService<NorthwindDbContext>();
-    context.Database.Migrate();
+    var dbContext = services.GetRequiredService<NorthwindDbContext>();
+    dbContext.Database.Migrate();
 
-    context = services.GetRequiredService<NorthwindIdentityDbContext>();
-    context.Database.Migrate();
+    var identityDbContext = services.GetRequiredService<NorthwindIdentityDbContext>();
+    identityDbContext.Database.Migrate();
+
+    var inMemoryDbContext = services.GetRequiredService<NorthwindInMemoryDbContext>();
+    await inMemoryDbContext.SeedDatabase();
 
     if (File.Exists(seedScriptPath))
     {

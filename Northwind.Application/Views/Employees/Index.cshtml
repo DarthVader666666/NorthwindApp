@@ -2,13 +2,15 @@
 
 @{
     ViewData["Title"] = "Employees";
+    var createLink = User.IsInRole("guest") ? Url.ActionLink("Create", "GuestEmployees") : Url.ActionLink("Create", "Employees");
 }
 
 <h1>Employees</h1>
 
-<button class="btn btn-primary" onclick="location.href = '@Url.ActionLink("Create", "Employees")'">
+<button class="btn btn-primary" onclick="location.href = '@createLink'">
     Create New
 </button>
+
 <table class="table">
     <thead>
         <tr>
@@ -29,7 +31,7 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr onclick="location.href = '@Url.ActionLink("Details", "Employees", new { id = item.EmployeeId })'" style="cursor:pointer">
+            <tr onclick="location.href = '@Url.ActionLink("Details", User.IsInRole("guest") ? "GuestEmployees" : "Employees", new { id = item.EmployeeId })'" style="cursor:pointer">
             <td class="align-middle">
                 @Html.DisplayFor(modelItem => item.FirstName) @Html.DisplayFor(modelItem => item.LastName)
             </td>

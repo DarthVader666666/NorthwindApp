@@ -12,7 +12,6 @@ namespace Northwind.Application.GuestControllers
     {
         public GuestEmployeesController(IGuestRepository<Employee> employeeRepository, IMapper mapper) : base(employeeRepository, mapper)
         {
-            employeeRepository.DbContext.SeedDatabase().Wait();
         }
     }
 }

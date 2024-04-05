@@ -10,7 +10,7 @@ namespace Northwind.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseInMemoryDatabase("NorthwindInMemoryDb");     
+            optionsBuilder.UseInMemoryDatabase("NorthwindInMemoryDb");
         }
     }
 }

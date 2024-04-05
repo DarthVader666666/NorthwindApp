@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Northwind.Bll.Interfaces;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Northwind.Application.Areas.Identity.Pages.Account
 {

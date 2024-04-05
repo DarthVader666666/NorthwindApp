@@ -12,7 +12,6 @@ namespace Northwind.Application.GuestControllers
     {
         public GuestCategoriesController(IGuestRepository<Category> categoryRepository, IMapper mapper) : base(categoryRepository, mapper)
         {
-            categoryRepository.DbContext.SeedDatabase().Wait();
         }
     }
 }

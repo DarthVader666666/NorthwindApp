@@ -1,14 +1,16 @@
 ﻿@model IEnumerable<Northwind.Application.Models.Category.CategoryIndexModel>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Categories";
+    var createLink = User.IsInRole("guest") ? Url.ActionLink("Create", "GuestCategories") : Url.ActionLink("Create", "Categories");
 }
 
 <h1>Categories</h1>
 
-<button class="btn btn-primary" onclick="location.href = '@Url.ActionLink("Create", "Categories")'">
+<button class="btn btn-primary" onclick="location.href = '@createLink'">
     Create New
 </button>
+
 <table class="table">
     <thead>
         <tr>
@@ -26,7 +28,7 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr onclick="location.href = '@Url.ActionLink("Details", "Categories", new { id = item.CategoryId })'" style="cursor:pointer">
+        <tr onclick="location.href = '@Url.ActionLink("Details", User.IsInRole("guest") ? "GuestCategories" : "Categories", new { id = item.CategoryId })'" style="cursor:pointer">
             <td class="align-middle">
                 @Html.DisplayFor(modelItem => item.CategoryName)
             </td>
