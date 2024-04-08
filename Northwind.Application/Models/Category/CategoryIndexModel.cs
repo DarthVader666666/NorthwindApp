@@ -9,5 +9,7 @@
         public string? Description { get; set; }
 
         public byte[]? Picture { get; set; }
+
+        public bool Delete { get; set; }
     }
 }

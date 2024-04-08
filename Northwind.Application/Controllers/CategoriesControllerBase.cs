@@ -125,30 +125,35 @@ namespace Northwind.Application.Controllers
             return View($"{ViewPath}Edit.cshtml", categoryEditModel);
         }
 
-        // GET: Categories/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        [HttpPost]
+        public async Task<IActionResult> Delete([FromForm] int[] ids)
         {
-            if (id == null)
+            var categories = new List<Category>();
+
+            foreach (var id in ids)
             {
-                return NotFound();
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                var employee = await _categoryRepository.Get(id);
+
+                if (employee == null)
+                {
+                    return NotFound();
+                }
+
+                categories.Add(employee);
             }
 
-            var category = await _categoryRepository.Get(id);
-
-            if (category == null)
-            {
-                return NotFound();
-            }
-
-            return View($"{ViewPath}Delete.cshtml", category);
+            return View($"{ViewPath}Delete.cshtml", _mapper.Map<IEnumerable<CategoryIndexModel>>(categories));
         }
 
-        // POST: Categories/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        [HttpPost]
+        public async Task<IActionResult> DeleteConfirmed([FromForm] int[] ids)
         {
-            await _categoryRepository.Delete(id);
+            await _categoryRepository.DeleteSeveral(ids);
 
             return RedirectToAction(nameof(Index));
         }
@@ -157,6 +162,5 @@ namespace Northwind.Application.Controllers
         {
             return (await _categoryRepository.Get(id)) != null;
         }
-
     }
 }
