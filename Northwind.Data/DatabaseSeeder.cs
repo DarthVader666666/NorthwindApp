@@ -5,12 +5,30 @@ namespace Northwind.Data
 {
     public static class DatabaseSeeder
     {
+        private const int amountOfEmployees = 5;
+        private const int amountOfCategories = 5;
+
         public static async Task SeedDatabase<TDbContext>(this TDbContext dbContext) where TDbContext : NorthwindDbContext
         {
             try
             {
                 await dbContext.Employees.AddRangeAsync(GenerateEmployees());
                 await dbContext.Categories.AddRangeAsync(GenerateCategories());
+                await dbContext.SaveChangesAsync();
+
+                foreach (var item in dbContext.Employees)
+                {
+                    var ids = dbContext.Employees.Select(e => e.EmployeeId);
+                    int? id = null;
+
+                    while (id == null || id == item.EmployeeId)
+                    {
+                        id = new Random().Next(ids.Min(), ids.Max());
+                    }
+
+                    item.ReportsTo = id;
+                }
+
                 await dbContext.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -28,7 +46,7 @@ namespace Northwind.Data
                 .RuleFor(e => e.HireDate, f => f.Date.Between(DateTime.UtcNow.AddDays(-10), DateTime.UtcNow))
                 .RuleFor(e => e.BirthDate, f => f.Person.DateOfBirth)
                 .RuleFor(e => e.Photo, f => DownloadPicture(f.Person.Avatar))
-                .Generate(5);
+                .Generate(amountOfEmployees);
         }
 
         private static List<Category> GenerateCategories()
@@ -37,7 +55,7 @@ namespace Northwind.Data
                 .RuleFor(c => c.CategoryName, f => f.Commerce.Categories(1)[0])
                 .RuleFor(c => c.Description, f => f.Commerce.ProductDescription())
                 .RuleFor(c => c.Picture, f => DownloadPicture(f.Person.Avatar))
-                .Generate(5);
+                .Generate(amountOfCategories);
         }
 
         private static byte[]? DownloadPicture(string url)

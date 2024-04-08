@@ -4,6 +4,7 @@
 
 @{
     ViewData["Title"] = "Details";
+    var guest = User.IsInRole("guest") ? "Guest" : "";
 }
 
 <h1>Details</h1>
@@ -109,14 +110,14 @@
             @Html.DisplayFor(model => model.PhotoPath)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ReportsToNavigation)
+            Reports To
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ReportsToNavigation.FirstName)
+            <a asp-action="Details" asp-route-id="@Model.ReportsTo">
+                @Html.DisplayFor(model => model.ReportsToNavigation.FirstName) @Html.DisplayFor(model => model.ReportsToNavigation.LastName)
+            </a>
         </dd>
     </dl>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.EmployeeId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+<button class="btn btn-primary" onclick="location.href = '@Url.ActionLink("Edit", $"{guest}Employees", new { id = Model.EmployeeId })'">Edit</button>
+<a asp-action="Index" class="float-end fw-bold">Back to List</a>
