@@ -13,5 +13,7 @@
         public string? HireDate { get; set; }
 
         public byte[]? Photo { get; set; }
+
+        public bool Delete { get; set; } = false;
     }
 }

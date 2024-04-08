@@ -34,12 +34,27 @@ namespace Northwind.Bll.Interfaces
             return await SaveAsync(entity);
         }
 
-        public virtual async Task<TEntity?> Get(int? id)
+        public async Task<int> DeleteSeveral(int[]? ids)
+        {
+            foreach (var id in ids)
+            {
+                var item = await DbContext.FindAsync<TEntity>(id);
+
+                if (item != null)
+                {
+                    DbContext.Remove(item);
+                }
+            }
+
+            return await DbContext.SaveChangesAsync();
+        }
+
+        public async Task<TEntity?> Get(int? id)
         {
             return await DbContext.FindAsync<TEntity>(id);
         }
 
-        public virtual IEnumerable<TEntity> GetList()
+        public IEnumerable<TEntity> GetList()
         {
             return DbContext.Set<TEntity>().AsEnumerable();
         }
