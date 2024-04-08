@@ -6,6 +6,7 @@ using Northwind.Bll.Interfaces;
 using Northwind.Data.Entities;
 
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Northwind.Application.Controllers
 {
@@ -17,7 +18,7 @@ namespace Northwind.Application.Controllers
         protected EmployeesControllerBase(IRepository<Employee> employeeRepository, IMapper mapper)
         {
             _mapper = mapper;
-            _employeeRepository = employeeRepository;            
+            _employeeRepository = employeeRepository;
         }
 
         protected string? ViewPath { get; set; } = "Views/Employees/";
@@ -46,12 +47,16 @@ namespace Northwind.Application.Controllers
                 return NotFound();
             }
 
+            employee.ReportsToNavigation = await _employeeRepository.Get(employee.ReportsTo);
+
             return View($"{ViewPath}Details.cshtml", employee);
         }
 
         // GET: Employees/Create
         public IActionResult Create()
         {
+            ViewBag.ReportsTo = GetReportsToSelectList();
+
             return View($"{ViewPath}Create.cshtml");
         }
 
@@ -86,6 +91,8 @@ namespace Northwind.Application.Controllers
             {
                 return NotFound();
             }
+
+            ViewBag.ReportsTo = GetReportsToSelectList(id);
 
             return View($"{ViewPath}Edit.cshtml", employeeEditModel);
         }
@@ -162,6 +169,15 @@ namespace Northwind.Application.Controllers
         private async Task<bool> EmployeeExists(int id)
         {
             return (await _employeeRepository.Get(id)) != null;
+        }
+
+        private SelectList GetReportsToSelectList(int? id = null)
+        {
+            var list = _employeeRepository.GetList();
+            var dictionary = list.Except(list.Where(e => e.EmployeeId == id)).ToDictionary(e => e.EmployeeId, e => e.FirstName + " " + e.LastName);
+
+            dictionary.Add(0, "");
+            return new SelectList(dictionary, "Key", "Value");
         }
     }
 }

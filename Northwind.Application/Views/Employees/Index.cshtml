@@ -55,7 +55,7 @@
                     <img src="data:image/bmp;base64,@Convert.ToBase64String(item.Photo!)" style="height:60px;width:60px;" />
                 </td>
                 <td class="align-middle text-center" style="min-width:50px;">
-                    <input name="ids" type="checkbox" id="@item.EmployeeId" asp-for="@item.Delete" value="@item.EmployeeId" onclick="onChangeHandler(this)" />
+                    <input name="ids" type="checkbox" id="@item.EmployeeId" value="@item.EmployeeId" onclick="onChangeHandler(this)" />
                 </td>
             </tr>
         }
