@@ -5,6 +5,8 @@ using Northwind.Application.Models.Employee;
 using Northwind.Bll.Interfaces;
 using Northwind.Data.Entities;
 
+using Microsoft.AspNetCore.Mvc.RazorPages;
+
 namespace Northwind.Application.Controllers
 {
     public abstract class EmployeesControllerBase : Controller
@@ -124,30 +126,35 @@ namespace Northwind.Application.Controllers
             return View($"{ViewPath}Edit.cshtml", employeeEditModel);
         }
 
-        // GET: Employees/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        [HttpPost]
+        public async Task<IActionResult> Delete([FromForm] int[] ids)
         {
-            if (id == null)
+            var employees = new List<Employee>();
+
+            foreach (var id in ids)
             {
-                return NotFound();
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                var employee = await _employeeRepository.Get(id);
+
+                if (employee == null)
+                {
+                    return NotFound();
+                }
+
+                employees.Add(employee);
             }
 
-            var employee = await _employeeRepository.Get(id);
-
-            if (employee == null)
-            {
-                return NotFound();
-            }
-
-            return View($"{ViewPath}Delete.cshtml", employee);
+            return View($"{ViewPath}Delete.cshtml", _mapper.Map<IEnumerable<EmployeeIndexModel>>(employees));
         }
 
-        // POST: Employees/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        [HttpPost]
+        public async Task<IActionResult> DeleteConfirmed([FromForm] int[] ids)
         {
-            await _employeeRepository.Delete(id);
+            await _employeeRepository.DeleteSeveral(ids);
 
             return RedirectToAction(nameof(Index));
         }
