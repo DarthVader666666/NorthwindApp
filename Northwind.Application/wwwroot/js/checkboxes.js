@@ -1,4 +1,3 @@
-let ids = [];
 const checkboxes = Array.from(document.querySelectorAll("input[type='checkbox']:not(#selectAllCheckbox)"));
 const deleteButton = document.getElementById("deleteButton");
 const selectAllCheckbox = document.getElementById("selectAllCheckbox");
@@ -11,6 +10,7 @@ function onChangeSelectAllHandler(checked) {
         });
 
         deleteButton.disabled = false;
+        deleteButton.hidden = false;
     }
     else {
         checkboxes.forEach((item) => {
@@ -19,21 +19,20 @@ function onChangeSelectAllHandler(checked) {
         });
 
         deleteButton.disabled = true;
+        deleteButton.hidden = true;
     }
 }
 
 function onChangeHandler(element) {
     if (element.checked) {
-        ids.push(element.id);
         deleteButton.disabled = false;
+        deleteButton.hidden = false;
     }
     else {
-        const index = ids.indexOf(element.id);
-        ids.splice(index, 1);
-
         if (!anyCheckboxesChecked()) {
             selectAllCheckbox.checked = false;
             deleteButton.disabled = true;
+            deleteButton.hidden = true;
         }
     }
 }
