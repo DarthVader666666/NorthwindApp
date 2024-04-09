@@ -15,7 +15,9 @@ namespace NorthwindApp.ConfigureServices
             {
                 var config = new MapperConfiguration(autoMapperConfig =>
                 {
-                    autoMapperConfig.CreateMap<Employee, EmployeeEditModel>();
+                    autoMapperConfig.CreateMap<Employee, EmployeeEditModel>()
+                        .ForMember(dest => dest.Photo, opts => opts.MapFrom(
+                            src => ImageConverter.ConvertNorthwindPhoto(src.Photo!, ImageHeaders.Employee)));
 
                     autoMapperConfig.CreateMap<EmployeeEditModel, Employee>()
                         .ForMember(dest => dest.Photo, opts => opts.MapFrom(
@@ -35,7 +37,9 @@ namespace NorthwindApp.ConfigureServices
                     autoMapperConfig.CreateMap<Category, CategoryIndexModel>()
                         .ForMember(dest => dest.Picture, opts => opts.MapFrom(src => ImageConverter.ConvertNorthwindPhoto(src.Picture!, ImageHeaders.Category)));
 
-                    autoMapperConfig.CreateMap<Category, CategoryEditModel>();
+                    autoMapperConfig.CreateMap<Category, CategoryEditModel>()
+                        .ForMember(dest => dest.Picture, opts => opts.MapFrom(
+                            src => ImageConverter.ConvertNorthwindPhoto(src.Picture!, ImageHeaders.Category)));
 
                     autoMapperConfig.CreateMap<CategoryEditModel, Category>()
                         .ForMember(dest => dest.Picture, opts => opts.MapFrom(
