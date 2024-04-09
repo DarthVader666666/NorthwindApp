@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using Northwind.Bll.Enums;
 using Northwind.Data;
 using Northwind.Data.Entities;
 
@@ -6,33 +7,62 @@ namespace Northwind.Bll.Services
 {
     public static class DatabaseSeeder
     {
-        public static async Task SeedDatabase(this NorthwindDbContext dbContext)
+        private static readonly Random random = new Random();
+        private const int amountOfEmployees = 5;
+        private const int amountOfCategories = 5;
+        private static readonly string[] jobTitles =
         {
-            if (!dbContext.Employees.Any())
+            "Principal Integration Producer",
+            "Senior Implementation Representative",
+            "Global Impact Synergist",
+            "Senior Usability Associate",
+            "Customer Ideation Developer",
+            "Forward Optimization Officer",
+            "Dynamic Directives Associate",
+            "Future Infrastructure Representative",
+            "Corporate Marketing Engineer",
+            "Central Markets Producer"
+        };
+
+        public static async Task SeedDatabase<TDbContext>(this TDbContext dbContext) where TDbContext : NorthwindDbContext
+        {
+            try
             {
-                try
+                await dbContext.Employees.AddRangeAsync(GenerateEmployees());
+                await dbContext.Categories.AddRangeAsync(GenerateCategories());
+                await dbContext.SaveChangesAsync();
+
+                foreach (var item in dbContext.Employees)
                 {
-                    await dbContext.Employees.AddRangeAsync(GenerateEmployees());
-                    await dbContext.Categories.AddRangeAsync(GenerateCategories());
-                    await dbContext.SaveChangesAsync();
+                    var ids = dbContext.Employees.Select(e => e.EmployeeId);
+                    int? id = null;
+
+                    while (id == null || id == item.EmployeeId)
+                    {
+                        id = new Random().Next(ids.Min(), ids.Max());
+                    }
+
+                    item.ReportsTo = id;
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
+
+                await dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
 
         private static List<Employee> GenerateEmployees()
-        { 
+        {
             return new Faker<Employee>()
                 .RuleFor(e => e.FirstName, f => f.Name.FirstName())
                 .RuleFor(e => e.LastName, f => f.Name.LastName())
-                .RuleFor(e => e.Title, f => f.Hacker.Phrase())
+                .RuleFor(e => e.Title, f => jobTitles[random.Next(0, jobTitles.Length)])
                 .RuleFor(e => e.HireDate, f => f.Date.Between(DateTime.UtcNow.AddDays(-10), DateTime.UtcNow))
                 .RuleFor(e => e.BirthDate, f => f.Person.DateOfBirth)
                 .RuleFor(e => e.Photo, f => DownloadPicture(f.Person.Avatar))
-                .Generate(5);
+                .Generate(amountOfEmployees);
         }
 
         private static List<Category> GenerateCategories()
@@ -40,17 +70,22 @@ namespace Northwind.Bll.Services
             return new Faker<Category>()
                 .RuleFor(c => c.CategoryName, f => f.Commerce.Categories(1)[0])
                 .RuleFor(c => c.Description, f => f.Commerce.ProductDescription())
-                .RuleFor(c => c.Picture, f => DownloadPicture(f.Person.Avatar))
-                .Generate(5);
+                .RuleFor(c => c.Picture, f => DownloadPicture($"wwwroot/pics/categories/{random.Next(1, amountOfCategories + 1)}.png", ImageHeaders.Category))
+                .Generate(amountOfCategories);
         }
 
-        private static byte[]? DownloadPicture(string url)
+        private static byte[]? DownloadPicture(string path, ImageHeaders? imageHeader = null)
         {
+            if (imageHeader == ImageHeaders.Category)
+            {
+                return FileDownloader.DownloadImage(path);
+            }
+
             byte[]? bytes = null;
 
             using (var client = new HttpClient())
             {
-                using var streamTask = client.GetStreamAsync(url);
+                using var streamTask = client.GetStreamAsync(path);
                 streamTask.Wait();
 
                 var stream = streamTask.Result;

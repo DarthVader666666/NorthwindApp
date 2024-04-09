@@ -20,6 +20,18 @@
             return script;
         }
 
+        public static byte[] DownloadImage(string path)
+        { 
+            var image = new byte[0];
+
+            if (File.Exists(path))
+            { 
+                image = File.ReadAllBytes(path);
+            }
+
+            return image;
+        }
+
         private static async Task<string> ReadText(FileStream fileStream)
         {
             var script = "";
