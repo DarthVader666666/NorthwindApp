@@ -89,7 +89,7 @@ namespace Northwind.Application.Controllers
 
             if (employeeEditModel == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Index));
             }
 
             ViewBag.ReportsTo = GetReportsToSelectList(id);

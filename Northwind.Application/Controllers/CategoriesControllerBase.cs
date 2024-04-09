@@ -41,7 +41,7 @@ namespace Northwind.Application.Controllers
 
             if (category == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Index));
             }
 
             return View($"{ViewPath}Details.cshtml", category);
