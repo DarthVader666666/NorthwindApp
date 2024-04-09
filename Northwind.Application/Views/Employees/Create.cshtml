@@ -3,6 +3,28 @@
     ViewData["Title"] = "Create";
 }
 
+@functions {
+    byte[] GetDefaultPicture()
+    {
+        var result = new byte[0];
+
+        try
+        {
+            result = File.ReadAllBytes("wwwroot/pics/AddPicture.gif");
+        }
+        catch (DirectoryNotFoundException ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        catch (FileNotFoundException ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+
+        return result;
+    }
+}
+
 <head>
     <link href="@Url.Content("~/css/details.css")" rel="stylesheet" type="text/css" />
 </head>
@@ -15,6 +37,12 @@
     <div class="col-md-4">
         <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <label class="control-label">Picture</label>
+            <div class="form-group">
+                <img id="image" src="data:image/bmp;base64,@Convert.ToBase64String(Model == null || Model.Photo == null ? GetDefaultPicture() : Model.Photo!)" onclick="onImageClickHandler()" style="cursor:pointer" />
+                <input id="fileInput" asp-for="FormFile" class="form-control" style="display:none;" onchange="previewFile(this)"/>
+                <span asp-validation-for="FormFile" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <label asp-for="FirstName" class="control-label"></label>
                 <input asp-for="FirstName" class="form-control"/>
@@ -76,11 +104,6 @@
                 <span asp-validation-for="HomePhone" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="FormFile" class="control-label">Picture</label>
-                <input asp-for="FormFile" class="form-control" />
-                <span asp-validation-for="FormFile" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="Notes" class="control-label"></label>
                 <textarea asp-for="Notes" class="form-control"></textarea>
                 <span asp-validation-for="Notes" class="text-danger"></span>
@@ -99,3 +122,5 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+
+<script src="~/js/fileSelection.js"></script>

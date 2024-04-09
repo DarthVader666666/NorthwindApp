@@ -10,5 +10,7 @@ namespace Northwind.Application.Models.Category
         public string? Description { get; set; }
 
         public IFormFile? FormFile { get; set; }
+
+        public byte[]? Picture { get; set; } = null;
     }
 }

@@ -34,6 +34,8 @@ namespace Northwind.Application.Models.Employee
 
         public IFormFile? FormFile { get; set; }
 
+        public byte[]? Photo { get; set; } = null;
+
         public string? Notes { get; set; }
 
         public int? ReportsTo { get; set; }
