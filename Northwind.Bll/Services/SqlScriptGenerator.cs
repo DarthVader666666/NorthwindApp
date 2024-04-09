@@ -26,5 +26,25 @@
                 }
             }
         }
+
+        public static void GenerateGuestRoleScript(string path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            var sqlScript =
+                $"INSERT INTO [dbo].[AspNetRoles] ([Id], [Name], [NormalizedName], [ConcurrencyStamp]) " +
+                $"VALUES('07179abe-e68f-4a3d-b85e-a6a96baf17d2','guest', 'GUEST', null)";
+
+            if (!File.Exists(path))
+            {
+                using (var sw = new StreamWriter(path, false))
+                {
+                    sw.Write(sqlScript);
+                }
+            }
+        }
     }
 }
