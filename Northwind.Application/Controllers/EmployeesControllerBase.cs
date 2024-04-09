@@ -133,8 +133,8 @@ namespace Northwind.Application.Controllers
             return View($"{ViewPath}Edit.cshtml", employeeEditModel);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Delete([FromForm] int[] ids)
+        [HttpGet]
+        public async Task<IActionResult> Delete([FromQuery] int[] ids)
         {
             var employees = new List<Employee>();
 
@@ -149,7 +149,7 @@ namespace Northwind.Application.Controllers
 
                 if (employee == null)
                 {
-                    return NotFound();
+                    return RedirectToAction(nameof(Index));
                 }
 
                 employees.Add(employee);

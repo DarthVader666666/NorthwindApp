@@ -82,7 +82,7 @@ namespace Northwind.Application.Controllers
 
             if (categoryEditModel == null)
             {
-                return NotFound();
+                RedirectToAction(nameof(Index));
             }
 
             return View($"{ViewPath}Edit.cshtml", categoryEditModel);
@@ -125,8 +125,8 @@ namespace Northwind.Application.Controllers
             return View($"{ViewPath}Edit.cshtml", categoryEditModel);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Delete([FromForm] int[] ids)
+        [HttpGet]
+        public async Task<IActionResult> Delete([FromQuery] int[] ids)
         {
             var categories = new List<Category>();
 
@@ -141,7 +141,7 @@ namespace Northwind.Application.Controllers
 
                 if (employee == null)
                 {
-                    return NotFound();
+                    return RedirectToAction(nameof(Index));
                 }
 
                 categories.Add(employee);
