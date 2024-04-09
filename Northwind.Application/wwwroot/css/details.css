@@ -1,0 +1,14 @@
+﻿body {
+    .control-label{
+        font-weight:bold;
+    }
+
+    .form-select{
+        cursor:pointer;
+    }
+
+    img{
+        height: 160px;
+        width: 160px;
+    }
+}
