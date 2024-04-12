@@ -59,8 +59,27 @@ using (var scope = app.Services.CreateScope())
     SqlScriptGenerator.GenerateAdminScript(adminScriptPath, adminEmail, adminPasswordHash, adminSecurityStamp, adminConcurrencyStamp);
     SqlScriptGenerator.GenerateGuestRoleScript(guestScriptPath);
 
-    var dbContext = services.GetRequiredService<NorthwindDbContext>();
-    dbContext.Database.Migrate();
+    var count = 3;
+
+    while (count > 0)
+    {
+        try
+        {
+            var dbContext = services.GetRequiredService<NorthwindDbContext>();
+            dbContext.Database.Migrate();
+            break;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Database request timed out. " + ex.Message);
+            count--;
+
+            if (count == 0)
+            {
+                throw;
+            }
+        }
+    }
 
     var identityDbContext = services.GetRequiredService<NorthwindIdentityDbContext>();
     identityDbContext.Database.Migrate();
