@@ -19,6 +19,6 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Restore dependencies
-      run: dotnet restore Northwind.Tests.dll
+      run: dotnet restore
     - name: Test
-      run: dotnet test Northwind.Tests.dll --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal
