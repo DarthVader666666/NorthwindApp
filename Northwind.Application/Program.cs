@@ -59,13 +59,14 @@ using (var scope = app.Services.CreateScope())
     SqlScriptGenerator.GenerateAdminScript(adminScriptPath, adminEmail, adminPasswordHash, adminSecurityStamp, adminConcurrencyStamp);
     SqlScriptGenerator.GenerateGuestRoleScript(guestScriptPath);
 
-    var count = 3;
+    var dbContext = services.GetRequiredService<NorthwindDbContext>();
+
+    var count = 10;
 
     while (count > 0)
     {
         try
         {
-            var dbContext = services.GetRequiredService<NorthwindDbContext>();
             dbContext.Database.Migrate();
             break;
         }
@@ -78,6 +79,8 @@ using (var scope = app.Services.CreateScope())
             {
                 throw;
             }
+
+            Thread.Sleep(5000);
         }
     }
 
