@@ -53,7 +53,7 @@ namespace Northwind.Bll.Services
             }
         }
 
-        private static List<Employee> GenerateEmployees()
+        public static List<Employee> GenerateEmployees(int count = amountOfEmployees)
         {
             return new Faker<Employee>()
                 .RuleFor(e => e.FirstName, f => f.Name.FirstName())
@@ -62,7 +62,7 @@ namespace Northwind.Bll.Services
                 .RuleFor(e => e.HireDate, f => f.Date.Between(DateTime.UtcNow.AddDays(-10), DateTime.UtcNow))
                 .RuleFor(e => e.BirthDate, f => f.Person.DateOfBirth)
                 .RuleFor(e => e.Photo, f => DownloadPicture(f.Person.Avatar))
-                .Generate(amountOfEmployees);
+                .Generate(count);
         }
 
         private static List<Category> GenerateCategories()

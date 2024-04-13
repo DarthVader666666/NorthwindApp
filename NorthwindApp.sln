@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Northwind.Bll", "Northwind.
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{A2E1FF7F-E606-4823-B8BD-146F39746700}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Northwind.Tests", "..\Northwind.Tests\Northwind.Tests.csproj", "{BFBC68D7-BA40-48A1-BAB9-704D48FEA7DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{A2E1FF7F-E606-4823-B8BD-146F39746700}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2E1FF7F-E606-4823-B8BD-146F39746700}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2E1FF7F-E606-4823-B8BD-146F39746700}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFBC68D7-BA40-48A1-BAB9-704D48FEA7DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFBC68D7-BA40-48A1-BAB9-704D48FEA7DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFBC68D7-BA40-48A1-BAB9-704D48FEA7DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFBC68D7-BA40-48A1-BAB9-704D48FEA7DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
