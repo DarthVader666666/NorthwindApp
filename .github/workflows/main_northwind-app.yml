@@ -22,10 +22,10 @@ jobs:
           include-prerelease: true
 
       - name: Build with dotnet
-        run: dotnet build NorthwindApp.sln --configuration Release
+        run: dotnet build ./NorthwindApp.sln --configuration Release
 
       - name: Test
-        run: dotnet test .\Northwind.Tests\Northwind.Tests.csproj --no-build --verbosity normal
+        run: dotnet test ./Northwind.Tests/Northwind.Tests.csproj --no-build --verbosity normal
 
       - name: dotnet publish
         run: dotnet publish Northwind.Application -c Release -o ${{env.DOTNET_ROOT}}/myapp
