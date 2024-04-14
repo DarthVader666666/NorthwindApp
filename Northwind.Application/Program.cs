@@ -56,8 +56,8 @@ using (var scope = app.Services.CreateScope())
     var adminConcurrencyStamp = config["AdminConcurrencyStamp"];
 
     await FileDownloader.DownloadScriptFileAsync(url, seedScriptPath);
-    SqlScriptGenerator.GenerateAdminScript(adminScriptPath, adminEmail, adminPasswordHash, adminSecurityStamp, adminConcurrencyStamp);
-    SqlScriptGenerator.GenerateGuestRoleScript(guestScriptPath);
+    SqlScriptGenerator.GenerateAdminScript(adminScriptPath!, adminEmail!, adminPasswordHash!, adminSecurityStamp!, adminConcurrencyStamp!);
+    SqlScriptGenerator.GenerateGuestRoleScript(guestScriptPath!);
 
     var dbContext = services.GetRequiredService<NorthwindDbContext>();
 

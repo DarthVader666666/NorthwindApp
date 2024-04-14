@@ -126,7 +126,7 @@ namespace Northwind.Application.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Delete([FromQuery] int[] ids)
+        public async Task<IActionResult> Delete([FromQuery] int?[] ids)
         {
             var categories = new List<Category>();
 
