@@ -26,6 +26,11 @@ namespace Northwind.Bll.Services
 
         public static async Task SeedDatabase<TDbContext>(this TDbContext dbContext) where TDbContext : NorthwindDbContext
         {
+            if (dbContext == null)
+            {
+                return;
+            }
+
             try
             {
                 await dbContext.Employees.AddRangeAsync(GenerateEmployees());
@@ -65,7 +70,7 @@ namespace Northwind.Bll.Services
                 .Generate(count);
         }
 
-        private static List<Category> GenerateCategories()
+        public static List<Category> GenerateCategories()
         {
             return new Faker<Category>()
                 .RuleFor(c => c.CategoryName, f => f.Commerce.Categories(1)[0])

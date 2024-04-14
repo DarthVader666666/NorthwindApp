@@ -62,7 +62,7 @@ namespace Northwind.Tests.ModuleTests
 
             foreach (var employee in employees)
             { 
-                var actual = await repository.Delete(employee.EmployeeId);
+                var actual = await repository.Delete(employee!.EmployeeId);
 
                 Assert.NotNull(actual);
                 Assert.Equal(employee.EmployeeId, actual.EmployeeId);
@@ -76,7 +76,7 @@ namespace Northwind.Tests.ModuleTests
 
             if (seed)
             { 
-                context.SeedDatabase();
+                context.SeedDatabase().Wait();
             }
 
             return new EmployeeRepository(context);
