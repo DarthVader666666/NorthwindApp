@@ -45,4 +45,8 @@
     <None Include="Northwind.Tests.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+  	<InternalsVisibleTo Include="Northwind.Tests.csproj" />
+  </ItemGroup>
+
 </Project>
