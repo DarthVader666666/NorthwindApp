@@ -41,4 +41,8 @@
     <Folder Include="Areas\Identity\Data\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="Northwind.Tests.csproj" />
+  </ItemGroup>
+
 </Project>
