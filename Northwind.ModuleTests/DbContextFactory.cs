@@ -1,6 +1,6 @@
 ﻿using Northwind.Data;
 
-namespace Northwind.Tests
+namespace Northwind.ModuleTests
 {
     public class DbContextFactory
     {

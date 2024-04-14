@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
-namespace Northwind.Tests.IntegrationTests
+namespace Northwind.IntegrationTests
 {
     public class EndPointTests : IClassFixture<WebApplicationFactory<Program>>
     {
@@ -17,13 +17,10 @@ namespace Northwind.Tests.IntegrationTests
         [InlineData("/GuestCategories/Index")]
         public async Task EndpointIndex_Test(string url)
         {
-            // Arrange
             var client = await GetGuestHttpClientAsync();
 
-            // Act
             var response = await client.GetAsync(url);
 
-            // Assert
             Assert.True(response.IsSuccessStatusCode);
             Assert.NotNull(response.Content);
         }

@@ -36,7 +36,7 @@ namespace Northwind.Bll.Interfaces
 
         public async Task<int> DeleteSeveral(int[]? ids)
         {
-            foreach (var id in ids)
+            foreach (var id in ids!)
             {
                 var item = await DbContext.FindAsync<TEntity>(id);
 

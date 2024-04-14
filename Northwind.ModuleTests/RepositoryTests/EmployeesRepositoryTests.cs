@@ -3,7 +3,7 @@ using Northwind.Bll.Services;
 using Northwind.Data.Entities;
 using Xunit;
 
-namespace Northwind.Tests.ModuleTests
+namespace Northwind.ModuleTests.RepositoryTests
 {
     public class EmployeesRepositoryTests : IClassFixture<DbContextFactory>
     {
