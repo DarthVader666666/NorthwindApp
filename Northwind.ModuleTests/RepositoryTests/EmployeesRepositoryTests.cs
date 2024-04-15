@@ -1,85 +1,75 @@
-﻿using Northwind.Bll.Interfaces;
+﻿using Moq;
+using Northwind.Bll.Interfaces;
 using Northwind.Bll.Services;
 using Northwind.Data.Entities;
 using Xunit;
 
 namespace Northwind.ModuleTests.RepositoryTests
 {
-    public class EmployeesRepositoryTests : IClassFixture<DbContextFactory>
+    public class EmployeesRepositoryTests
     {
-        private readonly DbContextFactory _contextFactory;
-
-        public EmployeesRepositoryTests(DbContextFactory dbContextFactory)
-        {
-            _contextFactory = dbContextFactory;
-        }
-
-        [Fact]
-        public void GetAllEmployees_Test()
-        {
-            var repository = GetEmployeeRepository(true);
-
-            var employees = repository.GetList();
-
-            Assert.NotNull(employees);
-            Assert.NotEmpty(employees);
-        }
+        private readonly Random random = new Random();
+        private readonly Mock<IRepository<Employee>> repository = new Mock<IRepository<Employee>>();
 
         [Theory]
         [InlineData(1)]
-        [InlineData(2)]
         [InlineData(3)]
-        public void GetEmployeeByIds_Test(int? id)
+        [InlineData(5)]
+        public void GetAllEmployees_Test(int amount)
         {
-            var repository = GetEmployeeRepository(true);
+            repository.Setup(mock => mock.GetList()).Returns(DatabaseSeeder.GenerateEmployees(amount));
 
-            var employee = repository.Get(id);
+            var employees = repository.Object.GetList();
 
-            Assert.NotNull(employee);
+            Assert.NotNull(employees);
+            Assert.NotEmpty(employees);
+            Assert.Equal(amount, employees.Count());
+        }
+
+        [Theory]
+        [MemberData(nameof(Employees))]
+        public async Task GetEmployeeById_Test(Employee? employee)
+        {
+            employee!.EmployeeId = random.Next(1, 10);
+            int? id = employee.EmployeeId;
+            repository.Setup(mock => mock.Get(It.Is<int?>(x => x == id))).ReturnsAsync(await Task.FromResult<Employee?>(employee));
+
+            var actual = await repository.Object.Get(id);
+
+            Assert.NotNull(actual);
+            Assert.Equal(employee.EmployeeId, actual.EmployeeId);
         }
 
         [Theory]
         [MemberData(nameof(Employees))]
         public async Task CreateEmployee_Test(Employee employee)
         {
-            var repository = GetEmployeeRepository(false);
+            var id = random.Next(1, 10);
+            employee.EmployeeId = id;
+            repository.Setup(mock => mock.Create(It.Is<Employee>(x => x == employee))).ReturnsAsync(await Task.FromResult(employee));
 
-            var actual = await repository.Create(employee);
+            var actual = await repository.Object.Create(employee);
 
             Assert.NotNull(actual);
+            Assert.Equal(id, actual.EmployeeId);
             Assert.Equal(employee.FirstName, actual.FirstName);
             Assert.Equal(employee.LastName, actual.LastName);
             Assert.Equal(employee.BirthDate, actual.BirthDate);
             Assert.Equal(employee.HireDate, actual.HireDate);
         }
 
-        [Fact]
-        public async Task DeleteEmployee_Test()
+        [Theory]
+        [MemberData(nameof(Employees))]
+        public async Task DeleteEmployee_Test(Employee employee)
         {
-            var repository = GetEmployeeRepository(true);
+            employee.EmployeeId = random.Next(1, 10);
+            var id = employee.EmployeeId;
+            repository.Setup(mock => mock.Delete(It.Is<int>(x => x == id))).ReturnsAsync(await Task.FromResult(employee));
 
-            var employees = repository.GetList();
+            var actual = await repository.Object.Delete(id);
 
-            foreach (var employee in employees)
-            { 
-                var actual = await repository.Delete(employee!.EmployeeId);
-
-                Assert.NotNull(actual);
-                Assert.Equal(employee.EmployeeId, actual.EmployeeId);
-                Assert.Null(await repository.Get(employee.EmployeeId));
-            }            
-        }
-
-        private IRepository<Employee> GetEmployeeRepository(bool seed = false)
-        {
-            var context = _contextFactory.GetInMemoryDbContext();
-
-            if (seed)
-            { 
-                context.SeedDatabase().Wait();
-            }
-
-            return new EmployeeRepository(context);
+            Assert.NotNull(actual);
+            Assert.Equal(employee.EmployeeId, actual.EmployeeId);
         }
 
         public static IEnumerable<object[]> Employees

@@ -70,7 +70,7 @@ namespace Northwind.Bll.Services
                 .Generate(count);
         }
 
-        public static List<Category> GenerateCategories()
+        public static List<Category> GenerateCategories(int count = amountOfCategories)
         {
             return new Faker<Category>()
                 .RuleFor(c => c.CategoryName, f => f.Commerce.Categories(1)[0])
