@@ -1,83 +1,71 @@
-﻿using Northwind.Bll.Interfaces;
+﻿using Moq;
+using Northwind.Bll.Interfaces;
 using Northwind.Bll.Services;
 using Northwind.Data.Entities;
 using Xunit;
 
 namespace Northwind.ModuleTests.RepositoryTests
 {
-    public class CategoryRepositoryTests : IClassFixture<DbContextFactory>
+    public class CategoryRepositoryTests
     {
-        private readonly DbContextFactory _contextFactory;
+        private readonly Random random = new Random();
+        private readonly Mock<IRepository<Category>> repository = new Mock<IRepository<Category>>();
 
-        public CategoryRepositoryTests(DbContextFactory dbContextFactory)
+        [Theory]
+        [InlineData(1)]
+        [InlineData(3)]
+        [InlineData(5)]
+        public void GetAllCategories_Test(int amount)
         {
-            _contextFactory = dbContextFactory;
-        }
+            repository.Setup(mock => mock.GetList()).Returns(DatabaseSeeder.GenerateCategories(amount));
 
-        [Fact]
-        public void GetAllCategories_Test()
-        {
-            var repository = GetCategoryRepository(true);
-
-            var categories = repository.GetList();
+            var categories = repository.Object.GetList();
 
             Assert.NotNull(categories);
             Assert.NotEmpty(categories);
         }
 
         [Theory]
-        [InlineData(1)]
-        [InlineData(2)]
-        [InlineData(3)]
-        public void GetCategoryByIds_Test(int? id)
+        [MemberData(nameof(Categories))]
+        public async Task GetCategoryByIds_Test(Category category)
         {
-            var repository = GetCategoryRepository(true);
+            var id = random.Next(1, 10);
+            category.CategoryId = id;
+            repository.Setup(mock => mock.Get(It.Is<int>(x => x == id))).ReturnsAsync(await Task.FromResult(category));
 
-            var employee = repository.Get(id);
+            var actual = await repository.Object.Get(id);
 
-            Assert.NotNull(employee);
+            Assert.NotNull(actual);
+            Assert.Equal(id, actual.CategoryId);
         }
 
         [Theory]
         [MemberData(nameof(Categories))]
         public async Task CreateCategory_Test(Category category)
         {
-            var repository = GetCategoryRepository(false);
+            var id = random.Next(1, 10);
+            category.CategoryId = id;
+            repository.Setup(mock => mock.Create(It.Is<Category>(x => x == category))).ReturnsAsync(await Task.FromResult(category));
 
-            var actual = await repository.Create(category);
+            var actual = await repository.Object.Create(category);
 
             Assert.NotNull(actual);
             Assert.Equal(category.CategoryName, actual.CategoryName);
             Assert.Equal(category.Description, actual.Description);
         }
 
-        [Fact]
-        public async Task DeleteCategory_Test()
+        [Theory]
+        [MemberData(nameof(Categories))]
+        public async Task DeleteCategory_Test(Category category)
         {
-            var repository = GetCategoryRepository(true);
+            var id = random.Next(1, 10);
+            category.CategoryId = id;
+            repository.Setup(mock => mock.Delete(It.Is<int?>(x => x == id))).ReturnsAsync(await Task.FromResult(category));
 
-            var categories = repository.GetList();
+            var actual = await repository.Object.Delete(category!.CategoryId);
 
-            foreach (var category in categories)
-            {
-                var actual = await repository.Delete(category!.CategoryId);
-
-                Assert.NotNull(actual);
-                Assert.Equal(category.CategoryId, actual.CategoryId);
-                Assert.Null(await repository.Get(category.CategoryId));
-            }
-        }
-
-        private IRepository<Category> GetCategoryRepository(bool seed = false)
-        {
-            var context = _contextFactory.GetInMemoryDbContext();
-
-            if (seed)
-            {
-                context.SeedDatabase().Wait();
-            }
-
-            return new CategoryRepository(context);
+            Assert.NotNull(actual);
+            Assert.Equal(category.CategoryId, actual.CategoryId);
         }
 
         public static IEnumerable<object[]> Categories

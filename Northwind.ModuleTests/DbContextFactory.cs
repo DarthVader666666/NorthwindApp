@@ -2,18 +2,11 @@
 
 namespace Northwind.ModuleTests
 {
-    public class DbContextFactory
+    public static class DbContextFactory
     {
-        private readonly NorthwindInMemoryDbContext _northwindInMemoryDbContext;
-
-        public DbContextFactory()
+        public static NorthwindInMemoryDbContext GetInMemoryDbContext()
         {
-            _northwindInMemoryDbContext = new NorthwindInMemoryDbContext();
-        }
-
-        public NorthwindInMemoryDbContext GetInMemoryDbContext()
-        {
-            return _northwindInMemoryDbContext;
+            return new NorthwindInMemoryDbContext();
         }
     }
 }
