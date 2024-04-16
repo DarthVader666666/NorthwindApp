@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Northwind.Application.Models.Product;
 using Northwind.Bll.Interfaces;
+using Northwind.Bll.Services;
 using Northwind.Data.Entities;
 
 namespace Northwind.Application.Controllers
@@ -23,17 +25,24 @@ namespace Northwind.Application.Controllers
         protected string? ViewPath { get; set; } = "Views/Products/";
 
         // GET: Products
-        public IActionResult Index(int id)
+        public async Task<IActionResult> Index(int categoryId)
         {
-            var products = _productRepository.GetListFor(id);
-            var productModels = _mapper.Map<IEnumerable<ProductIndexModel>>(products);
+            var products = _productRepository.GetListFor(categoryId);
 
-            if (productModels.Any())
+            if (!products.Any())
             {
-                productModels.First().CategoryName = _categoryRepository.Get(id).Result.CategoryName;
+                Redirect("Categories/Index/");
             }
 
-            return View($"{ViewPath}Index.cshtml", productModels);
+            var productModels = _mapper.Map<IEnumerable<ProductIndexModel>>(products);
+
+            var productsForCategory = new ProductsForCategoryModel() 
+            { 
+                Products = productModels,
+                CategoryName = (await _categoryRepository.Get(categoryId)).CategoryName 
+            };
+
+            return View($"{ViewPath}Index.cshtml", productsForCategory);
         }
 
         // GET: Products/Details/5
@@ -58,6 +67,7 @@ namespace Northwind.Application.Controllers
         // GET: Products/Create
         public IActionResult Create()
         {
+            ViewBag.CategoryId = GetCategoryIdSelectList();
             return View($"{ViewPath}Create.cshtml");
         }
 
@@ -72,7 +82,7 @@ namespace Northwind.Application.Controllers
                 var product = _mapper.Map<Product>(productCreateModel);
                 await _productRepository.Create(product);
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new { categoryId = product.CategoryId });
             }
 
             return View($"{ViewPath}Create.cshtml", productCreateModel);
@@ -135,7 +145,8 @@ namespace Northwind.Application.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete([FromQuery] int[] ids)
         {
-            var products = new List<Product>();
+            var productforCategoryModel = new ProductsForCategoryModel();
+            var products = new List<ProductIndexModel>();
 
             foreach (var id in ids)
             {
@@ -151,23 +162,34 @@ namespace Northwind.Application.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
-                products.Add(product);
+                products.Add(_mapper.Map<ProductIndexModel>(product));
             }
 
-            return View($"{ViewPath}Delete.cshtml", _mapper.Map<IEnumerable<ProductIndexModel>>(products));
+            productforCategoryModel.Products = products;
+
+            return View($"{ViewPath}Delete.cshtml", productforCategoryModel);
         }
 
         [HttpPost]
         public async Task<IActionResult> DeleteConfirmed([FromForm] int[] ids)
         {
-            await _productRepository.DeleteSeveral(ids);
+            var categoryId = await _productRepository.DeleteSeveral(ids);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), new { categoryId });
         }
 
         private async Task<bool> ProductExists(int id)
         {
             return (await _productRepository.Get(id)) != null;
+        }
+
+        private SelectList GetCategoryIdSelectList(int? id = null)
+        {
+            var list = _categoryRepository.GetList();
+            var dictionary = list.Except(list.Where(e => e.CategoryId == id)).ToDictionary(e => e.CategoryId, e => e.CategoryName);
+
+            dictionary.Add(0, "");
+            return new SelectList(dictionary, "Key", "Value");
         }
     }
 }

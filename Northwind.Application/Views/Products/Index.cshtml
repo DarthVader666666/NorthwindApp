@@ -1,53 +1,80 @@
-﻿@model IEnumerable<Northwind.Application.Models.Product.ProductIndexModel>
+﻿@model Northwind.Application.Models.Product.ProductsForCategoryModel
 
 @{
     ViewData["Title"] = "Products";
+    ViewData["Role"] = User.IsInRole("guest") ? "Guest" : "";
 }
 
-<h1>Products of @Model.First().CategoryName</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ProductName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.QuantityPerUnit)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UnitPrice)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UnitsInStock)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProductName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.QuantityPerUnit)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UnitPrice)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UnitsInStock)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a>
-            </td>
-        </tr>
+@functions
+{
+    string GetDetailsLink(int id) => Url.ActionLink("Details", $"{ViewData["Role"]}Products", new { id = id });
 }
-    </tbody>
-</table>
+
+<h1>Products of @Model.CategoryName</h1>
+
+<div>
+    <button class="btn btn-primary" onclick="location.href = '@Url.ActionLink("Create", $"{ViewData["Role"]}Products")'">
+        Create New
+    </button>
+
+    <button class="btn btn-primary" id="editButton" type="button">
+        Edit
+    </button>
+
+    <input onchange="onChangeSelectAllHandler(this.checked)" id="selectAllCheckbox" type="checkbox" hidden />
+    <span id="selectAllSpan" hidden>Select all Categories</span>
+</div>
+
+
+<form method="get" asp-action="Delete">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Product Name
+                </th>
+                <th>
+                    Quantity Per Unit
+                </th>
+                <th>
+                    Unit Price, $
+                </th>
+                <th>
+                    Units In Stock
+                </th>
+                <th>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <div class="row" style="width:100px;margin-left:200px;">
+                <button class="btn btn-danger float-end" type="submit" id="deleteButton" hidden>
+                    Delete
+                </button>
+            </div>
+
+            @foreach (var item in Model) 
+            {
+                <tr>
+                    <td style="cursor:pointer" onclick="location.href = '@GetDetailsLink(item.CategoryId)'">
+                         @Html.DisplayFor(modelItem => item.ProductName)
+                     </td>
+                    <td style="cursor:pointer" onclick="location.href = '@GetDetailsLink(item.CategoryId)'">
+                         @Html.DisplayFor(modelItem => item.QuantityPerUnit)
+                     </td>
+                    <td style="cursor:pointer" onclick="location.href = '@GetDetailsLink(item.CategoryId)'">
+                         @Html.DisplayFor(modelItem => item.UnitPrice)
+                     </td>
+                    <td style="cursor:pointer" onclick="location.href = '@GetDetailsLink(item.CategoryId)'">
+                         @Html.DisplayFor(modelItem => item.UnitsInStock)
+                     </td>
+                     <td>
+                        <input name="ids" type="checkbox" id="@item.ProductId" value="@item.ProductId" onclick="onChangeHandler(this)" hidden />
+                     </td>
+                 </tr>
+            }
+        </tbody>
+    </table>
+</form>
+
+<script src="~/js/checkboxes.js" />

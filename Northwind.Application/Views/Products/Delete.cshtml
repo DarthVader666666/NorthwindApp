@@ -1,0 +1,51 @@
+﻿@model Northwind.Application.Models.Product.ProductsForCategoryModel
+
+@{
+    var count = Model.Count();
+    var guest = User.IsInRole("guest") ? "Guest" : "";
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Delete</h1>
+
+<h3>Are you sure you want to delete @(count > 1 ? "these" : "this")</h3>
+<div>
+    <h4>@(count > 1 ? "Products" : "Product")?</h4>
+    <hr />
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Product Name
+                </th>
+                <th>
+                    Quantity Per Unit
+                </th>
+                <th>
+                    Unit Price, $
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <form asp-action="DeleteConfirmed" method="post">
+                @foreach (var item in Model)
+                {
+                    <input asp-for="@item.ProductId" name="ids" type="hidden" />
+                    <tr>
+                        <td class="align-middle">
+                            @Html.DisplayFor(modelItem => item.ProductName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.QuantityPerUnit)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.UnitPrice)
+                        </td>
+                    </tr>
+                }
+                <button class="btn btn-danger" type="submit">Delete</button>
+            </form>
+            <button class="btn btn-primary float-end" onclick="location.href = '@Url.ActionLink("Index", $"{guest}Products", new { categoryId = Model.Products.First().CategoryId })'">Back to List</button>
+        </tbody>
+    </table>
+</div>
