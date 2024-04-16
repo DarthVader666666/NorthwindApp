@@ -11,6 +11,8 @@ WORKDIR /src
 COPY ["Northwind.Application/Northwind.Application.csproj", "Northwind.Application/"]
 COPY ["Northwind.Data/Northwind.Data.csproj", "Northwind.Data/"]
 COPY ["Northwind.Bll/Northwind.Bll.csproj", "Northwind.Bll/"]
+COPY ["Northwind.IntegrationTests/Northwind.IntegrationTests.csproj", "Northwind.IntegrationTests/"]
+COPY ["Northwind.ModuleTests/Northwind.ModuleTests.csproj", "Northwind.ModuleTests/"]
 
 RUN dotnet restore "./Northwind.Application/./Northwind.Application.csproj"
 COPY . .

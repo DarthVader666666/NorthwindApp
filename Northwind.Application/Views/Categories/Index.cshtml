@@ -1,7 +1,12 @@
 ﻿@model IEnumerable<Northwind.Application.Models.Category.CategoryIndexModel>
 @{
     ViewData["Title"] = "Categories";
-    var guest = User.IsInRole("guest") ? "Guest" : "";
+    ViewData["Role"] = User.IsInRole("guest") ? "Guest" : "";
+}
+
+@functions
+{
+    string GetDetailsLink(int id) => Url.ActionLink("Details", $"{ViewData["Role"]}Categories", new { id = id });
 }
 
 <head>
@@ -10,52 +15,42 @@
 
 <h1>Categories</h1>
 
-<button class="btn btn-primary" onclick="location.href = '@Url.ActionLink("Create", $"{guest}Categories")'">
-    Create New
-</button>
+<div>
+    <button class="btn btn-primary" onclick="location.href = '@Url.ActionLink("Create", $"{ViewData["Role"]}Categories")'">
+        Create New
+    </button>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.CategoryName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Picture)
-            </th>
-            <th class="text-center">
-                <input onchange="onChangeSelectAllHandler(this.checked)" id="selectAllCheckbox" type="checkbox" />
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-    <form method="get" asp-action="Delete">
+    <button class="btn btn-primary" id="editButton" type="button">
+        Edit
+    </button>
+
+    <input onchange="onChangeSelectAllHandler(this.checked)" id="selectAllCheckbox" type="checkbox" hidden />
+    <span id="selectAllSpan" hidden>Select all Categories</span>
+</div>
+
+<form method="get" asp-action="Delete">
+    <div class="row" style="width:100px;margin-left:200px;">
         <button class="btn btn-danger float-end" type="submit" id="deleteButton" hidden>
             Delete
         </button>
+    </div>
+
+    <div class="row">
         @foreach (var item in Model)
         {
-            <tr style="cursor:pointer">
-                <td class="align-middle" onclick="location.href = '@Url.ActionLink("Details", $"{guest}Categories", new { id = item.CategoryId })'">
-                     @Html.DisplayFor(modelItem => item.CategoryName)
-                </td>
-                <td class="align-middle" onclick="location.href = '@Url.ActionLink("Details", $"{guest}Categories", new { id = item.CategoryId })'">
-                     @Html.DisplayFor(modelItem => item.Description)
-                </td>
-                <td class="align-middle" onclick="location.href = '@Url.ActionLink("Details", $"{guest}Categories", new { id = item.CategoryId })'">
-                    <img src="data:image/bmp;base64,@Convert.ToBase64String(item.Picture! ?? new byte[0])" style="height:60px;width:60px;" />
-                </td>
-                <td class="align-middle text-center" style="min-width:50px;">
-                    <input name="ids" type="checkbox" id="@item.CategoryId" value="@item.CategoryId" onclick="onChangeHandler(this)" />
-                </td>
-            </tr>
+            <div class="col p-3">
+                <div style="cursor:pointer" onclick="location.href = '@GetDetailsLink(item.CategoryId)'">
+                    <img src="data:image/bmp;base64,@Convert.ToBase64String(item.Picture! ?? new byte[0])" style="height:100px;width:100px;" />
+                </div>
+                <div class="text-xl-center">
+                    @Html.DisplayFor(modelItem => item.CategoryName)
+                </div>
+                <div class="text-xl-center">
+                    <input name="ids" type="checkbox" id="@item.CategoryId" value="@item.CategoryId" onclick="onChangeHandler(this)" hidden/>
+                </div>
+            </div>
         }
-    </form>
+    </div>    
+</form>
 
-    </tbody>
-</table>
-
-<script src="~/js/checkboxes.js" />
+<script src="~/js/checkboxes.js"/>

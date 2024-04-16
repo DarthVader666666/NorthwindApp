@@ -1,6 +1,29 @@
 const checkboxes = Array.from(document.querySelectorAll("input[type='checkbox']:not(#selectAllCheckbox)"));
 const deleteButton = document.getElementById("deleteButton");
 const selectAllCheckbox = document.getElementById("selectAllCheckbox");
+const selectAllSpan = document.getElementById("selectAllSpan");
+
+const editButton = document.getElementById("editButton");
+editButton.addEventListener("click", onEditClickHandler);
+
+function onEditClickHandler() {
+    if (selectAllSpan.hidden) {
+        selectAllSpan.hidden = false;
+        selectAllCheckbox.hidden = false;
+
+        checkboxes.forEach((item) => {
+            item.hidden = false;
+        });
+    }
+    else {
+        selectAllSpan.hidden = true;
+        selectAllCheckbox.hidden = true;
+
+        checkboxes.forEach((item) => {
+            item.hidden = true;
+        });
+    }
+}
 
 function onChangeSelectAllHandler(checked) {
     if (checked) {

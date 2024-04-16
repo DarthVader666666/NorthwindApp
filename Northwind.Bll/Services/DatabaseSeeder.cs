@@ -9,7 +9,7 @@ namespace Northwind.Bll.Services
     {
         private static readonly Random random = new Random();
         private const int amountOfEmployees = 5;
-        private const int amountOfCategories = 5;
+        private const int amountOfCategories = 15;
         private static readonly string[] jobTitles =
         {
             "Principal Integration Producer",
@@ -75,7 +75,7 @@ namespace Northwind.Bll.Services
             return new Faker<Category>()
                 .RuleFor(c => c.CategoryName, f => f.Commerce.Categories(1)[0])
                 .RuleFor(c => c.Description, f => f.Commerce.ProductDescription())
-                .RuleFor(c => c.Picture, f => DownloadPicture($"wwwroot/pics/categories/{random.Next(1, amountOfCategories + 1)}.png", ImageHeaders.Category))
+                .RuleFor(c => c.Picture, f => DownloadPicture($"wwwroot/pics/categories/{random.Next(1, 6)}.png", ImageHeaders.Category))
                 .Generate(amountOfCategories);
         }
 
