@@ -24,6 +24,8 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 
 builder.Services.AddScoped<IRepository<Employee>, EmployeeRepository>();
 builder.Services.AddScoped<IRepository<Category>, CategoryRepository>();
+builder.Services.AddScoped<IRepository<Product>, ProductRepository>();
+
 builder.Services.AddScoped<IGuestRepository<Employee>, GuestEmployeeRepository>();
 builder.Services.AddScoped<IGuestRepository<Category>, GuestCategoryRepository>();
 
@@ -47,7 +49,6 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     var seedScriptPath = config["SeedScriptPath"];
     var adminScriptPath = config["AdminScriptPath"];
-    var guestScriptPath = config["GuestScriptPath"];
     var url = config["ScriptUrl"];
 
     var adminEmail = config["AdminEmail"];
@@ -57,7 +58,6 @@ using (var scope = app.Services.CreateScope())
 
     await FileDownloader.DownloadScriptFileAsync(url, seedScriptPath);
     SqlScriptGenerator.GenerateAdminScript(adminScriptPath!, adminEmail!, adminPasswordHash!, adminSecurityStamp!, adminConcurrencyStamp!);
-    SqlScriptGenerator.GenerateGuestRoleScript(guestScriptPath!);
 
     var dbContext = services.GetRequiredService<NorthwindDbContext>();
 
@@ -98,11 +98,6 @@ using (var scope = app.Services.CreateScope())
     if (File.Exists(adminScriptPath))
     {
         File.Delete(adminScriptPath);
-    }
-
-    if (File.Exists(guestScriptPath))
-    {
-        File.Delete(guestScriptPath);
     }
 }
 
