@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Northwind.Application.Models.Category;
 using Northwind.Application.Models.Employee;
+using Northwind.Application.Models.Product;
 using Northwind.Bll.Enums;
 using Northwind.Bll.Services;
 using Northwind.Data.Entities;
@@ -49,6 +50,8 @@ namespace NorthwindApp.ConfigureServices
 
                     autoMapperConfig.CreateMap<CategoryCreateModel, Category>()
                         .ForMember(dest => dest.Picture, opts => opts.MapFrom(src => ImageConverter.ConvertFormFileToByteArray(src.FormFile!)));
+
+                    autoMapperConfig.CreateMap<Product, ProductIndexModel>();
                 });
 
                 return config.CreateMapper();

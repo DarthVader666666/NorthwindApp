@@ -4,8 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Northwind.Application.Models.Employee;
 using Northwind.Bll.Interfaces;
 using Northwind.Data.Entities;
-
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Northwind.Application.Controllers

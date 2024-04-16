@@ -59,6 +59,11 @@ namespace Northwind.Bll.Interfaces
             return DbContext.Set<TEntity>().AsEnumerable();
         }
 
+        public virtual IEnumerable<TEntity?> GetListFor(int fkId)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<TEntity?> Update(TEntity item)
         {
             DbContext.Update(item);

@@ -5,14 +5,14 @@
 namespace Northwind.Data.Migrations.NorthwindIdentityDb
 {
     /// <inheritdoc />
-    public partial class Add_Guest_role : Migration
+    public partial class Add_Customer_Role : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(
                 $"INSERT INTO [dbo].[AspNetRoles] ([Id], [Name], [NormalizedName], [ConcurrencyStamp]) " +
-                $"VALUES('07179abe-e68f-4a3d-b85e-a6a96baf17d2','guest', 'GUEST', null)");
+                $"VALUES('ab174f91-bbdd-4c07-b476-d40c997fd4c9','customer', 'CUSTOMER', null)");
         }
 
         /// <inheritdoc />
