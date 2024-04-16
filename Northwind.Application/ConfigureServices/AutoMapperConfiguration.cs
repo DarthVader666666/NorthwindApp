@@ -51,7 +51,11 @@ namespace NorthwindApp.ConfigureServices
                     autoMapperConfig.CreateMap<CategoryCreateModel, Category>()
                         .ForMember(dest => dest.Picture, opts => opts.MapFrom(src => ImageConverter.ConvertFormFileToByteArray(src.FormFile!)));
 
+
+
                     autoMapperConfig.CreateMap<Product, ProductIndexModel>();
+
+                    autoMapperConfig.CreateMap<ProductCreateModel, Product>();
                 });
 
                 return config.CreateMapper();

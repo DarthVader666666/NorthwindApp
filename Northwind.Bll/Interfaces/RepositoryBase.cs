@@ -34,7 +34,7 @@ namespace Northwind.Bll.Interfaces
             return await SaveAsync(entity);
         }
 
-        public async Task<int> DeleteSeveral(int[]? ids)
+        public virtual async Task<int> DeleteSeveral(int[]? ids)
         {
             foreach (var id in ids!)
             {
