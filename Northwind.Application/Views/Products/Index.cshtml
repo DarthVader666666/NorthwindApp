@@ -26,7 +26,7 @@
     </button>
 
     <input onchange="onChangeSelectAllHandler(this.checked)" id="selectAllCheckbox" style="margin-left:20px;" type="checkbox" hidden />
-    <label id="selectAllSpan" for="selectAllCheckbox" hidden>Select all Products</label>
+    <label id="selectAllSpan" for="selectAllCheckbox" hidden>Select all</label>
 
     <button form="form" class="btn btn-danger float-end" type="submit" id="deleteButton" hidden>
         Delete
@@ -78,5 +78,7 @@
         </tbody>
     </table>
 </form>
+
+<a asp-action="Details" asp-controller="Categories" asp-route-id="@Model.CategoryId" class="btn btn-primary">Back</a>
 
 <script src="~/js/checkboxes.js" />

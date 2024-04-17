@@ -27,7 +27,7 @@
             </tr>
         </thead>
         <tbody>
-            <form asp-action="DeleteConfirmed" method="post">
+            <form id="form" asp-action="DeleteConfirmed" method="post">
                 @foreach (var item in Model)
                 {
                     <input asp-for="@item.CategoryId" name="ids" type="hidden" />
@@ -43,9 +43,10 @@
                         </td>
                     </tr>                
                 }
-                <button class="btn btn-danger" type="submit">Delete</button>
+                
             </form>            
         </tbody>
-        <button class="btn btn-primary float-end" onclick="location.href = '@Url.ActionLink("Index", $"{guest}Categories")'">Back to List</button>
     </table>
+    <button form="form" class="btn btn-danger" type="submit">Delete</button>
+    <button class="btn btn-primary float-end" onclick="location.href = '@Url.ActionLink("Index", $"{guest}Categories")'">Back to List</button>
 </div>

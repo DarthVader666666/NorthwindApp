@@ -11,7 +11,7 @@
 <h3>Are you sure you want to delete @(count > 1 ? "these" : "this")</h3>
 <div>
     <h4>@(count > 1 ? "Products" : "Product")?</h4>
-    <hr />
+
     <table class="table">
         <thead>
             <tr>
@@ -27,7 +27,7 @@
             </tr>
         </thead>
         <tbody>
-            <form asp-action="DeleteConfirmed" method="post">
+            <form id="form" asp-action="DeleteConfirmed" method="post">
                 @foreach (var item in Model)
                 {
                     <input asp-for="@item.ProductId" name="ids" type="hidden" />
@@ -42,10 +42,11 @@
                             @Html.DisplayFor(modelItem => item.UnitPrice)
                         </td>
                     </tr>
-                }
-                <button class="btn btn-danger" type="submit">Delete</button>
+                }                
             </form>
-            <button class="btn btn-primary float-end" onclick="location.href = '@Url.ActionLink("Index", $"{guest}Products", new { categoryId = Model.Products.First().CategoryId })'">Back to List</button>
         </tbody>
     </table>
+
+    <button class="btn btn-danger" form="form" type="submit">Delete</button>
+    <button class="btn btn-primary float-end" onclick="location.href = '@Url.ActionLink("Index", $"{guest}Products", new { categoryId = Model.Products.First().CategoryId })'">Back to List</button>
 </div>
