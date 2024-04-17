@@ -67,7 +67,7 @@ namespace Northwind.Application.Controllers
         }
 
         // GET: Products/Create
-        public IActionResult Create(int categoryId = 0)
+        public IActionResult Create(int categoryId)
         {
             ViewBag.CategoryId = categoryId;
             ViewBag.CategoryIds = GetCategoryIdSelectList();
@@ -195,7 +195,6 @@ namespace Northwind.Application.Controllers
         {
             var categories = _categoryRepository.GetList();
             var dictionary = categories.ToDictionary(c => c.CategoryId, c => c.CategoryName);
-
             dictionary.Add(0, "");
 
             return new SelectList(dictionary, "Key", "Value", dictionary[categoryId]);
@@ -205,8 +204,8 @@ namespace Northwind.Application.Controllers
         {
             var suppliers = _supplierRepository.GetList();
             var dictionary = suppliers.ToDictionary(c => c.SupplierId, c => c.CompanyName);
-
             dictionary.Add(0, "");
+
             return new SelectList(dictionary, "Key", "Value", dictionary[supplierId]);
         }
     }
