@@ -34,8 +34,10 @@
                 <textarea asp-for="Description" class="form-control"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
-            <input type="submit" value="Save" class="btn btn-primary" />
-            <a asp-action="Index" class="float-end fw-bold">Back to List</a>
+            <div style="padding-top:20px;">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-primary float-end fw-bold">Back to List</a>
+            </div>
         </form>
     </div>
 </div>

@@ -38,14 +38,14 @@ namespace Northwind.Application.Controllers
                 return NotFound();
             }
 
-            var employee = await _employeeRepository.Get(id);
+            var employee = await _employeeRepository.GetAsync(id);
 
             if (employee == null)
             {
                 return NotFound();
             }
 
-            employee.ReportsToNavigation = await _employeeRepository.Get(employee.ReportsTo);
+            employee.ReportsToNavigation = await _employeeRepository.GetAsync(employee.ReportsTo);
 
             return View($"{ViewPath}Details.cshtml", employee);
         }
@@ -67,7 +67,7 @@ namespace Northwind.Application.Controllers
             if (ModelState.IsValid)
             {
                 var employee = _mapper.Map<Employee>(employeeCreateModel);
-                await _employeeRepository.Create(employee);
+                await _employeeRepository.CreateAsync(employee);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -83,7 +83,7 @@ namespace Northwind.Application.Controllers
                 return NotFound();
             }
 
-            var employeeEditModel = _mapper.Map<EmployeeEditModel>(await _employeeRepository.Get(id));
+            var employeeEditModel = _mapper.Map<EmployeeEditModel>(await _employeeRepository.GetAsync(id));
 
             if (employeeEditModel == null)
             {
@@ -111,7 +111,7 @@ namespace Northwind.Application.Controllers
                 try
                 {
                     var employee = _mapper.Map<Employee>(employeeEditModel);
-                    await _employeeRepository.Update(employee);
+                    await _employeeRepository.UpdateAsync(employee);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -143,7 +143,7 @@ namespace Northwind.Application.Controllers
                     return NotFound();
                 }
 
-                var employee = await _employeeRepository.Get(id);
+                var employee = await _employeeRepository.GetAsync(id);
 
                 if (employee == null)
                 {
@@ -159,14 +159,14 @@ namespace Northwind.Application.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteConfirmed([FromForm] int[] ids)
         {
-            await _employeeRepository.DeleteSeveral(ids);
+            await _employeeRepository.DeleteSeveralAsync(ids);
 
             return RedirectToAction(nameof(Index));
         }
 
         private async Task<bool> EmployeeExists(int id)
         {
-            return (await _employeeRepository.Get(id)) != null;
+            return (await _employeeRepository.GetAsync(id)) != null;
         }
 
         private SelectList GetReportsToSelectList(int? id = null)

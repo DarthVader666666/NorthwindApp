@@ -39,9 +39,9 @@
             @Html.DisplayNameFor(model => model.Products)
         </dt>
         <dd class="col-sm-10">
-            @Html.ActionLink("Product List", "Index", "Products", new { categoryId = Model.CategoryId })
+            <a asp-action="Index" asp-controller="Products" asp-route-categoryId="@Model.CategoryId" class="fw-bold">Product List</a>
         </dd>
     </dl>
 </div>
-<button class="btn btn-primary" onclick="location.href = '@Url.ActionLink("Edit", $"{guest}Categories", new { id = Model.CategoryId })'">Edit</button>
-<a asp-action="Index" class="float-end fw-bold">Back to List</a>
+<button class="btn btn-primary fw-bold" onclick="location.href = '@Url.ActionLink("Edit", $"{guest}Categories", new { id = Model.CategoryId })'">Edit</button>
+<a asp-action="Index" class="btn btn-primary float-end fw-bold">Back to List</a>

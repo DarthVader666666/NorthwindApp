@@ -6,6 +6,7 @@ namespace Northwind.Application.Models.Product
     {
         public IEnumerable<ProductIndexModel>? Products { get; set; }
         public string? CategoryName { get; set; }
+        public int CategoryId { get; set; }
 
         public IEnumerator<ProductIndexModel> GetEnumerator()
         {

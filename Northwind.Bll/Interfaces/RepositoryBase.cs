@@ -13,14 +13,14 @@ namespace Northwind.Bll.Interfaces
 
         public NorthwindDbContext DbContext { get; }
 
-        public async Task<TEntity?> Create(TEntity item)
+        public async Task<TEntity?> CreateAsync(TEntity item)
         {
             var entity = (await DbContext.AddAsync(item)).Entity;
 
             return await SaveAsync(entity);
         }
 
-        public async Task<TEntity?> Delete(int? id)
+        public async Task<TEntity?> DeleteAsync(int? id)
         {
             var item = await DbContext.FindAsync<TEntity>(id);
 
@@ -34,7 +34,7 @@ namespace Northwind.Bll.Interfaces
             return await SaveAsync(entity);
         }
 
-        public virtual async Task<int> DeleteSeveral(int[]? ids)
+        public virtual async Task<int> DeleteSeveralAsync(int[]? ids)
         {
             foreach (var id in ids!)
             {
@@ -49,7 +49,7 @@ namespace Northwind.Bll.Interfaces
             return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<TEntity?> Get(int? id)
+        public async Task<TEntity?> GetAsync(int? id)
         {
             return await DbContext.FindAsync<TEntity>(id);
         }
@@ -64,7 +64,7 @@ namespace Northwind.Bll.Interfaces
             throw new NotImplementedException();
         }
 
-        public async Task<TEntity?> Update(TEntity item)
+        public async Task<TEntity?> UpdateAsync(TEntity item)
         {
             DbContext.Update(item);
 

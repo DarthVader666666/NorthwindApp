@@ -16,7 +16,7 @@ namespace Northwind.Bll.Services
             return products;
         }
 
-        public override async Task<int> DeleteSeveral(int[]? ids)
+        public override async Task<int> DeleteSeveralAsync(int[]? ids)
         {
             Product product = null;
 

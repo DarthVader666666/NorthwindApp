@@ -10,23 +10,31 @@
     string GetDetailsLink(int id) => Url.ActionLink("Details", $"{ViewData["Role"]}Products", new { id = id });
 }
 
+<head>
+    <link href="@Url.Content("~/css/checkboxes.css")" rel="stylesheet" type="text/css" />
+</head>
+
 <h1>Products of @Model.CategoryName</h1>
 
 <div>
-    <button class="btn btn-primary" onclick="location.href = '@Url.ActionLink("Create", $"{ViewData["Role"]}Products")'">
+    <button class="btn btn-primary" onclick="location.href = '@Url.ActionLink("Create", $"{ViewData["Role"]}Products", new { categoryId = Model.CategoryId})'">
         Create New
     </button>
 
-    <button class="btn btn-primary" id="editButton" type="button">
-        Edit
+    <button class="btn btn-primary" id="editButton" style="margin-left:20px;" type="button">
+        Select
     </button>
 
-    <input onchange="onChangeSelectAllHandler(this.checked)" id="selectAllCheckbox" type="checkbox" hidden />
-    <span id="selectAllSpan" hidden>Select all Categories</span>
+    <input onchange="onChangeSelectAllHandler(this.checked)" id="selectAllCheckbox" style="margin-left:20px;" type="checkbox" hidden />
+    <label id="selectAllSpan" for="selectAllCheckbox" hidden>Select all Products</label>
+
+    <button form="form" class="btn btn-danger float-end" type="submit" id="deleteButton" hidden>
+        Delete
+    </button>
 </div>
 
 
-<form method="get" asp-action="Delete">
+<form id="form" method="get" asp-action="Delete">
     <table class="table">
         <thead>
             <tr>
@@ -47,25 +55,19 @@
             </tr>
         </thead>
         <tbody>
-            <div class="row" style="width:100px;margin-left:200px;">
-                <button class="btn btn-danger float-end" type="submit" id="deleteButton" hidden>
-                    Delete
-                </button>
-            </div>
-
             @foreach (var item in Model) 
             {
                 <tr>
-                    <td style="cursor:pointer" onclick="location.href = '@GetDetailsLink(item.CategoryId)'">
+                    <td style="cursor:pointer" onclick="location.href = '@GetDetailsLink(item.ProductId)'">
                          @Html.DisplayFor(modelItem => item.ProductName)
                      </td>
-                    <td style="cursor:pointer" onclick="location.href = '@GetDetailsLink(item.CategoryId)'">
+                    <td style="cursor:pointer" onclick="location.href = '@GetDetailsLink(item.ProductId)'">
                          @Html.DisplayFor(modelItem => item.QuantityPerUnit)
                      </td>
-                    <td style="cursor:pointer" onclick="location.href = '@GetDetailsLink(item.CategoryId)'">
+                    <td style="cursor:pointer" onclick="location.href = '@GetDetailsLink(item.ProductId)'">
                          @Html.DisplayFor(modelItem => item.UnitPrice)
                      </td>
-                    <td style="cursor:pointer" onclick="location.href = '@GetDetailsLink(item.CategoryId)'">
+                    <td style="cursor:pointer" onclick="location.href = '@GetDetailsLink(item.ProductId)'">
                          @Html.DisplayFor(modelItem => item.UnitsInStock)
                      </td>
                      <td>

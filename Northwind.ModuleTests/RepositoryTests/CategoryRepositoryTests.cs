@@ -31,9 +31,9 @@ namespace Northwind.ModuleTests.RepositoryTests
         {
             var id = random.Next(1, 10);
             category.CategoryId = id;
-            repository.Setup(mock => mock.Get(It.Is<int>(x => x == id))).ReturnsAsync(await Task.FromResult(category));
+            repository.Setup(mock => mock.GetAsync(It.Is<int>(x => x == id))).ReturnsAsync(await Task.FromResult(category));
 
-            var actual = await repository.Object.Get(id);
+            var actual = await repository.Object.GetAsync(id);
 
             Assert.NotNull(actual);
             Assert.Equal(id, actual.CategoryId);
@@ -45,9 +45,9 @@ namespace Northwind.ModuleTests.RepositoryTests
         {
             var id = random.Next(1, 10);
             category.CategoryId = id;
-            repository.Setup(mock => mock.Create(It.Is<Category>(x => x == category))).ReturnsAsync(await Task.FromResult(category));
+            repository.Setup(mock => mock.CreateAsync(It.Is<Category>(x => x == category))).ReturnsAsync(await Task.FromResult(category));
 
-            var actual = await repository.Object.Create(category);
+            var actual = await repository.Object.CreateAsync(category);
 
             Assert.NotNull(actual);
             Assert.Equal(category.CategoryName, actual.CategoryName);
@@ -60,9 +60,9 @@ namespace Northwind.ModuleTests.RepositoryTests
         {
             var id = random.Next(1, 10);
             category.CategoryId = id;
-            repository.Setup(mock => mock.Delete(It.Is<int?>(x => x == id))).ReturnsAsync(await Task.FromResult(category));
+            repository.Setup(mock => mock.DeleteAsync(It.Is<int?>(x => x == id))).ReturnsAsync(await Task.FromResult(category));
 
-            var actual = await repository.Object.Delete(category!.CategoryId);
+            var actual = await repository.Object.DeleteAsync(category!.CategoryId);
 
             Assert.NotNull(actual);
             Assert.Equal(category.CategoryId, actual.CategoryId);

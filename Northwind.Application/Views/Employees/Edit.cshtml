@@ -96,8 +96,10 @@
                 <select asp-for="ReportsTo" class="form-select" asp-items="ViewBag.ReportsTo"></select>
                 <span asp-validation-for="ReportsTo" class="text-danger"></span>
             </div>
-            <input type="submit" value="Save" class="btn btn-primary" />
-            <a asp-action="Index" class="float-end fw-bold">Back to List</a>
+            <div style="padding-top:20px;">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                <a asp-action="Index" class="float-end fw-bold btn btn-primary">Back to List</a>
+            </div>            
         </form>
     </div>
 </div>

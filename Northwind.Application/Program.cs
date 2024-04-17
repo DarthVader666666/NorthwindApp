@@ -25,6 +25,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 builder.Services.AddScoped<IRepository<Employee>, EmployeeRepository>();
 builder.Services.AddScoped<IRepository<Category>, CategoryRepository>();
 builder.Services.AddScoped<IRepository<Product>, ProductRepository>();
+builder.Services.AddScoped<IRepository<Supplier>, SupplierRepository>();
 
 builder.Services.AddScoped<IGuestRepository<Employee>, GuestEmployeeRepository>();
 builder.Services.AddScoped<IGuestRepository<Category>, GuestCategoryRepository>();
