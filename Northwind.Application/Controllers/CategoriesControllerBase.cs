@@ -37,7 +37,7 @@ namespace Northwind.Application.Controllers
                 return NotFound();
             }
 
-            var category = await _categoryRepository.Get(id);
+            var category = await _categoryRepository.GetAsync(id);
 
             if (category == null)
             {
@@ -62,7 +62,7 @@ namespace Northwind.Application.Controllers
             if (ModelState.IsValid)
             {
                 var category = _mapper.Map<Category>(categoryCreateModel);
-                await _categoryRepository.Create(category);
+                await _categoryRepository.CreateAsync(category);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -78,7 +78,7 @@ namespace Northwind.Application.Controllers
                 return NotFound();
             }
 
-            var categoryEditModel = _mapper.Map<CategoryEditModel>(await _categoryRepository.Get(id));
+            var categoryEditModel = _mapper.Map<CategoryEditModel>(await _categoryRepository.GetAsync(id));
 
             if (categoryEditModel == null)
             {
@@ -106,7 +106,7 @@ namespace Northwind.Application.Controllers
                 {
                     var category = _mapper.Map<Category>(categoryEditModel);
 
-                    await _categoryRepository.Update(category);
+                    await _categoryRepository.UpdateAsync(category);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -137,7 +137,7 @@ namespace Northwind.Application.Controllers
                     return NotFound();
                 }
 
-                var employee = await _categoryRepository.Get(id);
+                var employee = await _categoryRepository.GetAsync(id);
 
                 if (employee == null)
                 {
@@ -153,14 +153,14 @@ namespace Northwind.Application.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteConfirmed([FromForm] int[] ids)
         {
-            await _categoryRepository.DeleteSeveral(ids);
+            await _categoryRepository.DeleteSeveralAsync(ids);
 
             return RedirectToAction(nameof(Index));
         }
 
         private async Task<bool> CategoryExists(int id)
         {
-            return (await _categoryRepository.Get(id)) != null;
+            return (await _categoryRepository.GetAsync(id)) != null;
         }
     }
 }

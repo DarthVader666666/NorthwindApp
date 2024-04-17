@@ -20,21 +20,19 @@
         Create New
     </button>
 
-    <button class="btn btn-primary" id="editButton" type="button">
-        Edit
+    <button class="btn btn-primary" id="editButton" style="margin-left:20px;" type="button">
+        Select
     </button>
 
-    <input onchange="onChangeSelectAllHandler(this.checked)" id="selectAllCheckbox" type="checkbox" hidden />
-    <span id="selectAllSpan" hidden>Select all Categories</span>
+    <input onchange="onChangeSelectAllHandler(this.checked)" id="selectAllCheckbox" style="margin-left:20px;" type="checkbox" hidden />
+    <label id="selectAllSpan" for="selectAllCheckbox" hidden>Select all Categories</label>
+
+    <button form="form" class="btn btn-danger float-end" type="submit" id="deleteButton" hidden>
+        Delete
+    </button>
 </div>
 
-<form method="get" asp-action="Delete">
-    <div class="row" style="width:100px;margin-left:200px;">
-        <button class="btn btn-danger float-end" type="submit" id="deleteButton" hidden>
-            Delete
-        </button>
-    </div>
-
+<form id="form" method="get" asp-action="Delete">
     <div class="row">
         @foreach (var item in Model)
         {

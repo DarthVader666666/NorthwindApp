@@ -4,15 +4,33 @@
     var guest = User.IsInRole("guest") ? "Guest" : "";
 }
 
+@functions
+{
+    string GetDetailsLink(int id) => Url.ActionLink("Details", $"{ViewData["Role"]}Employees", new { id = id });
+}
+
 <head>
     <link href="@Url.Content("~/css/checkboxes.css")" rel="stylesheet" type="text/css" />
 </head>
 
 <h1>Employees</h1>
 
-<button class="btn btn-primary" onclick="location.href = '@Url.ActionLink("Create", $"{guest}Employees")'">
-    Create New
-</button>
+<div>
+    <button class="btn btn-primary" onclick="location.href = '@Url.ActionLink("Create", $"{ViewData["Role"]}Employees")'">
+        Create New
+    </button>
+
+    <button class="btn btn-primary" id="editButton" style="margin-left:20px;" type="button">
+        Select
+    </button>
+
+    <input onchange="onChangeSelectAllHandler(this.checked)" id="selectAllCheckbox" style="margin-left:20px;" type="checkbox" hidden />
+    <label id="selectAllSpan" for="selectAllCheckbox" hidden>Select all Employees</label>
+
+    <button form="form" class="btn btn-danger float-end" type="submit" id="deleteButton" hidden>
+        Delete
+    </button>
+</div>
 
 <table class="table">
     <thead>
@@ -30,36 +48,33 @@
                 @Html.DisplayNameFor(model => model.Photo)
             </th>
             <th class="text-center">
-                <input onchange="onChangeSelectAllHandler(this.checked)" id="selectAllCheckbox" type="checkbox" />
+                <input onchange="onChangeSelectAllHandler(this.checked)" id="selectAllCheckbox" type="checkbox" hidden/>
             </th>
         </tr>
     </thead>
     <tbody>
-    <form method="get" asp-action="Delete">
-        <button class="btn btn-danger float-end" type="submit" id="deleteButton" hidden>
-            Delete
-        </button>
-        @foreach (var item in Model)
-        {
-            <tr style="cursor:pointer">
-                <td class="align-middle">
-                        @Html.DisplayFor(modelItem => item.FirstName) @Html.DisplayFor(modelItem => item.LastName)
-                </td>
-                <td class="align-middle" onclick="location.href = '@Url.ActionLink("Details", $"{guest}Employees", new { id = item.EmployeeId })'">
-                        @Html.DisplayFor(modelItem => item.Title)
-                </td>
-                <td class="align-middle" onclick="location.href = '@Url.ActionLink("Details", $"{guest}Employees", new { id = item.EmployeeId })'">
-                        @Html.DisplayFor(modelItem => item.HireDate)
-                </td>
-                <td class="align-middle" onclick="location.href = '@Url.ActionLink("Details", $"{guest}Employees", new { id = item.EmployeeId })'">
-                    <img src="data:image/bmp;base64,@Convert.ToBase64String(item.Photo!)" style="height:60px;width:60px;" />
-                </td>
-                <td class="align-middle text-center" style="min-width:50px;">
-                    <input name="ids" type="checkbox" id="@item.EmployeeId" value="@item.EmployeeId" onclick="onChangeHandler(this)" />
-                </td>
-            </tr>
-        }
-    </form>
+        <form id="form" method="get" asp-action="Delete">            
+            @foreach (var item in Model)
+            {
+                <tr style="cursor:pointer">
+                    <td class="align-middle" onclick="location.href = '@GetDetailsLink(item.EmployeeId)'">
+                            @Html.DisplayFor(modelItem => item.FirstName) @Html.DisplayFor(modelItem => item.LastName)
+                    </td>
+                    <td class="align-middle" onclick="location.href = '@GetDetailsLink(item.EmployeeId)'">
+                            @Html.DisplayFor(modelItem => item.Title)
+                    </td>
+                    <td class="align-middle" onclick="location.href = '@GetDetailsLink(item.EmployeeId)'">
+                            @Html.DisplayFor(modelItem => item.HireDate)
+                    </td>
+                    <td class="align-middle" onclick="location.href = '@GetDetailsLink(item.EmployeeId)'">
+                        <img src="data:image/bmp;base64,@Convert.ToBase64String(item.Photo!)" style="height:60px;width:60px;" />
+                    </td>
+                    <td class="align-middle text-center" style="min-width:50px;">
+                        <input name="ids" type="checkbox" id="@item.EmployeeId" value="@item.EmployeeId" onclick="onChangeHandler(this)" hidden/>
+                    </td>
+                </tr>
+            }
+        </form>
     </tbody>
 </table>
 

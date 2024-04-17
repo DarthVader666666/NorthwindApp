@@ -14,12 +14,15 @@ namespace Northwind.Application.Controllers
         private readonly IMapper _mapper;
         private readonly IRepository<Product> _productRepository;
         private readonly IRepository<Category> _categoryRepository;
+        private readonly IRepository<Supplier> _supplierRepository;
 
-        public ProductsController(IRepository<Product> productRepository, IRepository<Category> categoryRepository, IMapper mapper)
+        public ProductsController(IRepository<Product> productRepository, IRepository<Category> categoryRepository, 
+            IRepository<Supplier> supplierRepository, IMapper mapper)
         {
             _mapper = mapper;
             _productRepository = productRepository;
             _categoryRepository = categoryRepository;
+            _supplierRepository = supplierRepository;
         }
 
         protected string? ViewPath { get; set; } = "Views/Products/";
@@ -29,17 +32,14 @@ namespace Northwind.Application.Controllers
         {
             var products = _productRepository.GetListFor(categoryId);
 
-            if (!products.Any())
-            {
-                Redirect("Categories/Index/");
-            }
-
             var productModels = _mapper.Map<IEnumerable<ProductIndexModel>>(products);
+            var categoryName = await _categoryRepository.GetAsync(categoryId);
 
             var productsForCategory = new ProductsForCategoryModel() 
             { 
                 Products = productModels,
-                CategoryName = (await _categoryRepository.Get(categoryId)).CategoryName 
+                CategoryName = categoryName == null ? "" : categoryName.CategoryName,
+                CategoryId = categoryId
             };
 
             return View($"{ViewPath}Index.cshtml", productsForCategory);
@@ -53,21 +53,26 @@ namespace Northwind.Application.Controllers
                 return NotFound();
             }
 
-            var product = await _productRepository.Get(id);
+            var product = await _productRepository.GetAsync(id);
 
             if (product == null)
             {
                 return NotFound();
             }
 
+            product.Supplier = await _supplierRepository.GetAsync(product.SupplierId);
+            product.Category = await _categoryRepository.GetAsync(product.CategoryId);
 
             return View($"{ViewPath}Details.cshtml", product);
         }
 
         // GET: Products/Create
-        public IActionResult Create()
+        public IActionResult Create(int categoryId = 0)
         {
-            ViewBag.CategoryId = GetCategoryIdSelectList();
+            ViewBag.CategoryId = categoryId;
+            ViewBag.CategoryIds = GetCategoryIdSelectList();
+            ViewBag.SupplierIds = GetSupplierIdSelectList();
+
             return View($"{ViewPath}Create.cshtml");
         }
 
@@ -80,7 +85,7 @@ namespace Northwind.Application.Controllers
             if (ModelState.IsValid)
             {
                 var product = _mapper.Map<Product>(productCreateModel);
-                await _productRepository.Create(product);
+                await _productRepository.CreateAsync(product);
 
                 return RedirectToAction(nameof(Index), new { categoryId = product.CategoryId });
             }
@@ -96,12 +101,15 @@ namespace Northwind.Application.Controllers
                 return NotFound();
             }
 
-            var productEditModel = _mapper.Map<ProductEditModel>(await _productRepository.Get(id));
+            var productEditModel = _mapper.Map<ProductEditModel>(await _productRepository.GetAsync(id));
 
             if (productEditModel == null)
             {
                 return RedirectToAction(nameof(Index));
             }
+
+            ViewBag.CategoryIds = GetCategoryIdSelectList(productEditModel.CategoryId);
+            ViewBag.SupplierIds = GetSupplierIdSelectList(productEditModel.SupplierId);
 
             return View($"{ViewPath}Edit.cshtml", productEditModel);
         }
@@ -122,7 +130,7 @@ namespace Northwind.Application.Controllers
                 try
                 {
                     var product = _mapper.Map<Product>(productEditModel);
-                    await _productRepository.Update(product);
+                    await _productRepository.UpdateAsync(product);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -155,7 +163,7 @@ namespace Northwind.Application.Controllers
                     return NotFound();
                 }
 
-                var product = await _productRepository.Get(id);
+                var product = await _productRepository.GetAsync(id);
 
                 if (product == null)
                 {
@@ -173,23 +181,33 @@ namespace Northwind.Application.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteConfirmed([FromForm] int[] ids)
         {
-            var categoryId = await _productRepository.DeleteSeveral(ids);
+            var categoryId = await _productRepository.DeleteSeveralAsync(ids);
 
             return RedirectToAction(nameof(Index), new { categoryId });
         }
 
         private async Task<bool> ProductExists(int id)
         {
-            return (await _productRepository.Get(id)) != null;
+            return (await _productRepository.GetAsync(id)) != null;
         }
 
-        private SelectList GetCategoryIdSelectList(int? id = null)
+        private SelectList GetCategoryIdSelectList(int categoryId = 0)
         {
-            var list = _categoryRepository.GetList();
-            var dictionary = list.Except(list.Where(e => e.CategoryId == id)).ToDictionary(e => e.CategoryId, e => e.CategoryName);
+            var categories = _categoryRepository.GetList();
+            var dictionary = categories.ToDictionary(c => c.CategoryId, c => c.CategoryName);
 
             dictionary.Add(0, "");
-            return new SelectList(dictionary, "Key", "Value");
+
+            return new SelectList(dictionary, "Key", "Value", dictionary[categoryId]);
+        }
+
+        private SelectList GetSupplierIdSelectList(int supplierId = 0)
+        {
+            var suppliers = _supplierRepository.GetList();
+            var dictionary = suppliers.ToDictionary(c => c.SupplierId, c => c.CompanyName);
+
+            dictionary.Add(0, "");
+            return new SelectList(dictionary, "Key", "Value", dictionary[supplierId]);
         }
     }
 }

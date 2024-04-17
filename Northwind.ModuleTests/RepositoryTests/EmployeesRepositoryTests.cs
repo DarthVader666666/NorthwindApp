@@ -32,9 +32,9 @@ namespace Northwind.ModuleTests.RepositoryTests
         {
             employee!.EmployeeId = random.Next(1, 10);
             int? id = employee.EmployeeId;
-            repository.Setup(mock => mock.Get(It.Is<int?>(x => x == id))).ReturnsAsync(await Task.FromResult<Employee?>(employee));
+            repository.Setup(mock => mock.GetAsync(It.Is<int?>(x => x == id))).ReturnsAsync(await Task.FromResult<Employee?>(employee));
 
-            var actual = await repository.Object.Get(id);
+            var actual = await repository.Object.GetAsync(id);
 
             Assert.NotNull(actual);
             Assert.Equal(employee.EmployeeId, actual.EmployeeId);
@@ -46,9 +46,9 @@ namespace Northwind.ModuleTests.RepositoryTests
         {
             var id = random.Next(1, 10);
             employee.EmployeeId = id;
-            repository.Setup(mock => mock.Create(It.Is<Employee>(x => x == employee))).ReturnsAsync(await Task.FromResult(employee));
+            repository.Setup(mock => mock.CreateAsync(It.Is<Employee>(x => x == employee))).ReturnsAsync(await Task.FromResult(employee));
 
-            var actual = await repository.Object.Create(employee);
+            var actual = await repository.Object.CreateAsync(employee);
 
             Assert.NotNull(actual);
             Assert.Equal(id, actual.EmployeeId);
@@ -64,9 +64,9 @@ namespace Northwind.ModuleTests.RepositoryTests
         {
             employee.EmployeeId = random.Next(1, 10);
             var id = employee.EmployeeId;
-            repository.Setup(mock => mock.Delete(It.Is<int>(x => x == id))).ReturnsAsync(await Task.FromResult(employee));
+            repository.Setup(mock => mock.DeleteAsync(It.Is<int>(x => x == id))).ReturnsAsync(await Task.FromResult(employee));
 
-            var actual = await repository.Object.Delete(id);
+            var actual = await repository.Object.DeleteAsync(id);
 
             Assert.NotNull(actual);
             Assert.Equal(employee.EmployeeId, actual.EmployeeId);
