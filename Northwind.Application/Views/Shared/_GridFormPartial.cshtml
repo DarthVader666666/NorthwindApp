@@ -3,7 +3,7 @@
 @model IEnumerable<object>
 
 @functions {
-    string ControllerName => this.Context.Request.Path.ToString()[1..];
+    string ControllerName => this.Context.Request.Path.ToString().Split('/')[1];
 
     PropertyInfo[] Properties => base.Model.First().GetType().GetProperties();
 
