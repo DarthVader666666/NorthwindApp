@@ -2,12 +2,12 @@
 
 @{
     ViewData["Title"] = "Products";
-    ViewData["Role"] = User.IsInRole("guest") ? "Guest" : "";
 }
 
 @functions
 {
-    string GetDetailsLink(int id) => Url.ActionLink("Details", $"{ViewData["Role"]}Products", new { id = id });
+    string GetDetailsLink(int id) => Url.ActionLink("Details", "Products", new { id = id }) ?? "/Home/Index";
+    string IsDisabled() => User.IsInRole("admin") ? "" : "disabled";
 }
 
 <head>
@@ -17,11 +17,11 @@
 <h1>Products of @Model.CategoryName</h1>
 
 <div>
-    <button class="btn btn-primary" onclick="location.href = '@Url.ActionLink("Create", $"{ViewData["Role"]}Products", new { categoryId = Model.CategoryId})'">
+    <button class="btn btn-primary" onclick="location.href = '@Url.ActionLink("Create", $"{ViewData["Role"]}Products", new { categoryId = Model.CategoryId})'" @IsDisabled()>
         Create New
     </button>
 
-    <button class="btn btn-primary" id="editButton" style="margin-left:20px;" type="button">
+    <button class="btn btn-primary" id="editButton" style="margin-left:20px;" type="button" @IsDisabled()>
         Select
     </button>
 

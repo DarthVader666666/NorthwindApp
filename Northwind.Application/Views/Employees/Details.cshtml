@@ -4,7 +4,10 @@
 
 @{
     ViewData["Title"] = "Details";
-    var guest = User.IsInRole("guest") ? "Guest" : "";
+}
+
+@functions{
+    string IsDisabled() => User.IsInRole("admin") ? "" : "disabled";
 }
 
 <head>
@@ -118,10 +121,10 @@
         </dt>
         <dd class = "col-sm-10">
             <a asp-action="Details" asp-route-id="@Model.ReportsTo" class="fw-bold">
-                @Html.DisplayFor(model => model.ReportsToNavigation.FirstName) @Html.DisplayFor(model => model.ReportsToNavigation.LastName)
+                @Html.DisplayFor(model => model.ReportsToNavigation!.FirstName) @Html.DisplayFor(model => model.ReportsToNavigation.LastName)
             </a>
         </dd>
     </dl>
 </div>
-<button class="btn btn-primary fw-bold" onclick="location.href = '@Url.ActionLink("Edit", $"{guest}Employees", new { id = Model.EmployeeId })'">Edit</button>
+<button @IsDisabled() class="btn btn-primary fw-bold" onclick="location.href = '@Url.ActionLink("Edit", "Employees", new { id = Model.EmployeeId })'">Edit</button>
 <a asp-action="Index" class="btn btn-primary float-end fw-bold">Back to List</a>

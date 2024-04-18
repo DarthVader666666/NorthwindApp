@@ -4,7 +4,6 @@
 
 @{
     ViewData["Title"] = "Details";
-    var guest = User.IsInRole("guest") ? "Guest" : "";
 }
 
 <head>
@@ -43,5 +42,5 @@
         </dd>
     </dl>
 </div>
-<button class="btn btn-primary fw-bold" onclick="location.href = '@Url.ActionLink("Edit", $"{guest}Categories", new { id = Model.CategoryId })'">Edit</button>
+<button class="btn btn-primary fw-bold" @(User.IsInRole("admin") ? "" : "disabled") onclick="location.href = '@Url.ActionLink("Edit", "Categories", new { id = Model.CategoryId })'">Edit</button>
 <a asp-action="Index" class="btn btn-primary float-end fw-bold">Back to List</a>

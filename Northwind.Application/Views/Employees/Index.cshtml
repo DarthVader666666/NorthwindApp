@@ -1,12 +1,11 @@
 ﻿@model IEnumerable<Northwind.Application.Models.Employee.EmployeeIndexModel>
 @{
     ViewData["Title"] = "Employees";
-    var guest = User.IsInRole("guest") ? "Guest" : "";
 }
 
 @functions
 {
-    string GetDetailsLink(int id) => Url.ActionLink("Details", $"{ViewData["Role"]}Employees", new { id = id });
+    string GetDetailsLink(int id) => Url.ActionLink("Details", "Employees", new { id = id }) ?? "/Home/Index";
 }
 
 <head>
@@ -16,11 +15,11 @@
 <h1>Employees</h1>
 
 <div>
-    <button class="btn btn-primary" onclick="location.href = '@Url.ActionLink("Create", $"{ViewData["Role"]}Employees")'">
+    <button class="btn btn-primary" onclick="location.href = '@Url.ActionLink("Create", "Employees")'">
         Create New
     </button>
 
-    <button class="btn btn-primary" id="editButton" style="margin-left:20px;" type="button">
+    <button class="btn btn-primary" id="editButton" style="margin-left:20px;" type="button" @(User.IsInRole("admin") ? "" : "disabled")>
         Select
     </button>
 

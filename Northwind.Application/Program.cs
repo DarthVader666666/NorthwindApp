@@ -27,9 +27,6 @@ builder.Services.AddScoped<IRepository<Category>, CategoryRepository>();
 builder.Services.AddScoped<IRepository<Product>, ProductRepository>();
 builder.Services.AddScoped<IRepository<Supplier>, SupplierRepository>();
 
-builder.Services.AddScoped<IGuestRepository<Employee>, GuestEmployeeRepository>();
-builder.Services.AddScoped<IGuestRepository<Category>, GuestCategoryRepository>();
-
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 builder.Services.ConfigureApplicationCookie(options =>
@@ -87,9 +84,6 @@ using (var scope = app.Services.CreateScope())
 
     var identityDbContext = services.GetRequiredService<NorthwindIdentityDbContext>();
     identityDbContext.Database.Migrate();
-
-    var inMemoryDbContext = services.GetRequiredService<NorthwindInMemoryDbContext>();
-    await inMemoryDbContext.SeedDatabase();
 
     if (File.Exists(seedScriptPath))
     {
