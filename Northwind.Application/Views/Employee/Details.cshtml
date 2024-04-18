@@ -126,5 +126,5 @@
         </dd>
     </dl>
 </div>
-<button @IsDisabled() class="btn btn-primary fw-bold" onclick="location.href = '@Url.ActionLink("Edit", "Employees", new { id = Model.EmployeeId })'">Edit</button>
+<button @IsDisabled() class="btn btn-primary fw-bold" onclick="location.href = '@Url.ActionLink("Edit", "Employee", new { id = Model.EmployeeId })'">Edit</button>
 <a asp-action="Index" class="btn btn-primary float-end fw-bold">Back to List</a>

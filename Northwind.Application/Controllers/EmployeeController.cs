@@ -10,12 +10,12 @@ using Microsoft.AspNetCore.Authorization;
 namespace Northwind.Application.Controllers
 {
     [Authorize(Roles = "admin")]
-    public class EmployeesController : Controller
+    public class EmployeeController : Controller
     {
         private readonly IMapper _mapper;
         private readonly IRepository<Employee> _employeeRepository;
 
-        public EmployeesController(IRepository<Employee> employeeRepository, IMapper mapper)
+        public EmployeeController(IRepository<Employee> employeeRepository, IMapper mapper)
         {
             _mapper = mapper;
             _employeeRepository = employeeRepository;

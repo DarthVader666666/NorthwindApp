@@ -1,0 +1,19 @@
+﻿@functions {
+    string ControllerName => this.Context.Request.Path.ToString()[1..];
+    string IsDisabled() => User.IsInRole("admin") ? "" : "disabled";
+}
+
+<button class="btn btn-primary" onclick="location.href = '@Url.ActionLink("Create", ControllerName)'">
+    Create New
+</button>
+
+<button class="btn btn-primary" id="editButton" style="margin-left:20px;" type="button" @IsDisabled()>
+    Select
+</button>
+
+<input onchange="onChangeSelectAllHandler(this.checked)" id="selectAllCheckbox" style="margin-left:20px;" type="checkbox" hidden />
+<label id="selectAllSpan" for="selectAllCheckbox" hidden>Select all</label>
+
+<button form="form" class="btn btn-danger float-end" type="submit" id="deleteButton" hidden>
+    Delete
+</button>

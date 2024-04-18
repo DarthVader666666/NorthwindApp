@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -9,14 +10,14 @@ using Northwind.Data.Entities;
 
 namespace Northwind.Application.Controllers
 {
-    public class ProductsController : Controller
+    public class ProductController : Controller
     {
         private readonly IMapper _mapper;
         private readonly IRepository<Product> _productRepository;
         private readonly IRepository<Category> _categoryRepository;
         private readonly IRepository<Supplier> _supplierRepository;
 
-        public ProductsController(IRepository<Product> productRepository, IRepository<Category> categoryRepository, 
+        public ProductController(IRepository<Product> productRepository, IRepository<Category> categoryRepository, 
             IRepository<Supplier> supplierRepository, IMapper mapper)
         {
             _mapper = mapper;
@@ -25,21 +26,13 @@ namespace Northwind.Application.Controllers
             _supplierRepository = supplierRepository;
         }
 
-        public async Task<IActionResult> Index(int categoryId)
+        public async Task<IActionResult> Index(int categoryId = 0)
         {
             var products = _productRepository.GetListFor(categoryId);
-
             var productModels = _mapper.Map<IEnumerable<ProductIndexModel>>(products);
-            var categoryName = await _categoryRepository.GetAsync(categoryId);
+            ViewBag.PreviousPage = Url.ActionLink("Details", "Category", new { id = categoryId });
 
-            var productsForCategory = new ProductsForCategoryModel() 
-            { 
-                Products = productModels,
-                CategoryName = categoryName == null ? "" : categoryName.CategoryName,
-                CategoryId = categoryId
-            };
-
-            return View(productsForCategory);
+            return View(productModels);
         }
 
         public async Task<IActionResult> Details(int? id)
@@ -148,7 +141,7 @@ namespace Northwind.Application.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete([FromQuery] int[] ids)
         {
-            var productforCategoryModel = new ProductsForCategoryModel();
+            var productforCategoryModel = new ProductForCategoryModel();
             var products = new List<ProductIndexModel>();
 
             foreach (var id in ids)

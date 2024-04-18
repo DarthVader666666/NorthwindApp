@@ -10,8 +10,8 @@
 
         public string? QuantityPerUnit { get; set; }
 
-        public decimal? UnitPrice { get; set; }
+        public string? UnitPrice { get; set; }
 
-        public short? UnitsInStock { get; set; }
+        public string? UnitsInStock { get; set; }
     }
 }

@@ -8,12 +8,12 @@ using Northwind.Data.Entities;
 
 namespace Northwind.Application.Controllers
 {
-    public class CategoriesController : Controller
+    public class CategoryController : Controller
     {
         private readonly IRepository<Category> _categoryRepository;
         private readonly IMapper _mapper;
 
-        public CategoriesController(IRepository<Category> categoryRepository, IMapper mapper)
+        public CategoryController(IRepository<Category> categoryRepository, IMapper mapper)
         {
             _categoryRepository = categoryRepository;
             _mapper = mapper;
