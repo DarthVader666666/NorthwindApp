@@ -1,0 +1,47 @@
+﻿@using System.Reflection;
+@using System.Text.RegularExpressions;
+@model IEnumerable<object>
+
+@functions {
+    string ControllerName => this.Context.Request.Path.ToString()[1..];
+
+    PropertyInfo[] Properties => base.Model.First().GetType().GetProperties();
+
+    object? GetPropertyValue<T>(object item, params string[] search)
+    {
+        PropertyInfo property = item.GetType().GetProperties().First(p => search.Any(s => p.Name.Contains(s)));
+        var value = property.GetValue(item);
+
+        return value is T ? value : null;
+    }
+
+    int GetId(object item)
+    {
+        return (int)(Properties.First(x => x.Name.Contains(ControllerName) && x.Name.Contains("Id")).GetValue(item) ?? 0);
+    }
+
+    string GetDetailsLink(int id) => Url.ActionLink("Details", ControllerName, new { id = id }) ?? "/Home/Index";
+}
+
+<head>
+    <link href="@Url.Content("~/css/checkboxes.css")" rel="stylesheet" type="text/css" />
+</head>
+
+<form id="form" method="get" asp-action="Delete">
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col p-3">
+                <div style="cursor:pointer" onclick="location.href = '@GetDetailsLink(GetId(item))'">
+                    <img src="data:image/bmp;base64,@Convert.ToBase64String(GetPropertyValue<byte[]>(item, "Picture", "Photo", "Image") as byte[] ?? new byte[0])" style="height:120px;width:120px;" />
+                </div>
+                <div class="text-xl-center">
+                    @(GetPropertyValue<string>(item, "Name") as string)
+                </div>
+                <div class="text-xl-center">
+                    <input name="ids" type="checkbox" id="@GetId(item)" value="@GetId(item)" onclick="onChangeHandler(this)" hidden />
+                </div>
+            </div>
+        }
+    </div>
+</form>

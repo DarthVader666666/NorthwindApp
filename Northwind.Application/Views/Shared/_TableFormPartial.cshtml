@@ -1,0 +1,90 @@
+﻿@using System.Reflection;
+@using System.Text.RegularExpressions;
+@model IEnumerable<object>
+
+@functions {
+    string ControllerName => this.Context.Request.Path.ToString()[1..];
+
+    PropertyInfo[] Properties => base.Model.First().GetType().GetProperties();
+
+    IEnumerable<string> GetPropertyNames()
+    {
+        return Properties.Select(x => x.Name).Where(x => !x.Contains("Id"));
+    }
+
+    IEnumerable<object?> GetPropertyValues(object item)
+    {
+        foreach (var propertyName in GetPropertyNames())
+        {
+            object value = null;
+
+            try
+            {
+                value = item.GetType().GetProperty(propertyName).GetValue(item);
+            }
+            catch (ArgumentNullException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            catch (NullReferenceException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            yield return value;
+        }
+    }
+
+    int GetId(object item)
+    {
+        return (int)(Properties.First(x => x.Name.Contains(ControllerName) && x.Name.Contains("Id")).GetValue(item) ?? 0);
+    }
+
+    string GetDetailsLink(int id) => Url.ActionLink("Details", ControllerName, new { id = id }) ?? "/Home/Index";
+}
+
+<head>
+    <link href="@Url.Content("~/css/checkboxes.css")" rel="stylesheet" type="text/css" />
+</head>
+
+<table class="table">
+    <thead>
+        <tr>
+            @foreach (var name in GetPropertyNames())
+            {
+                <th>
+                    @Regex.Replace(name, "((?<=[a-z])[A-Z]|[A-Z](?=[a-z]))", " $1")
+                </th>
+            }
+            <th class="text-center">
+                <input onchange="onChangeSelectAllHandler(this.checked)" id="selectAllCheckbox" type="checkbox" hidden />
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <form id="form" method="get" asp-action="Delete" asp-controller=@ControllerName>
+            @foreach (var item in base.Model)
+            {
+                <tr style="cursor:pointer">
+                    @foreach (var value in GetPropertyValues(item))
+                    {
+                        <td clas onclick="location.href = '@GetDetailsLink(GetId(item))'">
+                            @if (value is string)
+                            {
+                                @(value as string)
+                            }
+
+                            @if (value is byte[])
+                            {
+                                <img src="data:image/bmp;base64,@Convert.ToBase64String(value as byte[] ?? new byte[0])" style="height:60px;width:60px;" />
+                            }
+                        </td>
+                    }
+                    <td class="text-center" style="min-width:50px;">
+                        <input name="ids" type="checkbox" id="@GetId(item)" value="@GetId(item)" onclick="onChangeHandler(this)" hidden />
+                    </td>
+                </tr>
+            }
+        </form>
+    </tbody>
+</table>

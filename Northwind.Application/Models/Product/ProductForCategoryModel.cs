@@ -2,7 +2,7 @@
 
 namespace Northwind.Application.Models.Product
 {
-    public class ProductsForCategoryModel : IEnumerable<ProductIndexModel>
+    public class ProductForCategoryModel : IEnumerable<ProductIndexModel>
     {
         public IEnumerable<ProductIndexModel>? Products { get; set; }
         public string? CategoryName { get; set; }
