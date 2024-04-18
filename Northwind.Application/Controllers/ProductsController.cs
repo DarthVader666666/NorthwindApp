@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Northwind.Application.Models.Product;
 using Northwind.Bll.Interfaces;
-using Northwind.Bll.Services;
 using Northwind.Data.Entities;
 
 namespace Northwind.Application.Controllers
@@ -25,9 +25,6 @@ namespace Northwind.Application.Controllers
             _supplierRepository = supplierRepository;
         }
 
-        protected string? ViewPath { get; set; } = "Views/Products/";
-
-        // GET: Products
         public async Task<IActionResult> Index(int categoryId)
         {
             var products = _productRepository.GetListFor(categoryId);
@@ -42,10 +39,9 @@ namespace Northwind.Application.Controllers
                 CategoryId = categoryId
             };
 
-            return View($"{ViewPath}Index.cshtml", productsForCategory);
+            return View(productsForCategory);
         }
 
-        // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -63,21 +59,20 @@ namespace Northwind.Application.Controllers
             product.Supplier = await _supplierRepository.GetAsync(product.SupplierId);
             product.Category = await _categoryRepository.GetAsync(product.CategoryId);
 
-            return View($"{ViewPath}Details.cshtml", product);
+            return View(product);
         }
 
-        // GET: Products/Create
+        [Authorize(Roles = "admin")]
         public IActionResult Create(int categoryId)
         {
             ViewBag.CategoryId = categoryId;
             ViewBag.CategoryIds = GetCategoryIdSelectList();
             ViewBag.SupplierIds = GetSupplierIdSelectList();
 
-            return View($"{ViewPath}Create.cshtml");
+            return View();
         }
 
-        // POST: Products/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        [Authorize(Roles = "admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProductCreateModel productCreateModel)
@@ -90,10 +85,10 @@ namespace Northwind.Application.Controllers
                 return RedirectToAction(nameof(Index), new { categoryId = product.CategoryId });
             }
 
-            return View($"{ViewPath}Create.cshtml", productCreateModel);
+            return View(productCreateModel);
         }
 
-        // GET: Products/Edit/5
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -111,11 +106,10 @@ namespace Northwind.Application.Controllers
             ViewBag.CategoryIds = GetCategoryIdSelectList(productEditModel.CategoryId);
             ViewBag.SupplierIds = GetSupplierIdSelectList(productEditModel.SupplierId);
 
-            return View($"{ViewPath}Edit.cshtml", productEditModel);
+            return View(productEditModel);
         }
 
-        // POST: Products/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        [Authorize(Roles = "admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, ProductEditModel productEditModel)
@@ -147,9 +141,10 @@ namespace Northwind.Application.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            return View($"{ViewPath}Edit.cshtml", productEditModel);
+            return View(productEditModel);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpGet]
         public async Task<IActionResult> Delete([FromQuery] int[] ids)
         {
@@ -158,16 +153,11 @@ namespace Northwind.Application.Controllers
 
             foreach (var id in ids)
             {
-                if (id == null)
-                {
-                    return NotFound();
-                }
-
                 var product = await _productRepository.GetAsync(id);
 
                 if (product == null)
                 {
-                    return RedirectToAction(nameof(Index));
+                    return NotFound();
                 }
 
                 products.Add(_mapper.Map<ProductIndexModel>(product));
@@ -175,9 +165,10 @@ namespace Northwind.Application.Controllers
 
             productforCategoryModel.Products = products;
 
-            return View($"{ViewPath}Delete.cshtml", productforCategoryModel);
+            return View(productforCategoryModel);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<IActionResult> DeleteConfirmed([FromForm] int[] ids)
         {

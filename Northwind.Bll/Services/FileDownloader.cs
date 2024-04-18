@@ -10,7 +10,7 @@
             {
                 using var stream = await client.GetStreamAsync(url);
 
-                using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.ReadWrite))
+                using (var fileStream = new FileStream(path!, FileMode.Create, FileAccess.ReadWrite))
                 {
                     await stream.CopyToAsync(fileStream);
                     script = await ReadText(fileStream);

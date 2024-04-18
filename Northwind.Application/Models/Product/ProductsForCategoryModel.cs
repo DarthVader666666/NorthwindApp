@@ -10,7 +10,7 @@ namespace Northwind.Application.Models.Product
 
         public IEnumerator<ProductIndexModel> GetEnumerator()
         {
-            foreach (var item in Products)
+            foreach (var item in Products!)
             {
                 yield return item; 
             }

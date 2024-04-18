@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Testing;
+using System.Net;
 using Xunit;
 
 namespace Northwind.IntegrationTests
@@ -13,15 +14,15 @@ namespace Northwind.IntegrationTests
         }
 
         [Theory]
-        [InlineData("/GuestEmployees/Index")]
-        [InlineData("/GuestCategories/Index")]
+        [InlineData("/Employees/Index")]
+        [InlineData("/Categories/Index")]
         public async Task EndpointIndex_Test(string url)
         {
-            var client = await GetGuestHttpClientAsync();
+            var client = _factory.CreateClient();
 
             var response = await client.GetAsync(url);
 
-            Assert.True(response.IsSuccessStatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.NotNull(response.Content);
         }
 

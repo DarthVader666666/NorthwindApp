@@ -2,7 +2,7 @@
 
 namespace Northwind.Bll.Interfaces
 {
-    public abstract class RepositoryBase<TEntity, TDbContext> : IGuestRepository<TEntity>
+    public abstract class RepositoryBase<TEntity, TDbContext> : IRepository<TEntity>
         where TEntity : class 
         where TDbContext : NorthwindDbContext
     {

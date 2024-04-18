@@ -4,6 +4,10 @@
     ViewData["Title"] = "Details";
 }
 
+@functions{
+    string IsDisabled() => User.IsInRole("admin") ? "" : "disabled";
+}
+
 <h1>Details</h1>
 
 <div>
@@ -67,6 +71,6 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.ProductId" class="btn btn-primary fw-bold">Edit</a>
+    <button @IsDisabled() class="btn btn-primary fw-bold" onclick="location.href = '@Url.ActionLink("Edit", "Products", new { id = Model.ProductId })'">Edit</button>
     <a asp-action="Index" asp-route-categoryId="@Model.CategoryId" class="btn btn-primary float-end fw-bold">Back to List</a>
 </div>
