@@ -3,7 +3,7 @@
     string IsDisabled() => User.IsInRole("admin") ? "" : "disabled";
 }
 
-<button class="btn btn-primary" onclick="location.href = '@Url.ActionLink("Create", ControllerName)'">
+<button class="btn btn-primary" onclick="location.href = '@Url.ActionLink("Create", ControllerName)'" @IsDisabled()>
     Create New
 </button>
 

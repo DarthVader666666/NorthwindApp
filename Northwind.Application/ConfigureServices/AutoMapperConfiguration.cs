@@ -25,7 +25,7 @@ namespace NorthwindApp.ConfigureServices
                             src => src.FormFile != null ? ImageConverter.ConvertFormFileToByteArray(src.FormFile!) : src.Photo));
 
                     autoMapperConfig.CreateMap<Employee, EmployeeIndexModel>()
-                        .ForMember(dest => dest.HireDate, opts => opts.MapFrom(src => ((DateTime)src.HireDate!).ToShortDateString()))
+                        .ForMember(dest => dest.FullName, opts => opts.MapFrom(src => src.FirstName + " " + src.LastName))
                         .ForMember(dest => dest.Photo, opts => opts.MapFrom(src => ImageConverter.ConvertNorthwindPhoto(src.Photo!, ImageHeaders.Employee)));                        
 
                     autoMapperConfig.CreateMap<EmployeeIndexModel, Employee>();
