@@ -1,16 +1,10 @@
 ﻿@model IEnumerable<Northwind.Application.Models.Product.ProductIndexModel>
 @{
-    string previousPage = ViewBag.PreviousPage;
+    ViewData["PreviousPage"] = ViewBag.PreviousPage;
+    ViewData["ActionName"] = "Delete";
 }
 
 <h1>Products</h1>
 
 @await Html.PartialAsync("_IndexButtonsPartial")
-@await Html.PartialAsync("_TableFormPartial", Model)
-
-@if (previousPage != null)
-{
-    <button class="btn btn-primary fw-bold" onclick="location.href = '@previousPage'">Back</button>
-}
-
-<script src="~/js/checkboxes.js" />
+@await Html.PartialAsync("_TableFormPartial", Model, ViewData)

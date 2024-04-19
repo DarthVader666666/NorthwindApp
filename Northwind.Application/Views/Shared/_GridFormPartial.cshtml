@@ -3,7 +3,7 @@
 @model IEnumerable<object>
 
 @functions {
-    string ControllerName => this.Context.Request.Path.ToString().Split('/')[1];
+    string ControllerName => this.Context.Request.Path.ToString().TrimStart('/');
 
     PropertyInfo[] Properties => base.Model.First().GetType().GetProperties();
 
@@ -27,7 +27,7 @@
     <link href="@Url.Content("~/css/checkboxes.css")" rel="stylesheet" type="text/css" />
 </head>
 
-<form id="form" method="get" asp-action="Delete">
+<form id="form" method="get" asp-action=@ViewData["ActionName"]>
     <div class="row">
         @foreach (var item in Model)
         {
@@ -45,3 +45,10 @@
         }
     </div>
 </form>
+
+@if (ViewData["PreviousPage"] != null)
+{
+    <button class="btn btn-primary fw-bold" onclick="location.href = '@ViewData["PreviousPage"]'">Back</button>
+}
+
+<script src="~/js/checkboxes.js" />
