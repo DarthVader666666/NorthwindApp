@@ -1,5 +1,5 @@
 ﻿@functions {
-    string ControllerName => this.Context.Request.Path.ToString()[1..];
+    string ControllerName => this.Context.Request.Path.ToString().TrimStart('/');
     string IsDisabled() => User.IsInRole("admin") ? "" : "disabled";
 }
 

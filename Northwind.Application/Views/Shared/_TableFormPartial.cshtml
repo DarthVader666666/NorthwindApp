@@ -3,7 +3,7 @@
 @model IEnumerable<object>
 
 @functions {
-    string ControllerName => this.Context.Request.Path.ToString().Split('/')[1];
+    string ControllerName => this.Context.Request.Path.ToString().TrimStart('/');
 
     PropertyInfo[] Properties => base.Model.First().GetType().GetProperties();
 
@@ -62,7 +62,7 @@
         </tr>
     </thead>
     <tbody>
-        <form id="form" method="get" asp-action="Delete" asp-controller=@ControllerName>
+        <form id="form" method="get" asp-action=@ViewData["ActionName"] asp-controller=@ControllerName>
             @foreach (var item in base.Model)
             {
                 <tr style="cursor:pointer">
@@ -88,3 +88,10 @@
         </form>
     </tbody>
 </table>
+
+@if (ViewData["PreviousPage"] != null)
+{
+    <button class="btn btn-primary fw-bold" onclick="location.href = '@ViewData["PreviousPage"]'">Back</button>
+}
+
+<script src="~/js/checkboxes.js" />
