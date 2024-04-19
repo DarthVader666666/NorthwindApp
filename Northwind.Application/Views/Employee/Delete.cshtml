@@ -15,13 +15,10 @@
         <thead>
             <tr>
                 <th>
-                    Full Name
+                    @Html.DisplayNameFor(model => model.FullName)
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.Title)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.HireDate)
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.Photo)
@@ -35,13 +32,10 @@
                     <input asp-for="@item.EmployeeId" name="ids" type="hidden" />
                     <tr>
                         <td class="align-middle">
-                            @Html.DisplayFor(modelItem => item.FirstName) @Html.DisplayFor(modelItem => item.LastName)
+                            @Html.DisplayFor(modelItem => item.FullName)
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.Title)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.HireDate)
                         </td>
                         <td>
                             <img src="data:image/bmp;base64,@Convert.ToBase64String(item.Photo!)" style="height:60px;width:60px;" />
