@@ -4,17 +4,12 @@
 
 @functions {
     string ControllerName => (ViewData["ControllerName"] ?? Model.First().GetType().Name).ToString()!;
-
     PropertyInfo[] Properties => base.Model.First().GetType().GetProperties();
-
-    IEnumerable<string> GetPropertyNames()
-    {
-        return Properties.Select(x => x.Name).Where(x => !x.Contains("Id"));
-    }
+    IEnumerable<string> PropertyNames => Properties.Select(x => x.Name).Where(x => !x.Contains("Id"));
 
     IEnumerable<object?> GetPropertyValues(object item)
     {
-        foreach (var propertyName in GetPropertyNames())
+        foreach (var propertyName in PropertyNames)
         {
             object value = null;
 
@@ -50,7 +45,7 @@
 <table class="table">
     <thead>
         <tr>
-            @foreach (var name in GetPropertyNames())
+            @foreach (var name in PropertyNames)
             {
                 <th>
                     @name.SplitForUpperCase()

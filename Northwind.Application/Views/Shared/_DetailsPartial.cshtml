@@ -21,7 +21,7 @@
 </head>
 
 <div>
-    <dl class="row">
+    <dl class="row border-1">
         @{
             var image = Properties.FirstOrDefault(x => x.GetValue(Model) is byte[]);
 
@@ -50,6 +50,11 @@
                 @if (value is string)
                 {
                     @value
+                }
+
+                @if (value is int || value is decimal || value is short || value is bool)
+                {
+                    @value.ToString();
                 }
 
                 @if (value is DateTime)

@@ -1,13 +1,13 @@
 ﻿@functions {
     string ControllerName => this.Context.Request.Path.ToString().TrimStart('/');
-    string IsDisabled() => User.IsInRole("admin") ? "" : "disabled";
+    string Disabled => User.IsInRole("admin") ? "" : "disabled";
 }
 
-<button class="btn btn-primary" onclick="location.href = '@Url.ActionLink("Create", ControllerName)'" @IsDisabled()>
+<button class="btn btn-primary" onclick="location.href = '@Url.ActionLink("Create", ControllerName)'" @Disabled>
     Create
 </button>
 
-<button class="btn btn-primary" id="editButton" style="margin-left:20px;" type="button" @IsDisabled()>
+<button class="btn btn-primary" id="editButton" style="margin-left:20px;" type="button" @Disabled>
     Select
 </button>
 
