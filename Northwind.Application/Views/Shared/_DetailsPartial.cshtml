@@ -52,6 +52,11 @@
                     @value
                 }
 
+                @if (value is DateTime)
+                {
+                    @(((DateTime)value).ToShortDateString())
+                }
+
                 @if (value != null && value.GetType() == Model.GetType())
                 {
                     var id = value.GetType().GetProperty(IdName).GetValue(value);
