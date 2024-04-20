@@ -1,0 +1,86 @@
+﻿@using System.Reflection;
+@using Northwind.Bll.Enums
+@using Northwind.Bll.Services
+@using Northwind.Bll.Services.Extensions
+@model object
+
+@{
+    var idName = Properties.First(x => x.Name.Contains(ControllerName) && x.Name.Contains("Id")).Name;
+}
+
+@functions {
+    string ControllerName => (ViewData["ControllerName"] ?? Model.GetType().Name).ToString().SplitForUpperCase().Split(' ')[1];
+    PropertyInfo[] Properties => Model.GetType().GetProperties();
+    string IdName => Properties.First(x => x.Name.Contains(ControllerName) && x.Name.Contains("Id")).Name;
+    int IdValue => (int)(Properties.First(x => x.Name.Contains(ControllerName) && x.Name.Contains("Id")).GetValue(Model) ?? 0);
+    string Disabled => User.IsInRole("admin") ? "" : "disabled";
+}
+
+<head>
+    <link href="@Url.Content("~/css/details.css")" rel="stylesheet" type="text/css" />
+</head>
+
+<div>
+    <dl class="row">
+        @{
+            var image = Properties.FirstOrDefault(x => x.GetValue(Model) is byte[]);
+
+            if (image != null)
+            {
+                var imageValue = image.GetValue(Model) as byte[];
+
+                <dt class="col-sm-2">Picture</dt>
+                <dd class="col-sm-10">
+                    <img 
+                        src="data:image/bmp;base64,@Convert.ToBase64String(
+                            ImageConverter.ConvertNorthwindPhoto(image.GetValue(Model) as byte[] ?? new byte[0]))" 
+                        style="height:120px;width:120px;" 
+                    />
+                </dd>
+            }
+        }
+
+        @foreach (var item in Properties.Where(x => !x.Name.Contains("Id") && !(x.GetValue(Model) is byte[])))
+        {
+            var value = item.GetValue(Model);
+
+            <dt class="col-sm-2">@item.Name.SplitForUpperCase()</dt>
+            <dd class="col-sm-10">
+
+                @if (value is string)
+                {
+                    @value
+                }
+
+                @if (value != null && value.GetType() == Model.GetType())
+                {
+                    var id = value.GetType().GetProperty(IdName).GetValue(value);
+                    <a href=@Url.ActionLink("Details", ControllerName, new { id = id }) class="fw-bold">Show @value.GetType().Name.SplitForUpperCase()</a>
+                }
+
+                @if (value is IEnumerable<object>)
+                {
+                    var controller = item.Name;
+
+                    if (controller.Count(x => char.IsUpper(x)) > 1)
+                    {
+                        controller = item.Name.SplitForUpperCase().Split(' ')[1];
+                    }
+
+                    controller = controller[^1] == 's' ? controller[..^1] : controller;
+
+                    <a href=@Url.ActionLink("Index", controller, new { id = IdValue }) class="fw-bold">Show @item.Name.SplitForUpperCase()</a>
+                }
+            </dd>
+        }
+    </dl>
+</div>
+
+<button class="btn btn-primary fw-bold" @Disabled onclick="location.href = '@Url.ActionLink("Edit", ControllerName, new { id = IdValue })'">Edit</button>
+
+@if (ViewData["PreviousPage"] != null)
+{
+    <button class="btn btn-primary fw-bold float-end" onclick="location.href = '@ViewData["PreviousPage"]'">Back To List</button>
+}
+
+<script src="~/js/fileSelection.js" />

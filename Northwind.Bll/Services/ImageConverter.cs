@@ -28,34 +28,14 @@ namespace Northwind.Bll.Services
             return reader.ReadBytes((int)formFile.Length);
         }
 
-        public static byte[] ConvertNorthwindPhoto(byte[] source, ImageHeaders headerType)
+        public static byte[] ConvertNorthwindPhoto(byte[] source)
         {
-            var header = headerType == ImageHeaders.Employee ? OleEmployeeHeader : OleCategoryHeader;
-            var result = HasHeader(source, header) ? source[headerLength..] : source;
-            return result;
-        }
-
-        private static bool HasHeader(byte[] source, byte[] header)
-        {
-            if (source == null)
+            if (source.Length >= headerLength && (source[..headerLength].SequenceEqual(OleEmployeeHeader) || source[..headerLength].SequenceEqual(OleCategoryHeader)))
             {
-                return false;
+                return source[headerLength..];
             }
 
-            if (source.Length < header.Length)
-            {
-                return false;
-            }
-
-            for (int i = 0; i < header.Length; i++)
-            {
-                if (source[i] != header[i])
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return source;
         }
     }
 }

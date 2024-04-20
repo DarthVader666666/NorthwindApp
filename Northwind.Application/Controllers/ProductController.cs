@@ -26,11 +26,11 @@ namespace Northwind.Application.Controllers
             _supplierRepository = supplierRepository;
         }
 
-        public async Task<IActionResult> Index(int categoryId = 0)
+        public async Task<IActionResult> Index(int id = 0)
         {
-            var products = _productRepository.GetListFor(categoryId);
+            var products = _productRepository.GetListFor(id);
             var productModels = _mapper.Map<IEnumerable<ProductIndexModel>>(products);
-            ViewBag.PreviousPage = Url.ActionLink("Details", "Category", new { id = categoryId });
+            ViewBag.PreviousPage = Url.ActionLink("Details", "Category", new { id });
 
             return View(productModels);
         }
@@ -51,6 +51,8 @@ namespace Northwind.Application.Controllers
 
             product.Supplier = await _supplierRepository.GetAsync(product.SupplierId);
             product.Category = await _categoryRepository.GetAsync(product.CategoryId);
+
+            ViewBag.PreviousPage = Url.ActionLink("Index", "Product", new { id = product.CategoryId });
 
             return View(product);
         }

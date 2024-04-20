@@ -18,7 +18,7 @@ namespace NorthwindApp.ConfigureServices
                 {
                     autoMapperConfig.CreateMap<Employee, EmployeeEditModel>()
                         .ForMember(dest => dest.Photo, opts => opts.MapFrom(
-                            src => ImageConverter.ConvertNorthwindPhoto(src.Photo!, ImageHeaders.Employee)));
+                            src => ImageConverter.ConvertNorthwindPhoto(src.Photo!)));
 
                     autoMapperConfig.CreateMap<EmployeeEditModel, Employee>()
                         .ForMember(dest => dest.Photo, opts => opts.MapFrom(
@@ -26,7 +26,7 @@ namespace NorthwindApp.ConfigureServices
 
                     autoMapperConfig.CreateMap<Employee, EmployeeIndexModel>()
                         .ForMember(dest => dest.FullName, opts => opts.MapFrom(src => src.FirstName + " " + src.LastName))
-                        .ForMember(dest => dest.Photo, opts => opts.MapFrom(src => ImageConverter.ConvertNorthwindPhoto(src.Photo!, ImageHeaders.Employee)));                        
+                        .ForMember(dest => dest.Photo, opts => opts.MapFrom(src => ImageConverter.ConvertNorthwindPhoto(src.Photo!)));                        
 
                     autoMapperConfig.CreateMap<EmployeeIndexModel, Employee>();
 
@@ -36,11 +36,11 @@ namespace NorthwindApp.ConfigureServices
 
 
                     autoMapperConfig.CreateMap<Category, CategoryIndexModel>()
-                        .ForMember(dest => dest.Picture, opts => opts.MapFrom(src => ImageConverter.ConvertNorthwindPhoto(src.Picture!, ImageHeaders.Category)));
+                        .ForMember(dest => dest.Picture, opts => opts.MapFrom(src => ImageConverter.ConvertNorthwindPhoto(src.Picture!)));
 
                     autoMapperConfig.CreateMap<Category, CategoryEditModel>()
                         .ForMember(dest => dest.Picture, opts => opts.MapFrom(
-                            src => ImageConverter.ConvertNorthwindPhoto(src.Picture!, ImageHeaders.Category)));
+                            src => ImageConverter.ConvertNorthwindPhoto(src.Picture!)));
 
                     autoMapperConfig.CreateMap<CategoryEditModel, Category>()
                         .ForMember(dest => dest.Picture, opts => opts.MapFrom(

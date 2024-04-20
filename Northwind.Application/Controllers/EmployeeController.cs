@@ -44,6 +44,7 @@ namespace Northwind.Application.Controllers
             }
 
             employee.ReportsToNavigation = await _employeeRepository.GetAsync(employee.ReportsTo);
+            ViewBag.PreviousPage = Url.ActionLink("Index", "Employee");
 
             return View(employee);
         }

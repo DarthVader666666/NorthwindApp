@@ -24,6 +24,8 @@ namespace Northwind.Application.Controllers
             var categories = _categoryRepository.GetList();
             var categoryModels = _mapper.Map<IEnumerable<CategoryIndexModel>>(categories);
 
+            ViewBag.PreviousPage = Url.ActionLink("Index", "Category");
+
             return View(categoryModels);
         }
 

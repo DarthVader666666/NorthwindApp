@@ -1,76 +1,11 @@
 ﻿@model Northwind.Data.Entities.Product
 
 @{
-    ViewData["Title"] = "Details";
-}
-
-@functions{
-    string IsDisabled() => User.IsInRole("admin") ? "" : "disabled";
+    ViewData["PreviousPage"] = ViewBag.PreviousPage;
+    ViewData["ControllerName"] = "Product";
 }
 
 <h1>Details</h1>
+<h4>Product</h4>
 
-<div>
-    <h4>Product</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ProductName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ProductName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.QuantityPerUnit)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.QuantityPerUnit)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UnitPrice)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UnitPrice)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UnitsInStock)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UnitsInStock)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UnitsOnOrder)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UnitsOnOrder)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ReorderLevel)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ReorderLevel)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Discontinued)
-        </dt>
-        <dd class = "col-sm-10">
-            @Model.Discontinued
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Category)
-        </dt>
-        <dd class = "col-sm-10">
-            @(Model.Category == null ? "" : Model.Category.CategoryName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Supplier)
-        </dt>
-        <dd class = "col-sm-10">
-            @(Model.Supplier == null ? "" : Model.Supplier.CompanyName)
-        </dd>
-    </dl>
-</div>
-<div>
-    <button @IsDisabled() class="btn btn-primary fw-bold" onclick="location.href = '@Url.ActionLink("Edit", "Products", new { id = Model.ProductId })'">Edit</button>
-    <a asp-action="Index" asp-route-categoryId="@Model.CategoryId" class="btn btn-primary float-end fw-bold">Back to List</a>
-</div>
+@await Html.PartialAsync("_DetailsPartial", Model, ViewData)
