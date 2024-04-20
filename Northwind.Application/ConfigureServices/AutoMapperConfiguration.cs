@@ -53,7 +53,13 @@ namespace NorthwindApp.ConfigureServices
 
 
 
-                    autoMapperConfig.CreateMap<Product, ProductIndexModel>();
+                    autoMapperConfig.CreateMap<Product, ProductIndexModel>()
+                        .ForMember(dest => dest.UnitPrice, opts => opts.MapFrom(
+                            src => string.Format("{0:f2}", src.UnitPrice)));
+
+                    autoMapperConfig.CreateMap<Product, ProductDetailsModel>()
+                        .ForMember(dest => dest.UnitPrice, opts => opts.MapFrom(src => string.Format("{0:f2}", src.UnitPrice)));
+
                     autoMapperConfig.CreateMap<ProductCreateModel, Product>();
 
                     autoMapperConfig.CreateMap<Product, ProductEditModel>()

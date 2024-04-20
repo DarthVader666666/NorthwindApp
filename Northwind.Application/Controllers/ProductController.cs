@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -54,7 +53,7 @@ namespace Northwind.Application.Controllers
 
             ViewBag.PreviousPage = Url.ActionLink("Index", "Product", new { id = product.CategoryId });
 
-            return View(product);
+            return View(_mapper.Map<ProductDetailsModel>(product));
         }
 
         [Authorize(Roles = "admin")]
