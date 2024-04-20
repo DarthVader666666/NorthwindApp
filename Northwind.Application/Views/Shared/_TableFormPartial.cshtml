@@ -1,5 +1,5 @@
 ﻿@using System.Reflection;
-@using System.Text.RegularExpressions;
+@using Northwind.Bll.Services.Extensions
 @model IEnumerable<object>
 
 @functions {
@@ -53,7 +53,7 @@
             @foreach (var name in GetPropertyNames())
             {
                 <th>
-                    @Regex.Replace(name, "((?<=[a-z])[A-Z]|[A-Z](?=[a-z]))", " $1")
+                    @name.SplitForUpperCase()
                 </th>
             }
             <th class="text-center">

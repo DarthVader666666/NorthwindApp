@@ -4,7 +4,7 @@
 }
 
 <button class="btn btn-primary" onclick="location.href = '@Url.ActionLink("Create", ControllerName)'" @IsDisabled()>
-    Create New
+    Create
 </button>
 
 <button class="btn btn-primary" id="editButton" style="margin-left:20px;" type="button" @IsDisabled()>
@@ -12,7 +12,7 @@
 </button>
 
 <input onchange="onChangeSelectAllHandler(this.checked)" id="selectAllCheckbox" style="margin-left:20px;" type="checkbox" hidden />
-<label id="selectAllSpan" for="selectAllCheckbox" hidden>Select all</label>
+<label id="selectAllSpan" for="selectAllCheckbox" hidden>All</label>
 
 <button form="form" class="btn btn-danger float-end" type="submit" id="deleteButton" hidden>
     Delete
