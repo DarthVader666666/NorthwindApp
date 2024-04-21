@@ -96,7 +96,7 @@ namespace Northwind.Application.Controllers
         {
             if (id != employeeEditModel.EmployeeId)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Index));
             }
 
             if (ModelState.IsValid)
@@ -140,6 +140,8 @@ namespace Northwind.Application.Controllers
 
                 employees.Add(employee);
             }
+
+            ViewBag.PreviousPage = Url.ActionLink("Index", "Employee");
 
             return View(_mapper.Map<IEnumerable<EmployeeIndexModel>>(employees));
         }

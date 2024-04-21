@@ -1,51 +1,18 @@
 ﻿@model IEnumerable<Northwind.Application.Models.Category.CategoryIndexModel>
-
 @{
+    ViewData["PreviousPage"] = ViewBag.PreviousPage;
+    ViewData["ControllerName"] = "Category";
+    ViewData["ActionName"] = "DeleteConfirmed";
+    ViewData["FormMethod"] = "post";
+    ViewData["Hidden"] = "hidden";
+
     var count = Model.Count();
-    ViewData["Title"] = "Delete";
 }
 
 <h1>Delete</h1>
-
 <h3>Are you sure you want to delete @(count > 1 ? "these" : "this")</h3>
-<div>
-    <h4>@(count > 1 ? "Categories" : "Categorie")?</h4>
-    <hr />
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.CategoryName)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Description)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Picture)
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <form id="form" asp-action="DeleteConfirmed" method="post">
-                @foreach (var item in Model)
-                {
-                    <input asp-for="@item.CategoryId" name="ids" type="hidden" />
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(model => item.CategoryName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(model => item.Description)
-                        </td>
-                        <td>
-                            <img src="data:image/bmp;base64,@Convert.ToBase64String(item.Picture!)" style="height:120px;width:120px;" />
-                        </td>
-                    </tr>                
-                }
-                
-            </form>            
-        </tbody>
-    </table>
-    <button form="form" class="btn btn-danger" type="submit">Delete</button>
-    <button class="btn btn-primary float-end" onclick="location.href = '@Url.ActionLink("Index", "Category")'">Back to List</button>
-</div>
+<h4>@(count > 1 ? "Categories" : "Categorie")?</h4>
+<hr />
+
+@await Html.PartialAsync("_TableFormPartial")
+<button form="form" class="btn btn-danger float-end" type="submit">Delete</button>

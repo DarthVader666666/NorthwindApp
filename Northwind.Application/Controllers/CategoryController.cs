@@ -43,6 +43,8 @@ namespace Northwind.Application.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            ViewBag.PreviousPage = Url.ActionLink("Index", "Category");
+
             return View(category);
         }
 
@@ -93,7 +95,7 @@ namespace Northwind.Application.Controllers
         {
             if (id != categoryEditModel.CategoryId)
             {
-                return NotFound();
+                RedirectToAction(nameof(Index));
             }
 
             if (ModelState.IsValid)
@@ -131,7 +133,7 @@ namespace Northwind.Application.Controllers
             {
                 if (id == null)
                 {
-                    return NotFound();
+                    continue;
                 }
 
                 var employee = await _categoryRepository.GetAsync(id);
@@ -143,6 +145,8 @@ namespace Northwind.Application.Controllers
 
                 categories.Add(employee);
             }
+
+            ViewBag.PreviousPage = Url.ActionLink("Index", "Category");
 
             return View(_mapper.Map<IEnumerable<CategoryIndexModel>>(categories));
         }

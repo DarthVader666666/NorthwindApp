@@ -3,9 +3,12 @@
 @model IEnumerable<object>
 
 @functions {
-    string ControllerName => (ViewData["ControllerName"] ?? Model.First().GetType().Name).ToString()!;
+    string ControllerName => ViewData["ControllerName"].ToString().SplitForUpperCase(Model.FirstOrDefault());
+    string Method => ViewData["FormMethod"] == null ? "get" : ViewData["FormMethod"].ToString();
     PropertyInfo[] Properties => base.Model.First().GetType().GetProperties();
     IEnumerable<string> PropertyNames => Properties.Select(x => x.Name).Where(x => !x.Contains("Id"));
+    string Disabled => User.IsInRole("admin") ? "" : "disabled";
+    string Hidden => ViewData["Hidden"] == null ? "" : ViewData["Hidden"].ToString();
 
     IEnumerable<object?> GetPropertyValues(object item)
     {
@@ -38,55 +41,56 @@
     string GetDetailsLink(int id) => Url.ActionLink("Details", ControllerName, new { id = id }) ?? "/Home/Index";
 }
 
-<head>
-    <link href="@Url.Content("~/css/checkboxes.css")" rel="stylesheet" type="text/css" />
-</head>
-
-<table class="table">
-    <thead>
-        <tr>
-            @foreach (var name in PropertyNames)
-            {
-                <th>
-                    @name.SplitForUpperCase()
+<div style="padding-top:20px;">
+    <table class="table">
+        <thead  style="height:60px;">
+            <tr >
+                @foreach (var name in PropertyNames)
+                {
+                    <th class="align-content-center">
+                        @name.SplitForUpperCase()
+                    </th>
+                }
+                <th class="text-center align-content-center">
+                    <input onchange="onChangeSelectAllHandler(this.checked)" id="selectAllCheckbox" style="margin-left:20px;" type="checkbox" @Disabled @Hidden />
                 </th>
-            }
-            <th class="text-center">
-                <input onchange="onChangeSelectAllHandler(this.checked)" id="selectAllCheckbox" type="checkbox" hidden />
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        <form id="form" method="get" asp-action=@ViewData["ActionName"] asp-controller=@ControllerName>
-            @foreach (var item in base.Model)
-            {
-                <tr style="cursor:pointer">
-                    @foreach (var value in GetPropertyValues(item))
+            </tr>
+        </thead>
+        <tbody>
+            <form id="form" method="@Method" asp-action=@ViewData["ActionName"] asp-controller=@ControllerName>
+                @foreach (var item in base.Model)
+                {
+                    if (ViewData["ActionName"] == "DeleteConfirmed")
                     {
-                        <td clas onclick="location.href = '@GetDetailsLink(GetId(item))'">
-                            @if (value is string)
-                            {
-                                @(value as string)
-                            }
-
-                            @if (value is byte[])
-                            {
-                                <img src="data:image/bmp;base64,@Convert.ToBase64String(value as byte[] ?? new byte[0])" style="height:60px;width:60px;" />
-                            }
-                        </td>
+                        <input value="@GetId(item)" name="ids" type="hidden" />
                     }
-                    <td class="text-center align-content-center" style="min-width:50px;">
-                        <input name="ids" type="checkbox" id="@GetId(item)" value="@GetId(item)" onclick="onChangeHandler(this)" hidden />
-                    </td>
-                </tr>
-            }
-        </form>
-    </tbody>
-</table>
+
+                    <tr style="cursor:pointer">
+                         @foreach (var value in GetPropertyValues(item))
+                         {
+                             <td class="align-content-center" onclick="location.href = '@GetDetailsLink(GetId(item))'">
+                                 @if (value is string)
+                                 {
+                                     @(value as string)
+                                 }
+
+                                 @if (value is byte[])
+                                 {
+                                     <img src="data:image/bmp;base64,@Convert.ToBase64String(value as byte[] ?? new byte[0])" style="height:60px;width:60px;" />
+                                 }
+                             </td>
+                         }
+                        <td class="text-center align-content-center">
+                            <input name="ids" type="checkbox" id="@GetId(item)" value="@GetId(item)" style="margin-left:20px;" onclick="onChangeHandler(this)" @Disabled @Hidden />
+                        </td>
+                    </tr>
+                }
+            </form>
+        </tbody>
+    </table>
+</div>
 
 @if (ViewData["PreviousPage"] != null)
 {
     <button class="btn btn-primary fw-bold" onclick="location.href = '@ViewData["PreviousPage"]'">Back</button>
 }
-
-<script src="~/js/checkboxes.js" />
