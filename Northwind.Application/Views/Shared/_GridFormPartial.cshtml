@@ -1,11 +1,11 @@
 ﻿@using System.Reflection;
-@using System.Text.RegularExpressions;
+@using Northwind.Bll.Services.Extensions;
 @model IEnumerable<object>
 
 @functions {
-    string ControllerName => (ViewData["ControllerName"] ?? Model.First().GetType().Name).ToString()!;
-
+    string ControllerName => ViewData["ControllerName"].ToString().SplitForUpperCase(Model.FirstOrDefault());
     PropertyInfo[] Properties => base.Model.First().GetType().GetProperties();
+    string Disabled => User.IsInRole("admin") ? "" : "disabled";
 
     object? GetPropertyValue<T>(object item, params string[] search)
     {
@@ -23,9 +23,8 @@
     string GetDetailsLink(int id) => Url.ActionLink("Details", ControllerName, new { id = id }) ?? "/Home/Index";
 }
 
-<head>
-    <link href="@Url.Content("~/css/checkboxes.css")" rel="stylesheet" type="text/css" />
-</head>
+<input onchange="onChangeSelectAllHandler(this.checked)" id="selectAllCheckbox" style="margin-left:120px;" type="checkbox" @Disabled />
+<label >Select all</label>
 
 <form id="form" method="get" asp-action=@ViewData["ActionName"]>
     <div class="row">
@@ -39,16 +38,9 @@
                     @(GetPropertyValue<string>(item, "Name") as string)
                 </div>
                 <div class="text-center align-content-center">
-                    <input name="ids" type="checkbox" id="@GetId(item)" value="@GetId(item)" onclick="onChangeHandler(this)" hidden />
+                    <input name="ids" type="checkbox" id="@GetId(item)" value="@GetId(item)" onclick="onChangeHandler(this)" @Disabled />
                 </div>
             </div>
         }
     </div>
 </form>
-
-@if (ViewData["PreviousPage"] != null)
-{
-    <button class="btn btn-primary fw-bold" onclick="location.href = '@ViewData["PreviousPage"]'">Back</button>
-}
-
-<script src="~/js/checkboxes.js" />

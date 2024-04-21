@@ -9,16 +9,12 @@
 }
 
 @functions {
-    string ControllerName => (ViewData["ControllerName"] ?? Model.GetType().Name).ToString().SplitForUpperCase().Split(' ')[1];
+    string ControllerName => ViewData["ControllerName"].ToString().SplitForUpperCase(Model);
     PropertyInfo[] Properties => Model.GetType().GetProperties();
     string IdName => Properties.First(x => x.Name.Contains(ControllerName) && x.Name.Contains("Id")).Name;
     int IdValue => (int)(Properties.First(x => x.Name.Contains(ControllerName) && x.Name.Contains("Id")).GetValue(Model) ?? 0);
     string Disabled => User.IsInRole("admin") ? "" : "disabled";
 }
-
-<head>
-    <link href="@Url.Content("~/css/details.css")" rel="stylesheet" type="text/css" />
-</head>
 
 <div>
     <dl class="row border-1">
@@ -92,5 +88,3 @@
 {
     <button class="btn btn-primary fw-bold float-end" onclick="location.href = '@ViewData["PreviousPage"]'">Back To List</button>
 }
-
-<script src="~/js/fileSelection.js" />

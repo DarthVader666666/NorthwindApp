@@ -110,7 +110,7 @@ namespace Northwind.Application.Controllers
         {
             if (id != productEditModel.ProductId)
             {
-                return NotFound();
+                RedirectToAction(nameof(Index));
             }
 
             if (ModelState.IsValid)
@@ -158,6 +158,7 @@ namespace Northwind.Application.Controllers
             }
 
             productforCategoryModel.Products = products;
+            ViewBag.PreviousPage = Url.ActionLink("Index", "Product", new { id = products.Any() ? products.First().CategoryId : 0 });
 
             return View(productforCategoryModel);
         }
