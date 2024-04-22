@@ -22,7 +22,9 @@ namespace NorthwindApp.ConfigureServices
 
                     autoMapperConfig.CreateMap<EmployeeEditModel, Employee>()
                         .ForMember(dest => dest.Photo, opts => opts.MapFrom(
-                            src => src.FormFile != null ? ImageConverter.ConvertFormFileToByteArray(src.FormFile!) : src.Photo));
+                            src => src.FormFile != null && src.FormFile.Length > 0 ? ImageConverter.ConvertFormFileToByteArray(src.FormFile!) : src.Photo))
+                        .ForMember(dest => dest.ReportsTo, opts => opts.MapFrom(
+                            src => src.ReportsTo == 0 ? null : src.ReportsTo));
 
                     autoMapperConfig.CreateMap<Employee, EmployeeIndexModel>()
                         .ForMember(dest => dest.FullName, opts => opts.MapFrom(src => src.FirstName + " " + src.LastName))
@@ -32,6 +34,8 @@ namespace NorthwindApp.ConfigureServices
 
                     autoMapperConfig.CreateMap<EmployeeCreateModel, Employee>()
                         .ForMember(dest => dest.Photo, opts => opts.MapFrom(src => ImageConverter.ConvertFormFileToByteArray(src.FormFile!)));
+
+                    autoMapperConfig.CreateMap<Employee, EmployeeDetailsModel>();
 
 
 

@@ -43,10 +43,12 @@ namespace Northwind.Application.Controllers
                 return NotFound();
             }
 
-            employee.ReportsToNavigation = await _employeeRepository.GetAsync(employee.ReportsTo);
+            var employeeDetailsModel = _mapper.Map<EmployeeDetailsModel>(employee);
+
+            employeeDetailsModel.ReportsToNavigation = await _employeeRepository.GetAsync(employee.ReportsTo);
             ViewBag.PreviousPage = Url.ActionLink("Index", "Employee");
 
-            return View(employee);
+            return View(employeeDetailsModel);
         }
 
         public IActionResult Create()
@@ -85,7 +87,7 @@ namespace Northwind.Application.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.ReportsTo = GetReportsToSelectList(id);
+            employeeEditModel.ReportsToList = GetReportsToSelectList(id: id, reportsTo: employeeEditModel.ReportsTo ?? 0);
 
             return View(employeeEditModel);
         }
@@ -121,6 +123,7 @@ namespace Northwind.Application.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            employeeEditModel.ReportsToList = GetReportsToSelectList(id: id, reportsTo:employeeEditModel.ReportsTo);
             return View(employeeEditModel);
         }
 
@@ -159,13 +162,25 @@ namespace Northwind.Application.Controllers
             return (await _employeeRepository.GetAsync(id)) != null;
         }
 
-        private SelectList GetReportsToSelectList(int? id = null)
+        private SelectList GetReportsToSelectList(int? id = null, int? reportsTo = null)
         {
             var list = _employeeRepository.GetList();
             var dictionary = list.Except(list.Where(e => e.EmployeeId == id)).ToDictionary(e => e.EmployeeId, e => e.FirstName + " " + e.LastName);
 
             dictionary.Add(0, "");
-            return new SelectList(dictionary, "Key", "Value");
+            var selectList = new SelectList(dictionary, "Key", "Value");
+
+            if (reportsTo != null)
+            {
+                var selecteItem = selectList.FirstOrDefault(x => x.Value == reportsTo.ToString());
+
+                if (selecteItem != null)
+                {
+                    selecteItem.Selected = true;
+                }
+            }
+            
+            return selectList;
         }
     }
 }

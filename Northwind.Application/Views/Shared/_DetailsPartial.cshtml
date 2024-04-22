@@ -58,7 +58,7 @@
                     @(((DateTime)value).ToShortDateString())
                 }
 
-                @if (value != null && value.GetType() == Model.GetType())
+                @if (value != null && value.GetType().FullName.Contains(ControllerName))
                 {
                     var id = value.GetType().GetProperty(IdName).GetValue(value);
                     <a href=@Url.ActionLink("Details", ControllerName, new { id = id }) class="fw-bold">Show @value.GetType().Name.SplitForUpperCase()</a>

@@ -1,23 +1,21 @@
-﻿using AutoMapper.Configuration.Annotations;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System.ComponentModel.DataAnnotations;
+﻿using Northwind.Data.Entities;
 
 namespace Northwind.Application.Models.Employee
 {
-    public class EmployeeEditModel
+    public class EmployeeDetailsModel
     {
         public int EmployeeId { get; set; }
-        [Required]
+
         public string LastName { get; set; } = null!;
-        [Required]
+
         public string FirstName { get; set; } = null!;
-        [Required]
+
         public string? Title { get; set; }
 
         public string? TitleOfCourtesy { get; set; }
-        [Required]
+
         public DateTime? BirthDate { get; set; }
-        [Required]
+
         public DateTime? HireDate { get; set; }
 
         public string? Address { get; set; }
@@ -32,14 +30,14 @@ namespace Northwind.Application.Models.Employee
 
         public string? HomePhone { get; set; }
 
-        public byte[]? Photo { get; set; }
+        public string? Extension { get; set; }
 
-        public IFormFile? FormFile { get; set; }
+        public byte[]? Photo { get; set; }
 
         public string? Notes { get; set; }
 
-        public int? ReportsTo { get; set; }
+        public string? PhotoPath { get; set; }
 
-        public SelectList? ReportsToList { get; set; }
+        public Northwind.Data.Entities.Employee? ReportsToNavigation { get; set; }
     }
 }

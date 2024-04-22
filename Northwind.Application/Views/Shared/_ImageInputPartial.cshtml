@@ -1,0 +1,15 @@
+﻿@using Northwind.Application.Models.Category
+@using Northwind.Application.Models.Employee
+@model object
+
+@{
+    if (Model is EmployeeEditModel)
+    {
+        <input type="hidden" asp-for=@(((EmployeeEditModel)Model).Photo) />
+    }
+
+    if (Model is CategoryEditModel)
+    {
+        <input type="hidden" asp-for=@(((CategoryEditModel)Model).Picture) />
+    }
+}
