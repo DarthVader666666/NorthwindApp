@@ -1,12 +1,13 @@
 ﻿@functions {
     string ControllerName => ViewData["ControllerName"].ToString() ?? this.Context.Request.Path.ToString().TrimStart('/');
     string Disabled => User.IsInRole("admin") ? "" : "disabled";
+    int Id => int.Parse(ViewData["id"] == null ? "0" : ViewData["id"].ToString());
 }
 
-<button class="btn btn-primary" onclick="location.href = '@Url.ActionLink("Create", ControllerName)'" @Disabled>
+<button class="btn btn-primary fw-bold" onclick="location.href = '@Url.ActionLink("Create", ControllerName, new { id = Id })'" @Disabled>
     Create
 </button>
 
-<button form="form" class="btn btn-danger float-end" type="submit" id="deleteButton" hidden>
+<button form="form" class="btn btn-danger float-end fw-bold" type="submit" id="deleteButton" hidden>
     Delete
 </button>

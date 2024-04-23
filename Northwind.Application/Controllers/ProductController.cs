@@ -30,6 +30,7 @@ namespace Northwind.Application.Controllers
             var products = _productRepository.GetListFor(id);
             var productModels = _mapper.Map<IEnumerable<ProductIndexModel>>(products);
             ViewBag.PreviousPage = Url.ActionLink("Details", "Category", new { id });
+            ViewBag.Id = id;
 
             return View(productModels);
         }
@@ -57,12 +58,12 @@ namespace Northwind.Application.Controllers
         }
 
         [Authorize(Roles = "admin")]
-        public IActionResult Create(int categoryId)
+        public IActionResult Create(int id)
         {
-            ViewBag.CategoryId = categoryId;
+            ViewBag.PreviousPage = Url.ActionLink("Index", "Product", new { id });
 
             var productCreateModel = new ProductCreateModel();
-            productCreateModel.CategoryIdList = GetCategoryIdSelectList();
+            productCreateModel.CategoryIdList = GetCategoryIdSelectList(id);
             productCreateModel.SupplierIdList = GetSupplierIdSelectList();
 
             return View(productCreateModel);
@@ -99,8 +100,8 @@ namespace Northwind.Application.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.CategoryIds = GetCategoryIdSelectList(productEditModel.CategoryId);
-            ViewBag.SupplierIds = GetSupplierIdSelectList(productEditModel.SupplierId);
+            productEditModel.CategoryIdList = GetCategoryIdSelectList(productEditModel.CategoryId);
+            productEditModel.SupplierIdList = GetSupplierIdSelectList(productEditModel.SupplierId);
 
             return View(productEditModel);
         }
@@ -136,6 +137,9 @@ namespace Northwind.Application.Controllers
 
                 return RedirectToAction(nameof(Index), new { id = productEditModel.CategoryId });
             }
+
+            productEditModel.CategoryIdList = GetCategoryIdSelectList(productEditModel.CategoryId);
+            productEditModel.SupplierIdList = GetSupplierIdSelectList(productEditModel.SupplierId);
 
             return View(productEditModel);
         }
@@ -179,22 +183,58 @@ namespace Northwind.Application.Controllers
             return (await _productRepository.GetAsync(id)) != null;
         }
 
-        private SelectList GetCategoryIdSelectList(int categoryId = 0)
+        private SelectList GetCategoryIdSelectList(int? categoryId = null)
         {
             var categories = _categoryRepository.GetList();
             var dictionary = categories.ToDictionary(c => c.CategoryId, c => c.CategoryName);
             dictionary.Add(0, "");
 
-            return new SelectList(dictionary, "Key", "Value", dictionary[categoryId]);
+            var selectList = new SelectList(dictionary, "Key", "Value", dictionary);
+
+            SelectListItem selectedItem = null;
+
+            if (categoryId != null)
+            {
+                selectedItem = selectList.FirstOrDefault(x => x.Value == categoryId.ToString());
+            }
+            else
+            {
+                selectedItem = selectList.FirstOrDefault(x => x.Value == 0.ToString());
+            }
+
+            if (selectedItem != null)
+            {
+                selectedItem.Selected = true;
+            }
+
+            return selectList;
         }
 
-        private SelectList GetSupplierIdSelectList(int supplierId = 0)
+        private SelectList GetSupplierIdSelectList(int? supplierId = null)
         {
             var suppliers = _supplierRepository.GetList();
             var dictionary = suppliers.ToDictionary(c => c.SupplierId, c => c.CompanyName);
             dictionary.Add(0, "");
 
-            return new SelectList(dictionary, "Key", "Value", dictionary[supplierId]);
+            var selectList = new SelectList(dictionary, "Key", "Value", dictionary);
+
+            SelectListItem selectedItem = null;
+
+            if (supplierId != null)
+            {
+                selectedItem = selectList.FirstOrDefault(x => x.Value == supplierId.ToString());
+            }
+            else
+            {
+                selectedItem = selectList.FirstOrDefault(x => x.Value == 0.ToString());
+            }
+
+            if (selectedItem != null)
+            {
+                selectedItem.Selected = true;
+            }
+
+            return selectList;
         }
     }
 }

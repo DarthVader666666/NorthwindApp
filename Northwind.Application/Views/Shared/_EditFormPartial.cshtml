@@ -17,9 +17,15 @@
     string Disabled => User.IsInRole("admin") ? "" : "disabled";
     PropertyInfo FormFileProperty => Properties.FirstOrDefault(x => x.GetValue(Model) is IFormFile);
     string? FormFile => FormFileProperty == null ? null : FormFileProperty.Name;
-    PropertyInfo Image => Properties.FirstOrDefault(x => (x.Name.Contains("Image") || x.Name.Contains("Picture") || x.Name.Contains("Photo")) && x.GetValue(Model) is byte[]);
+    PropertyInfo Image => Properties.FirstOrDefault(x => (x.Name.Contains("Image") || x.Name.Contains("Picture") || x.Name.Contains("Photo")) && x.PropertyType.FullName.Contains("Byte"));
     PropertyInfo[] SelectLists => Properties.Where(x => x.PropertyType.FullName.Contains("SelectList")).ToArray();
     PropertyInfo[] ForeignKeys => Properties.Where(x => x.PropertyType.FullName.Contains("Int") && SelectLists.Any(y => y.Name.Contains(x.Name))).ToArray();
+
+    object SetPropertyName(string name)
+    {
+        ViewData["PropertyName"] = name;
+        return ViewData;
+    }
 }
 
 <div class="row">
@@ -48,23 +54,24 @@
                 }
             }
 
-            @foreach (var item in Properties.Where(x => !x.Name.Contains("Id") && !(x.GetValue(Model) is byte[])))
+            @foreach (var item in Properties.Where(x => !(x.GetValue(Model) is byte[])))
             {
                 var value = item.GetValue(Model);
                 var type = item.PropertyType.FullName;
+                var hidden = type.Contains("IFormFile") || SelectLists.Any(x => x.Name != item.Name && x.Name.Contains(item.Name)) ? "hidden" : "";
 
                 <div class="form-group">
+                    <label class="control-label" @hidden>@item.Name.Replace("List", "").Replace("Id", "").SplitForUpperCase()</label>
+                    @await Html.PartialAsync("_ValidationSpanPartial", Model, SetPropertyName(item.Name) as ViewDataDictionary)
+
                     @if (type.Contains("DateTime"))
                     {
                         var date = (DateTime)value;
-                        <label class="control-label">@item.Name.SplitForUpperCase()</label>
                         <input name="@item.Name" value=@($"{date.Year:D4}-{date.Month:D2}-{date.Day:D2}") type="date" class="form-control" />
                     }
 
                     @if (type.Contains("String"))
                     {
-                        <label class="control-label">@item.Name.SplitForUpperCase()</label>
-
                         if (value != null && (value as string).Length > 100)
                         {
                             <textarea name="@item.Name" class="form-control">@value</textarea>
@@ -77,9 +84,7 @@
 
                     @if (type.Contains("SelectList") && value != null)
                     {
-                        <label class="control-label">@item.Name.SplitForUpperCase()</label>
-
-                        <select class="form-select" name="@item.Name[..^4]">
+                        <select class="form-select" name="@item.Name.Replace("List", "")">
                             @foreach (var option in value as SelectList)
                             {
                                 if (option.Selected)
@@ -96,19 +101,16 @@
 
                     @if (type.Contains("Int") && !ForeignKeys.Any(x => x.Name.Contains(item.Name)))
                     {
-                        <label class="control-label">@item.Name.SplitForUpperCase()</label>
                         <input type="number" name="@item.Name" value="@value" class="form-control" />
                     }
 
                     @if (type.Contains("Decimal"))
                     {
-                        <label class="control-label">@item.Name.SplitForUpperCase()</label>
                         <input type="text" name="@item.Name" value="@value" class="form-control" />
                     }
 
                     @if (type.Contains("Bool"))
                     {
-                        <label class="control-label">@item.Name.SplitForUpperCase()</label>
                         <input class="form-check-input" type="checkbox" value="true" name="@item.Name" @((bool)value ? "checked" : "") />
                     }
 
@@ -116,8 +118,6 @@
                     {
                         <input id="fileInput" name="@item.Name" type="file" class="form-control" accept="image/gif,image/bmp,image/jpeg,image/jpg,image/png" onchange="previewFile(this)" style="display:none" />
                     }
-
-                    <span asp-validation-for="@item.Name" class="text-danger"></span>
                 </div>
             }
 

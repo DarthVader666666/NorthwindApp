@@ -74,6 +74,8 @@ namespace Northwind.Application.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            employeeCreateModel.ReportsToList = GetReportsToSelectList();
+
             return View(employeeCreateModel);
         }
 
@@ -174,16 +176,22 @@ namespace Northwind.Application.Controllers
             dictionary.Add(0, "");
             var selectList = new SelectList(dictionary, "Key", "Value");
 
+            SelectListItem selectedItem = null;
+
             if (reportsTo != null)
             {
-                var selecteItem = selectList.FirstOrDefault(x => x.Value == reportsTo.ToString());
-
-                if (selecteItem != null)
-                {
-                    selecteItem.Selected = true;
-                }
+                selectedItem = selectList.FirstOrDefault(x => x.Value == reportsTo.ToString());                
             }
-            
+            else
+            {
+                selectedItem = selectList.FirstOrDefault(x => x.Value == 0.ToString());               
+            }
+
+            if (selectedItem != null)
+            {
+                selectedItem.Selected = true;
+            }
+
             return selectList;
         }
     }

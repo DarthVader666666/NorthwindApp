@@ -1,5 +1,6 @@
 ﻿using AutoMapper.Configuration.Annotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Northwind.Bll.Validation;
 using System.ComponentModel.DataAnnotations;
 
 namespace Northwind.Application.Models.Employee
@@ -7,17 +8,21 @@ namespace Northwind.Application.Models.Employee
     public class EmployeeEditModel
     {
         public int EmployeeId { get; set; }
-        [Required]
+
+        [Required(ErrorMessage = "Last Name is required")]
         public string LastName { get; set; } = null!;
-        [Required]
+
+        [Required(ErrorMessage = "First Name is required")]
         public string FirstName { get; set; } = null!;
-        [Required]
+
         public string? Title { get; set; }
 
         public string? TitleOfCourtesy { get; set; }
-        [Required]
+
+        [DateValidation(MinYears = 18, MaxYears = 60)]
         public DateTime? BirthDate { get; set; }
-        [Required]
+
+        [DateValidation(MinYears = 0, MaxYears = 60)]
         public DateTime? HireDate { get; set; }
 
         public string? Address { get; set; }

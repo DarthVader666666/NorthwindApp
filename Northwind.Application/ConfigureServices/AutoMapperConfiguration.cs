@@ -42,6 +42,9 @@ namespace NorthwindApp.ConfigureServices
                     autoMapperConfig.CreateMap<Category, CategoryIndexModel>()
                         .ForMember(dest => dest.Picture, opts => opts.MapFrom(src => ImageConverter.ConvertNorthwindPhoto(src.Picture!)));
 
+                    autoMapperConfig.CreateMap<Category, CategoryDetailsModel>()
+                        .ForMember(dest => dest.Picture, opts => opts.MapFrom(src => ImageConverter.ConvertNorthwindPhoto(src.Picture!)));
+
                     autoMapperConfig.CreateMap<Category, CategoryEditModel>()
                         .ForMember(dest => dest.Picture, opts => opts.MapFrom(
                             src => ImageConverter.ConvertNorthwindPhoto(src.Picture!)));

@@ -43,9 +43,10 @@ namespace Northwind.Application.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            var categoryDetailsModel = _mapper.Map<CategoryDetailsModel>(category);
             ViewBag.PreviousPage = Url.ActionLink("Index", "Category");
 
-            return View(category);
+            return View(categoryDetailsModel);
         }
 
         [Authorize(Roles = "admin")]
