@@ -67,11 +67,19 @@ namespace NorthwindApp.ConfigureServices
                     autoMapperConfig.CreateMap<Product, ProductDetailsModel>()
                         .ForMember(dest => dest.UnitPrice, opts => opts.MapFrom(src => string.Format("{0:f2}", src.UnitPrice)));
 
-                    autoMapperConfig.CreateMap<ProductCreateModel, Product>();
+                    autoMapperConfig.CreateMap<ProductCreateModel, Product>()
+                        .ForMember(dest => dest.CategoryId, opts => opts.MapFrom(src => src.CategoryId == 0 ? null : src.CategoryId))
+                        .ForMember(dest => dest.SupplierId, opts => opts.MapFrom(src => src.SupplierId == 0 ? null : src.SupplierId));
 
-                    autoMapperConfig.CreateMap<Product, ProductEditModel>();
+                    autoMapperConfig.CreateMap<Product, ProductEditModel>()
+                        .ForMember(dest => dest.Category, opts => opts.MapFrom(src => src.CategoryId))
+                        .ForMember(dest => dest.Supplier, opts => opts.MapFrom(src => src.SupplierId));
 
-                    autoMapperConfig.CreateMap<ProductEditModel, Product>();
+                    autoMapperConfig.CreateMap<ProductEditModel, Product>()
+                        .ForMember(dest => dest.CategoryId, opts => opts.MapFrom(src => src.Category == 0 ? null : src.Category))
+                        .ForMember(dest => dest.SupplierId, opts => opts.MapFrom(src => src.Supplier == 0 ? null : src.Supplier))
+                        .ForMember(dest => dest.Category, opts => opts.Ignore())
+                        .ForMember(dest => dest.Supplier, opts => opts.Ignore());
                 });
 
                 return config.CreateMapper();

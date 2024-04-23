@@ -84,7 +84,9 @@
 
                     @if (type.Contains("SelectList") && value != null)
                     {
-                        <select class="form-select" name="@item.Name.Replace("List", "")">
+                        var r = @item.Name.Replace("List", "");
+
+                        <select class="form-select" name="@r">
                             @foreach (var option in value as SelectList)
                             {
                                 if (option.Selected)

@@ -30,7 +30,7 @@
     <div class="row">
         @foreach (var item in Model)
         {
-            <div class="col p-3">
+            <div class="col p-3" style="text-align: center">
                 <div style="cursor:pointer" onclick="location.href = '@GetDetailsLink(GetId(item))'">
                     <img src="data:image/bmp;base64,@Convert.ToBase64String(GetPropertyValue<byte[]>(item, "Picture", "Photo", "Image") as byte[] ?? new byte[0])" style="height:120px;width:120px;" />
                 </div>
