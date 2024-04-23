@@ -6,7 +6,7 @@
     ViewData["Id"] = ViewBag.Id;
 }
 
-<h1>Products</h1>
+<h1>@(ViewBag.CategoryName) product list</h1>
 
 @await Html.PartialAsync("_IndexButtonsPartial", ViewData)
 
