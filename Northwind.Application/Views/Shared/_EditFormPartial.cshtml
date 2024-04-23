@@ -58,7 +58,7 @@
             {
                 var value = item.GetValue(Model);
                 var type = item.PropertyType.FullName;
-                var hidden = type.Contains("IFormFile") || SelectLists.Any(x => x.Name != item.Name && x.Name.Contains(item.Name)) ? "hidden" : "";
+                var hidden = type.Contains("IFormFile") || SelectLists.Any(x => x.Name != item.Name && x.Name.Contains(item.Name)) || item.Name == $"{ControllerName}Id" ? "hidden" : "";
 
                 <div class="form-group">
                     <label class="control-label" @hidden>@item.Name.Replace("List", "").Replace("Id", "").SplitForUpperCase()</label>
@@ -103,7 +103,7 @@
 
                     @if (type.Contains("Int") && !ForeignKeys.Any(x => x.Name.Contains(item.Name)))
                     {
-                        <input type="number" name="@item.Name" value="@value" class="form-control" />
+                        <input type="number" name="@item.Name" value="@value" @hidden class="form-control" />
                     }
 
                     @if (type.Contains("Decimal"))
