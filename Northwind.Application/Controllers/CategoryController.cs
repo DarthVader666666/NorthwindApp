@@ -51,7 +51,8 @@ namespace Northwind.Application.Controllers
         [Authorize(Roles = "admin")]
         public IActionResult Create()
         {
-            return View();
+            ViewBag.PreviousPage = Url.ActionLink("Index", "Category");
+            return View(new CategoryCreateModel());
         }
 
         [Authorize(Roles = "admin")]

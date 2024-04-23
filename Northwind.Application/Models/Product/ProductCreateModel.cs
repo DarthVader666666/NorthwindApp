@@ -1,4 +1,6 @@
-﻿namespace Northwind.Application.Models.Product
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace Northwind.Application.Models.Product
 {
     public class ProductCreateModel
     {
@@ -8,10 +10,14 @@
 
         public int? SupplierId { get; set; }
 
-        public string? QuantityPerUnit { get; set; }
+        public ushort? QuantityPerUnit { get; set; }
 
         public decimal? UnitPrice { get; set; }
 
-        public short? UnitsInStock { get; set; }
+        public ushort? UnitsInStock { get; set; }
+
+        public SelectList? CategoryIdList { get; set; }
+
+        public SelectList? SupplierIdList { get; set; }
     }
 }

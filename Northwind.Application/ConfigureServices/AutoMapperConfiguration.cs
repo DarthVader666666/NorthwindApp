@@ -66,9 +66,7 @@ namespace NorthwindApp.ConfigureServices
 
                     autoMapperConfig.CreateMap<ProductCreateModel, Product>();
 
-                    autoMapperConfig.CreateMap<Product, ProductEditModel>()
-                        .ForMember(dest => dest.SupplierName, opts => opts.MapFrom(
-                            src => src.Supplier == null ? "" : src.Supplier.CompanyName ));
+                    autoMapperConfig.CreateMap<Product, ProductEditModel>();
 
                     autoMapperConfig.CreateMap<ProductEditModel, Product>();
                 });

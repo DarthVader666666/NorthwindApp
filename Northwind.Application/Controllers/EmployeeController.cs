@@ -54,8 +54,12 @@ namespace Northwind.Application.Controllers
         public IActionResult Create()
         {
             ViewBag.ReportsTo = GetReportsToSelectList();
+            ViewBag.PreviousPage = Url.ActionLink("Index", "Employee");
 
-            return View();
+            var employeeCreateModel = new EmployeeCreateModel();
+            employeeCreateModel.ReportsToList = GetReportsToSelectList();
+
+            return View(employeeCreateModel);
         }
 
         [HttpPost]

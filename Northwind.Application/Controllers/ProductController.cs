@@ -60,10 +60,12 @@ namespace Northwind.Application.Controllers
         public IActionResult Create(int categoryId)
         {
             ViewBag.CategoryId = categoryId;
-            ViewBag.CategoryIds = GetCategoryIdSelectList();
-            ViewBag.SupplierIds = GetSupplierIdSelectList();
 
-            return View();
+            var productCreateModel = new ProductCreateModel();
+            productCreateModel.CategoryIdList = GetCategoryIdSelectList();
+            productCreateModel.SupplierIdList = GetSupplierIdSelectList();
+
+            return View(productCreateModel);
         }
 
         [Authorize(Roles = "admin")]
@@ -76,7 +78,7 @@ namespace Northwind.Application.Controllers
                 var product = _mapper.Map<Product>(productCreateModel);
                 await _productRepository.CreateAsync(product);
 
-                return RedirectToAction(nameof(Index), new { categoryId = product.CategoryId });
+                return RedirectToAction(nameof(Index), new { id = product.CategoryId });
             }
 
             return View(productCreateModel);
@@ -132,7 +134,7 @@ namespace Northwind.Application.Controllers
                     }
                 }
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new { id = productEditModel.CategoryId });
             }
 
             return View(productEditModel);
@@ -169,7 +171,7 @@ namespace Northwind.Application.Controllers
         {
             var categoryId = await _productRepository.DeleteSeveralAsync(ids);
 
-            return RedirectToAction(nameof(Index), new { categoryId });
+            return RedirectToAction(nameof(Index), new { id = categoryId });
         }
 
         private async Task<bool> ProductExists(int id)
