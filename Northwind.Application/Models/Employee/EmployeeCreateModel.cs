@@ -1,4 +1,5 @@
-﻿using Northwind.Bll.Validation;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Northwind.Bll.Validation;
 using System.ComponentModel.DataAnnotations;
 
 namespace Northwind.Application.Models.Employee
@@ -39,5 +40,7 @@ namespace Northwind.Application.Models.Employee
         public string? Notes { get; set; }
 
         public int? ReportsTo { get; set; }
+
+        public SelectList? ReportsToList { get; set; }
     }
 }
