@@ -12,7 +12,12 @@
     string? FormFile => FormFileProperty == null ? null : FormFileProperty.Name;
     PropertyInfo Image => Properties.FirstOrDefault(x => (x.Name.Contains("Image") || x.Name.Contains("Picture") || x.Name.Contains("Photo")) && x.PropertyType.FullName.Contains("Byte"));
     PropertyInfo[] SelectLists => Properties.Where(x => x.PropertyType.FullName.Contains("SelectList")).ToArray();
-    PropertyInfo[] ForeignKeys => Properties.Where(x => x.PropertyType.FullName.Contains("Int") && SelectLists.Any(y => y.Name.Contains(x.Name))).ToArray();
+
+    object SetPropertyName(string name)
+    {
+        ViewData["PropertyName"] = name;
+        return ViewData;
+    }
 }
 
 <div class="row">
@@ -37,25 +42,25 @@
             @foreach (var item in Properties.Where(x => !(x.GetValue(Model) is byte[])))
             {
                 var type = item.PropertyType.FullName;
+                var hidden = type.Contains("IFormFile") || SelectLists.Any(x => x.Name != item.Name && x.Name.Contains(item.Name)) ? "hidden" : "";
 
                 <div class="form-group">
+                    <label class="control-label" @hidden>@item.Name.Replace("List", "").Replace("Id", "").SplitForUpperCase()</label>
+                    @await Html.PartialAsync("_ValidationSpanPartial", Model, SetPropertyName(item.Name) as ViewDataDictionary)
+
                     @if (type.Contains("DateTime"))
                     {
-                        <label class="control-label">@item.Name.SplitForUpperCase()</label>
                         <input name="@item.Name" type="date" class="form-control" />
                     }
 
                     @if (type.Contains("String"))
                     {
-                        <label class="control-label">@item.Name.SplitForUpperCase()</label>
                         <input name="@item.Name" class="form-control" />
                     }
 
                     @if (type.Contains("SelectList"))
                     {
-                        <label class="control-label">@item.Name.SplitForUpperCase()</label>
-
-                        <select class="form-select" name="@item.Name[..^4]">
+                        <select class="form-select" name="@item.Name.Replace("List", "")">
                             @foreach (var option in item.GetValue(Model) as SelectList)
                             {
                                 if (option.Selected)
@@ -70,21 +75,18 @@
                         </select>
                     }
 
-                    @if (type.Contains("Int") && !ForeignKeys.Any(x => x.Name.Contains(item.Name)))
+                    @if (type.Contains("Int") && !item.Name.Contains("Id"))
                     {
-                        <label class="control-label">@item.Name.SplitForUpperCase()</label>
                         <input type="number" name="@item.Name" class="form-control" />
                     }
 
                     @if (type.Contains("Decimal"))
                     {
-                        <label class="control-label">@item.Name.SplitForUpperCase()</label>
                         <input type="text" name="@item.Name" class="form-control" />
                     }
 
                     @if (type.Contains("Bool"))
                     {
-                        <label class="control-label">@item.Name.SplitForUpperCase()</label>
                         <input class="form-check-input" type="checkbox" name="@item.Name" />
                     }
 
@@ -92,8 +94,6 @@
                     {
                         <input id="fileInput" name="@item.Name" type="file" class="form-control" accept="image/gif,image/bmp,image/jpeg,image/jpg,image/png" onchange="previewFile(this)" style="display:none" />
                     }
-
-                    <span asp-validation-for="@item.Name" class="text-danger"></span>
                 </div>
             }
         </form>

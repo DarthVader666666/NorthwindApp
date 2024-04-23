@@ -3,9 +3,22 @@
     ViewData["PreviousPage"] = ViewBag.PreviousPage;
     ViewData["ControllerName"] = "Product";
     ViewData["ActionName"] = "Delete";
+    ViewData["Id"] = ViewBag.Id;
 }
 
 <h1>Products</h1>
 
-@await Html.PartialAsync("_IndexButtonsPartial")
-@await Html.PartialAsync("_TableFormPartial", Model, ViewData)
+@await Html.PartialAsync("_IndexButtonsPartial", ViewData)
+
+@if (Model.Any())
+{
+    @await Html.PartialAsync("_TableFormPartial", Model, ViewData)
+}
+else
+{
+    <h1>List is empty</h1>
+    @if (ViewData["PreviousPage"] != null)
+    {
+        <button class="btn btn-primary fw-bold" onclick="location.href = '@ViewData["PreviousPage"]'">Back</button>
+    }
+}

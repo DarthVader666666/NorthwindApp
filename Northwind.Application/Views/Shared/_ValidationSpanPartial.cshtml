@@ -1,0 +1,140 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Northwind.Application.Models.Category
+@using Northwind.Application.Models.Employee
+@using System.Reflection
+@using Northwind.Application.Models.Product
+@model object
+
+@functions
+{
+    string PropertyName
+    {
+        get
+        {
+            if (ViewData != null)
+            {
+                return ViewData["PropertyName"] == null ? "" : ViewData["PropertyName"].ToString();
+            }
+
+            return "";
+        }
+    }
+}
+
+@if (Model is EmployeeEditModel)
+{
+    if (PropertyName == "FirstName")
+    {
+        <span asp-validation-for="@((Model as EmployeeEditModel).FirstName)" class="text-danger float-end"></span>
+    }
+
+    if (PropertyName == "LastName")
+    {
+        <span asp-validation-for="@((Model as EmployeeEditModel).LastName)" class="text-danger float-end"></span>
+    }
+
+    if (PropertyName == "HireDate")
+    {
+        <span asp-validation-for="@((Model as EmployeeEditModel).HireDate)" class="text-danger float-end"></span>
+    }
+
+    if (PropertyName == "BirthDate")
+    {
+        <span asp-validation-for="@((Model as EmployeeEditModel).BirthDate)" class="text-danger float-end"></span>
+    }
+}
+
+@if (Model is EmployeeCreateModel)
+{
+    if (PropertyName == "FirstName")
+    {
+        <span asp-validation-for="@((Model as EmployeeCreateModel).FirstName)" class="text-danger float-end"></span>
+    }
+
+    if (PropertyName == "LastName")
+    {
+        <span asp-validation-for="@((Model as EmployeeCreateModel).LastName)" class="text-danger float-end"></span>
+    }
+
+    if (PropertyName == "HireDate")
+    {
+        <span asp-validation-for="@((Model as EmployeeCreateModel).HireDate)" class="text-danger float-end"></span>
+    }
+
+    if (PropertyName == "BirthDate")
+    {
+        <span asp-validation-for="@((Model as EmployeeCreateModel).BirthDate)" class="text-danger float-end"></span>
+    }
+}
+
+@if (Model is CategoryEditModel)
+{
+    if (PropertyName == "CategoryName")
+    {
+        <span asp-validation-for="@((Model as CategoryEditModel).CategoryName)" class="text-danger float-end"></span>
+    }
+}
+
+@if (Model is CategoryCreateModel)
+{
+    if (PropertyName == "CategoryName")
+    {
+        <span asp-validation-for="@((Model as CategoryCreateModel).CategoryName)" class="text-danger float-end"></span>
+    }
+}
+
+@if (Model is ProductEditModel)
+{
+    if (PropertyName == "ProductName")
+    {
+        <span asp-validation-for="@((Model as ProductEditModel).ProductName)" class="text-danger float-end"></span>
+    }
+
+    if (PropertyName == "UnitPrice")
+    {
+        <span asp-validation-for="@((Model as ProductEditModel).UnitPrice)" class="text-danger float-end"></span>
+    }
+
+    if (PropertyName == "UnitsInStock")
+    {
+        <span asp-validation-for="@((Model as ProductEditModel).UnitsInStock)" class="text-danger float-end"></span>
+    }
+
+    if (PropertyName == "UnitsOnOrder")
+    {
+        <span asp-validation-for="@((Model as ProductEditModel).UnitsOnOrder)" class="text-danger float-end"></span>
+    }
+
+    if (PropertyName == "ReorderLevel")
+    {
+        <span asp-validation-for="@((Model as ProductEditModel).ReorderLevel)" class="text-danger float-end"></span>
+    }
+}
+
+@if (Model is ProductCreateModel)
+{
+    if (PropertyName == "ProductName")
+    {
+        <span asp-validation-for="@((Model as ProductCreateModel).ProductName)" class="text-danger float-end"></span>
+    }
+
+    if (PropertyName == "UnitPrice")
+    {
+        <span asp-validation-for="@((Model as ProductCreateModel).UnitPrice)" class="text-danger float-end"></span>
+    }
+
+    if (PropertyName == "UnitsInStock")
+    {
+        <span asp-validation-for="@((Model as ProductCreateModel).UnitsInStock)" class="text-danger float-end"></span>
+    }
+
+    if (PropertyName == "UnitsOnOrder")
+    {
+        <span asp-validation-for="@((Model as ProductCreateModel).UnitsOnOrder)" class="text-danger float-end"></span>
+    }
+
+    if (PropertyName == "ReorderLevel")
+    {
+        <span asp-validation-for="@((Model as ProductCreateModel).ReorderLevel)" class="text-danger float-end"></span>
+    }
+}

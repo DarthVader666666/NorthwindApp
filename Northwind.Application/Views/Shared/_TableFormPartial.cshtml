@@ -5,7 +5,7 @@
 @functions {
     string ControllerName => ViewData["ControllerName"].ToString().SplitForUpperCase(Model.FirstOrDefault());
     string Method => ViewData["FormMethod"] == null ? "get" : ViewData["FormMethod"].ToString();
-    PropertyInfo[] Properties => base.Model.First().GetType().GetProperties();
+    PropertyInfo[] Properties => Model.Any() ? Model.First().GetType().GetProperties() : new PropertyInfo[0];
     IEnumerable<string> PropertyNames => Properties.Select(x => x.Name).Where(x => !x.Contains("Id"));
     string Disabled => User.IsInRole("admin") ? "" : "disabled";
     string Hidden => ViewData["Hidden"] == null ? "" : ViewData["Hidden"].ToString();
