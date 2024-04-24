@@ -7,7 +7,7 @@
 	 <UserSecretsId>f6cac77a-52ab-48dc-8bf5-32d28290beca</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>.</DockerfileContext>
-	<DockerfileFile>..\Dockerfile</DockerfileFile>
+	<DockerfileFile>Dockerfile</DockerfileFile>
 	<DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
 
@@ -32,11 +32,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Northwind.Tests.csproj" />
+    <None Include="Northwind.IntegrationTests.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-  	<InternalsVisibleTo Include="Northwind.Tests.csproj" />
+  	<InternalsVisibleTo Include="Northwind.IntegrationTests.csproj" />
   </ItemGroup>
 
 </Project>
