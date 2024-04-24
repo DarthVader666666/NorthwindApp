@@ -11,15 +11,16 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Northwind.Data.Entities;
 
 namespace Northwind.Application.Areas.Identity.Pages.Account
 {
     public class ConfirmEmailModel : PageModel
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<NorthwindUser> _userManager;
+        private readonly SignInManager<NorthwindUser> _signInManager;
 
-        public ConfirmEmailModel(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public ConfirmEmailModel(UserManager<NorthwindUser> userManager, SignInManager<NorthwindUser> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;

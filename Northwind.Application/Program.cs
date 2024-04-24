@@ -18,7 +18,7 @@ var connectionString = config["ConnectionStrings:SQL_Server"];
 builder.Services.AddDbContext<NorthwindInMemoryDbContext>();
 builder.Services.AddDbContext<NorthwindDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<NorthwindIdentityDbContext>(options => options.UseSqlServer(connectionString));
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<NorthwindUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<NorthwindIdentityDbContext>();
 
@@ -26,6 +26,7 @@ builder.Services.AddScoped<IRepository<Employee>, EmployeeRepository>();
 builder.Services.AddScoped<IRepository<Category>, CategoryRepository>();
 builder.Services.AddScoped<IRepository<Product>, ProductRepository>();
 builder.Services.AddScoped<IRepository<Supplier>, SupplierRepository>();
+builder.Services.AddScoped<IRepository<Customer>, CustomerRepository>();
 
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 

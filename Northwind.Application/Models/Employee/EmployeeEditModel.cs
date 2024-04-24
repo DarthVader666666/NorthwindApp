@@ -19,7 +19,7 @@ namespace Northwind.Application.Models.Employee
 
         public string? TitleOfCourtesy { get; set; }
 
-        [DateValidation(MinYears = 18, MaxYears = 60)]
+        [DateValidation(MinYears = 18, MaxYears = 90)]
         public DateTime? BirthDate { get; set; }
 
         [DateValidation(MinYears = 0, MaxYears = 60)]

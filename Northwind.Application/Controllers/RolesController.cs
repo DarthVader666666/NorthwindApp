@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Northwind.Application.Models.Roles;
+using Northwind.Data.Entities;
 
 namespace Northwind.Application.Controllers
 {
@@ -9,9 +10,9 @@ namespace Northwind.Application.Controllers
     public class RolesController : Controller
     {
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<NorthwindUser> _userManager;
 
-        public RolesController(RoleManager<IdentityRole> roleManager, UserManager<IdentityUser> userManager)
+        public RolesController(RoleManager<IdentityRole> roleManager, UserManager<NorthwindUser> userManager)
         {
             _roleManager = roleManager;
             _userManager = userManager;

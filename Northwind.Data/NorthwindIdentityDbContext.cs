@@ -1,21 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Northwind.Data.Entities;
 
 namespace Northwind.Data;
 
-public class NorthwindIdentityDbContext : IdentityDbContext<IdentityUser>
+public class NorthwindIdentityDbContext : IdentityDbContext<NorthwindUser>
 {
     public NorthwindIdentityDbContext(DbContextOptions<NorthwindIdentityDbContext> options)
         : base(options)
     {
-    }
-
-    protected override void OnModelCreating(ModelBuilder builder)
-    {
-        base.OnModelCreating(builder);
-        // Customize the ASP.NET Identity model and override the defaults if needed.
-        // For example, you can rename the ASP.NET Identity table names and more.
-        // Add your customizations after calling base.OnModelCreating(builder);
     }
 }

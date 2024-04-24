@@ -20,7 +20,7 @@ namespace Northwind.Bll.Interfaces
             return await SaveAsync(entity);
         }
 
-        public async Task<TEntity?> DeleteAsync(int? id)
+        public virtual async Task<TEntity?> DeleteAsync(int? id)
         {
             var item = await DbContext.FindAsync<TEntity>(id);
 
@@ -49,7 +49,7 @@ namespace Northwind.Bll.Interfaces
             return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<TEntity?> GetAsync(int? id)
+        public virtual async Task<TEntity?> GetAsync(int? id)
         {
             return await DbContext.FindAsync<TEntity>(id);
         }

@@ -75,7 +75,7 @@
                         </select>
                     }
 
-                    @if (type.Contains("Int") && !item.Name.Contains("Id"))
+                    @if (type.Contains("Int") && !item.Name.Contains("Id") && !SelectLists.Any(x => x.Name.Contains(item.Name)))
                     {
                         <input type="number" name="@item.Name" class="form-control" />
                     }
