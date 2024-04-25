@@ -4,7 +4,7 @@
     int Id => int.Parse(ViewData["id"] == null ? "0" : ViewData["id"].ToString());
 }
 
-<button class="btn btn-primary fw-bold" onclick="location.href = '@Url.ActionLink("Create", ControllerName, new { id = Id })'" @Disabled>
+<button class="btn btn-primary fw-bold" onclick="location.href = '@Url.ActionLink("Create", ControllerName, new { fkId = Id })'" @Disabled>
     Create
 </button>
 
