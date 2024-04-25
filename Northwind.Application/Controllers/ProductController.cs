@@ -62,18 +62,18 @@ namespace Northwind.Application.Controllers
             product.Supplier = await _supplierRepository.GetAsync(product.SupplierId);
             product.Category = await _categoryRepository.GetAsync(product.CategoryId);
 
-            ViewBag.PreviousPage = Url.ActionLink("Index", "Product", new { id = product.CategoryId });
+            ViewBag.PreviousPage = Url.ActionLink("Index", "Product", new { fkId = product.CategoryId });
 
             return View(_mapper.Map<ProductDetailsModel>(product));
         }
 
         [Authorize(Roles = "admin")]
-        public IActionResult Create(int id)
+        public IActionResult Create(int fkId)
         {
-            ViewBag.PreviousPage = Url.ActionLink("Index", "Product", new { id });
+            ViewBag.PreviousPage = Url.ActionLink("Index", "Product", new { fkId });
 
             var productCreateModel = new ProductCreateModel();
-            productCreateModel.CategoryIdList = GetCategoryIdSelectList(id);
+            productCreateModel.CategoryIdList = GetCategoryIdSelectList(fkId);
             productCreateModel.SupplierIdList = GetSupplierIdSelectList();
 
             return View(productCreateModel);
@@ -89,10 +89,10 @@ namespace Northwind.Application.Controllers
                 var product = _mapper.Map<Product>(productCreateModel);
                 await _productRepository.CreateAsync(product);
 
-                return RedirectToAction(nameof(Index), new { id = product.CategoryId });
+                return RedirectToAction(nameof(Index), new { fkId = product.CategoryId });
             }
 
-            ViewBag.PreviousPage = Url.ActionLink("Index", "Product", new { id = productCreateModel.CategoryId });
+            ViewBag.PreviousPage = Url.ActionLink("Index", "Product", new { fkId = productCreateModel.CategoryId });
             productCreateModel.CategoryIdList = GetCategoryIdSelectList(productCreateModel.CategoryId);
             productCreateModel.SupplierIdList = GetSupplierIdSelectList(productCreateModel.SupplierId);
 
@@ -164,7 +164,7 @@ namespace Northwind.Application.Controllers
         {
             var products = await _productRepository.GetRangeAsync(ids);
 
-            ViewBag.PreviousPage = Url.ActionLink("Index", "Product", new { id = products.Any() ? products.First().CategoryId : 0 });
+            ViewBag.PreviousPage = Url.ActionLink("Index", "Product", new { fkId = products.Any() ? products.First().CategoryId : 0 });
 
             return View(_mapper.Map<IEnumerable<ProductDeleteModel>>(products));
         }
@@ -173,9 +173,9 @@ namespace Northwind.Application.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteConfirmed([FromForm] int?[] ids)
         {
-            var categoryId = await _productRepository.DeleteSeveralAsync(ids);
+            await _productRepository.DeleteSeveralAsync(ids);
 
-            return RedirectToAction(nameof(Index), new { id = categoryId });
+            return RedirectToAction(nameof(Index), new { fkId = 0 });
         }
 
         private async Task<bool> ProductExists(int id)

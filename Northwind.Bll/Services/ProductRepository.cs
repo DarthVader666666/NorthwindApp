@@ -12,7 +12,7 @@ namespace Northwind.Bll.Services
 
         public override Task<IEnumerable<Product?>> GetListForAsync(int fkId)
         {
-            return Task.Run(() => DbContext.Products.Where(x => x.CategoryId == fkId).AsEnumerable());
+            return Task.Run(() => DbContext.Products.Where(x => fkId == 0 || x.CategoryId == fkId).AsEnumerable());
         }
 
         public override Task<IEnumerable<Product?>> GetRangeAsync(params int?[] ids)
