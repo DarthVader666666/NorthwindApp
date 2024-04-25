@@ -2,16 +2,13 @@
 {
     public partial class ProductIndexModel
     {
-        public int ProductId { get; set; }
+        public IEnumerable<ProductIndexDataModel> Products { get; }
+        public PageViewModel PageViewModel { get; }
 
-        public int CategoryId { get; set; }
-
-        public string ProductName { get; set; } = null!;
-
-        public string? QuantityPerUnit { get; set; }
-
-        public string? UnitPrice { get; set; }
-
-        public string? UnitsInStock { get; set; }
+        public ProductIndexModel(IEnumerable<ProductIndexDataModel> products, PageViewModel viewModel)
+        {
+            Products = products;
+            PageViewModel = viewModel;
+        }
     }
 }

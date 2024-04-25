@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Northwind.Application.Models;
 using Northwind.Application.Models.Product;
 using Northwind.Bll.Interfaces;
 using Northwind.Data.Entities;
@@ -11,6 +12,8 @@ namespace Northwind.Application.Controllers
 {
     public class ProductController : Controller
     {
+        private const int pageSize = 7;
+
         private readonly IMapper _mapper;
         private readonly IRepository<Product> _productRepository;
         private readonly IRepository<Category> _categoryRepository;
@@ -25,17 +28,21 @@ namespace Northwind.Application.Controllers
             _supplierRepository = supplierRepository;
         }
 
-        public async Task<IActionResult> Index(int id = 0)
+        public async Task<IActionResult> Index(int fkId = 0, int page = 1)
         {
-            var products = _productRepository.GetListFor(id);
-            var productModels = _mapper.Map<IEnumerable<ProductIndexModel>>(products);
+            var allProducts = await _productRepository.GetListForAsync(fkId);
+            var products = allProducts.Skip((page - 1) * pageSize).Take(pageSize);
+            var productDataModels = _mapper.Map<IEnumerable<ProductIndexDataModel>>(products);
 
-            ViewBag.PreviousPage = Url.ActionLink("Details", "Category", new { id });
-            ViewBag.Id = id;
-            var category = await _categoryRepository.GetAsync(id);
+            var pageModel = new PageViewModel(allProducts.Count(), page, pageSize, fkId);
+            var productIndexModel = new ProductIndexModel(productDataModels, pageModel);
+
+            ViewBag.PreviousPage = Url.ActionLink("Details", "Category", new { fkId });
+            ViewBag.Id = fkId;
+            var category = await _categoryRepository.GetAsync(fkId);
             ViewBag.CategoryName = category != null ? category.CategoryName : "";
 
-            return View(productModels);
+            return View(productIndexModel);
         }
 
         public async Task<IActionResult> Details(int? id)
@@ -153,32 +160,18 @@ namespace Northwind.Application.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpGet]
-        public async Task<IActionResult> Delete([FromQuery] int[] ids)
+        public async Task<IActionResult> Delete([FromQuery] int?[] ids)
         {
-            var productforCategoryModel = new ProductForCategoryModel();
-            var products = new List<ProductIndexModel>();
+            var products = await _productRepository.GetRangeAsync(ids);
 
-            foreach (var id in ids)
-            {
-                var product = await _productRepository.GetAsync(id);
-
-                if (product == null)
-                {
-                    return NotFound();
-                }
-
-                products.Add(_mapper.Map<ProductIndexModel>(product));
-            }
-
-            productforCategoryModel.Products = products;
             ViewBag.PreviousPage = Url.ActionLink("Index", "Product", new { id = products.Any() ? products.First().CategoryId : 0 });
 
-            return View(productforCategoryModel);
+            return View(_mapper.Map<IEnumerable<ProductDeleteModel>>(products));
         }
 
         [Authorize(Roles = "admin")]
         [HttpPost]
-        public async Task<IActionResult> DeleteConfirmed([FromForm] int[] ids)
+        public async Task<IActionResult> DeleteConfirmed([FromForm] int?[] ids)
         {
             var categoryId = await _productRepository.DeleteSeveralAsync(ids);
 
@@ -192,7 +185,7 @@ namespace Northwind.Application.Controllers
 
         private SelectList GetCategoryIdSelectList(int? categoryId = null)
         {
-            var categories = _categoryRepository.GetList();
+            var categories = _categoryRepository.GetListAsync().Result;
             var dictionary = categories.ToDictionary(c => c.CategoryId, c => c.CategoryName);
             dictionary.Add(0, "");
 
@@ -219,7 +212,7 @@ namespace Northwind.Application.Controllers
 
         private SelectList GetSupplierIdSelectList(int? supplierId = null)
         {
-            var suppliers = _supplierRepository.GetList();
+            var suppliers = _supplierRepository.GetListAsync().Result;
             var dictionary = suppliers.ToDictionary(c => c.SupplierId, c => c.CompanyName);
             dictionary.Add(0, "");
 

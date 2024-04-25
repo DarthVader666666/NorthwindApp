@@ -1,4 +1,5 @@
-﻿@model IEnumerable<Northwind.Application.Models.Product.ProductIndexModel>
+﻿@addTagHelper *, Northwind.Application
+@model Northwind.Application.Models.Product.ProductIndexModel
 @{
     ViewData["PreviousPage"] = ViewBag.PreviousPage;
     ViewData["ControllerName"] = "Product";
@@ -10,9 +11,10 @@
 
 @await Html.PartialAsync("_IndexButtonsPartial", ViewData)
 
-@if (Model.Any())
+@if (Model.Products.Any())
 {
-    @await Html.PartialAsync("_TableFormPartial", Model, ViewData)
+    @await Html.PartialAsync("_TableFormPartial", Model.Products, ViewData)
+    <page-link page-model="Model.PageViewModel" page-action="Index" class="float-end"></page-link>
 }
 else
 {

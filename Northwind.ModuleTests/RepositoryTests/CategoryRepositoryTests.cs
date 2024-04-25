@@ -15,11 +15,11 @@ namespace Northwind.ModuleTests.RepositoryTests
         [InlineData(1)]
         [InlineData(3)]
         [InlineData(5)]
-        public void GetAllCategories_Test(int amount)
+        public async Task GetAllCategories_Test(int amount)
         {
-            repository.Setup(mock => mock.GetList()).Returns(DatabaseSeeder.GenerateCategories(amount));
+            repository.Setup(mock => mock.GetListAsync()).ReturnsAsync(await Task.FromResult(DatabaseSeeder.GenerateCategories(amount)));
 
-            var categories = repository.Object.GetList();
+            var categories = await repository.Object.GetListAsync();
 
             Assert.NotNull(categories);
             Assert.NotEmpty(categories);

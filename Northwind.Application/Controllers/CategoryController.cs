@@ -19,9 +19,9 @@ namespace Northwind.Application.Controllers
             _mapper = mapper;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var categories = _categoryRepository.GetList();
+            var categories = await _categoryRepository.GetListAsync();
             var categoryModels = _mapper.Map<IEnumerable<CategoryIndexModel>>(categories);
 
             ViewBag.PreviousPage = Url.ActionLink("Index", "Category");
@@ -129,24 +129,7 @@ namespace Northwind.Application.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete([FromQuery] int?[] ids)
         {
-            var categories = new List<Category>();
-
-            foreach (var id in ids)
-            {
-                if (id == null)
-                {
-                    continue;
-                }
-
-                var employee = await _categoryRepository.GetAsync(id);
-
-                if (employee == null)
-                {
-                    return RedirectToAction(nameof(Index));
-                }
-
-                categories.Add(employee);
-            }
+            var categories = await _categoryRepository.GetRangeAsync(ids);
 
             ViewBag.PreviousPage = Url.ActionLink("Index", "Category");
 
@@ -155,7 +138,7 @@ namespace Northwind.Application.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPost]
-        public async Task<IActionResult> DeleteConfirmed([FromForm] int[] ids)
+        public async Task<IActionResult> DeleteConfirmed([FromForm] int?[] ids)
         {
             await _categoryRepository.DeleteSeveralAsync(ids);
 

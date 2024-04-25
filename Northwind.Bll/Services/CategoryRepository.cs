@@ -9,5 +9,14 @@ namespace Northwind.Bll.Services
         public CategoryRepository(NorthwindDbContext context) : base(context)
         {
         }
+
+        public override Task<IEnumerable<Category?>> GetRangeAsync(params int?[] ids)
+        {
+            return Task.Run(async () =>
+            {
+                var categories = await GetListAsync();
+                return categories.Where(x => ids.Any(id => id == x.CategoryId));
+            });
+        }
     }
 }
