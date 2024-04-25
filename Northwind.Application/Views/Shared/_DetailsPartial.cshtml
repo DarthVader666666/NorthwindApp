@@ -78,7 +78,7 @@
 
                     controller = controller[^1] == 's' ? controller[..^1] : controller;
 
-                    <a href=@Url.ActionLink("Index", controller, new { id = IdValue, page = 1 }) class="fw-bold">Show @item.Name.SplitForUpperCase()</a>
+                    <a href=@Url.ActionLink("Index", controller, new { fkId = IdValue, page = 1 }) class="fw-bold">Show @item.Name.SplitForUpperCase()</a>
                 }
             </dd>
         }
