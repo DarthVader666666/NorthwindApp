@@ -15,11 +15,11 @@ namespace Northwind.ModuleTests.RepositoryTests
         [InlineData(1)]
         [InlineData(3)]
         [InlineData(5)]
-        public void GetAllEmployees_Test(int amount)
+        public async Task GetAllEmployees_Test(int amount)
         {
-            repository.Setup(mock => mock.GetList()).Returns(DatabaseSeeder.GenerateEmployees(amount));
+            repository.Setup(mock => mock.GetListAsync()).ReturnsAsync(await Task.FromResult(DatabaseSeeder.GenerateEmployees(amount)));
 
-            var employees = repository.Object.GetList();
+            var employees = await repository.Object.GetListAsync();
 
             Assert.NotNull(employees);
             Assert.NotEmpty(employees);

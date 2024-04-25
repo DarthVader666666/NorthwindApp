@@ -194,7 +194,7 @@ namespace Northwind.Application.Areas.Identity.Pages.Account
 
         private SelectList GetCustomerSelectList()
         {
-            var list = _customerRepository.GetList();
+            var list = _customerRepository.GetListAsync().Result;
             var dictionary = list.ToDictionary(c => c.CustomerId, c => c.CompanyName);
 
             dictionary.Add("", "");

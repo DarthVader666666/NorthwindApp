@@ -21,9 +21,9 @@ namespace Northwind.Application.Controllers
             _employeeRepository = employeeRepository;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var employees = _employeeRepository.GetList();
+            var employees = await _employeeRepository.GetListAsync();
             var employeeModels = _mapper.Map<IEnumerable<EmployeeIndexModel>>(employees);
 
             return View(employeeModels);
@@ -45,7 +45,6 @@ namespace Northwind.Application.Controllers
 
             var employeeDetailsModel = _mapper.Map<EmployeeDetailsModel>(employee);
 
-            employeeDetailsModel.ReportsToNavigation = await _employeeRepository.GetAsync(employee.ReportsTo);
             ViewBag.PreviousPage = Url.ActionLink("Index", "Employee");
 
             return View(employeeDetailsModel);
@@ -156,7 +155,7 @@ namespace Northwind.Application.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeleteConfirmed([FromForm] int[] ids)
+        public async Task<IActionResult> DeleteConfirmed([FromForm] int?[] ids)
         {
             await _employeeRepository.DeleteSeveralAsync(ids);
 
@@ -170,7 +169,7 @@ namespace Northwind.Application.Controllers
 
         private SelectList GetReportsToSelectList(int? id = null, int? reportsTo = null)
         {
-            var list = _employeeRepository.GetList();
+            var list = _employeeRepository.GetListAsync().Result;
             var dictionary = list.Except(list.Where(e => e.EmployeeId == id)).ToDictionary(e => e.EmployeeId, e => e.FirstName + " " + e.LastName);
 
             dictionary.Add(0, "");

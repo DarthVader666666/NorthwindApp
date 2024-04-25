@@ -34,7 +34,7 @@ namespace Northwind.Bll.Interfaces
             return await SaveAsync(entity);
         }
 
-        public virtual async Task<int> DeleteSeveralAsync(int[]? ids)
+        public virtual async Task<int> DeleteSeveralAsync(int?[] ids)
         {
             foreach (var id in ids!)
             {
@@ -54,12 +54,17 @@ namespace Northwind.Bll.Interfaces
             return await DbContext.FindAsync<TEntity>(id);
         }
 
-        public IEnumerable<TEntity> GetList()
+        public Task<IEnumerable<TEntity?>> GetListAsync()
         {
-            return DbContext.Set<TEntity>().AsEnumerable();
+            return Task.Run(() => DbContext.Set<TEntity>().AsEnumerable());
         }
 
-        public virtual IEnumerable<TEntity?> GetListFor(int fkId)
+        public virtual Task<IEnumerable<TEntity?>> GetListForAsync(int fkId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual Task<IEnumerable<TEntity?>> GetRangeAsync(params int?[] ids)
         {
             throw new NotImplementedException();
         }

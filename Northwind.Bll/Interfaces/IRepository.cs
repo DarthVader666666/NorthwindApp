@@ -2,12 +2,13 @@
 {
     public interface IRepository<TEntity> where TEntity : class
     {
-        IEnumerable<TEntity?> GetList();
+        Task<IEnumerable<TEntity?>> GetListAsync();
         Task<TEntity?> GetAsync(int? id);
+        Task<IEnumerable<TEntity?>> GetRangeAsync(params int?[] ids);
         Task<TEntity?> CreateAsync(TEntity item);
         Task<TEntity?> UpdateAsync(TEntity item);
         Task<TEntity?> DeleteAsync(int? id);
-        Task<int> DeleteSeveralAsync(int[]? ids);
-        IEnumerable<TEntity?> GetListFor(int fkId);
+        Task<int> DeleteSeveralAsync(int?[] ids);
+        Task<IEnumerable<TEntity?>> GetListForAsync(int fkId);
     }
 }

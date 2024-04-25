@@ -60,7 +60,7 @@ namespace NorthwindApp.ConfigureServices
 
 
 
-                    autoMapperConfig.CreateMap<Product, ProductIndexModel>()
+                    autoMapperConfig.CreateMap<Product, ProductIndexDataModel>()
                         .ForMember(dest => dest.UnitPrice, opts => opts.MapFrom(
                             src => string.Format("{0:f2}", src.UnitPrice)));
 
@@ -70,6 +70,8 @@ namespace NorthwindApp.ConfigureServices
                     autoMapperConfig.CreateMap<ProductCreateModel, Product>()
                         .ForMember(dest => dest.CategoryId, opts => opts.MapFrom(src => src.CategoryId == 0 ? null : src.CategoryId))
                         .ForMember(dest => dest.SupplierId, opts => opts.MapFrom(src => src.SupplierId == 0 ? null : src.SupplierId));
+
+                    autoMapperConfig.CreateMap<Product, ProductDeleteModel>();
 
                     autoMapperConfig.CreateMap<Product, ProductEditModel>()
                         .ForMember(dest => dest.Category, opts => opts.MapFrom(src => src.CategoryId))
