@@ -37,7 +37,7 @@ namespace Northwind.Application.Controllers
             var pageModel = new PageViewModel(allProducts.Count(), page, pageSize, fkId);
             var productIndexModel = new ProductIndexModel(productDataModels, pageModel);
 
-            ViewBag.PreviousPage = Url.ActionLink("Details", "Category", new { fkId });
+            ViewBag.PreviousPage = Url.ActionLink("Details", "Category", new { id = fkId });
             ViewBag.Id = fkId;
             var category = await _categoryRepository.GetAsync(fkId);
             ViewBag.CategoryName = category != null ? category.CategoryName : "";
