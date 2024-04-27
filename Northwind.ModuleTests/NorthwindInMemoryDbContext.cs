@@ -4,7 +4,8 @@ namespace Northwind.Data
 {
     public class NorthwindInMemoryDbContext : NorthwindDbContext
     {
-        public NorthwindInMemoryDbContext()
+        public NorthwindInMemoryDbContext(DbContextOptions<NorthwindDbContext> options)
+            : base(options)
         {
         }
 

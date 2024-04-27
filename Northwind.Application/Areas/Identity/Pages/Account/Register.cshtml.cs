@@ -26,21 +26,19 @@ namespace Northwind.Application.Areas.Identity.Pages.Account
 {
     public class RegisterModel : PageModel
     {
-        private readonly SignInManager<NorthwindUser> _signInManager;
-        private readonly UserManager<NorthwindUser> _userManager;
-        private readonly IUserStore<NorthwindUser> _userStore;
-        private readonly IUserEmailStore<NorthwindUser> _emailStore;
+        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IUserStore<IdentityUser> _userStore;
+        private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
-        private readonly IRepository<Customer> _customerRepository;
 
         public RegisterModel(
-            UserManager<NorthwindUser> userManager,
-            IUserStore<NorthwindUser> userStore,
-            SignInManager<NorthwindUser> signInManager,
+            UserManager<IdentityUser> userManager,
+            IUserStore<IdentityUser> userStore,
+            SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender,
-            IRepository<Customer> customerRepository
+            IEmailSender emailSender
             )
         {
             _userManager = userManager;
@@ -49,8 +47,6 @@ namespace Northwind.Application.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
-            _customerRepository = customerRepository;
-            Input = new InputModel { CustomerList = GetCustomerSelectList() };
         }
 
         /// <summary>
@@ -105,11 +101,6 @@ namespace Northwind.Application.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
-
-            public SelectList CustomerList { get; set; }
-
-            //[StringLength(5, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 5)]
-            public string? CustomerId { get; set; }
         }
 
 
@@ -127,7 +118,6 @@ namespace Northwind.Application.Areas.Identity.Pages.Account
             {
                 var user = CreateUser();
 
-                user.CustomerId = Input.CustomerId;
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 var result = await _userManager.CreateAsync(user, Input.Password);
@@ -165,44 +155,30 @@ namespace Northwind.Application.Areas.Identity.Pages.Account
             }
 
             // If we got this far, something failed, redisplay form
-            Input.CustomerList = GetCustomerSelectList();
             return Page();
         }
 
-        private NorthwindUser CreateUser()
+        private IdentityUser CreateUser()
         {
             try
             {
-                return Activator.CreateInstance<NorthwindUser>();
+                return Activator.CreateInstance<IdentityUser>();
             }
             catch
             {
-                throw new InvalidOperationException($"Can't create an instance of '{nameof(NorthwindUser)}'. " +
-                    $"Ensure that '{nameof(NorthwindUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
+                throw new InvalidOperationException($"Can't create an instance of '{nameof(IdentityUser)}'. " +
+                    $"Ensure that '{nameof(IdentityUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
                     $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
             }
         }
 
-        private IUserEmailStore<NorthwindUser> GetEmailStore()
+        private IUserEmailStore<IdentityUser> GetEmailStore()
         {
             if (!_userManager.SupportsUserEmail)
             {
                 throw new NotSupportedException("The default UI requires a user store with email support.");
             }
-            return (IUserEmailStore<NorthwindUser>)_userStore;
-        }
-
-        private SelectList GetCustomerSelectList()
-        {
-            var list = _customerRepository.GetListAsync().Result;
-            var dictionary = list.ToDictionary(c => c.CustomerId, c => c.CompanyName);
-
-            dictionary.Add("", "");
-            var selectList = new SelectList(dictionary, "Key", "Value");
-
-            selectList.First(x => x.Value == "").Selected = true;
-
-            return selectList;
+            return (IUserEmailStore<IdentityUser>)_userStore;
         }
     }
 }

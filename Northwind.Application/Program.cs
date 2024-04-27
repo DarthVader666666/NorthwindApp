@@ -15,12 +15,11 @@ builder.Services.AddLogging(builder => builder.AddConsole());
 
 var connectionString = config["ConnectionStrings:SQL_Server"];
 
-builder.Services.AddDbContext<NorthwindInMemoryDbContext>();
 builder.Services.AddDbContext<NorthwindDbContext>(options => options.UseSqlServer(connectionString));
-builder.Services.AddDbContext<NorthwindIdentityDbContext>(options => options.UseSqlServer(connectionString));
-builder.Services.AddDefaultIdentity<NorthwindUser>(options => options.SignIn.RequireConfirmedAccount = true)
+//builder.Services.AddDbContext<NorthwindInMemoryDbContext>();
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<NorthwindIdentityDbContext>();
+    .AddEntityFrameworkStores<NorthwindDbContext>();
 
 builder.Services.AddScoped<IRepository<Employee>, EmployeeRepository>();
 builder.Services.AddScoped<IRepository<Category>, CategoryRepository>();
@@ -82,9 +81,6 @@ using (var scope = app.Services.CreateScope())
             Thread.Sleep(5000);
         }
     }
-
-    var identityDbContext = services.GetRequiredService<NorthwindIdentityDbContext>();
-    identityDbContext.Database.Migrate();
 
     if (File.Exists(seedScriptPath))
     {

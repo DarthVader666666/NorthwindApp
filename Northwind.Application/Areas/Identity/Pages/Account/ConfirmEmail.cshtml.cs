@@ -17,10 +17,10 @@ namespace Northwind.Application.Areas.Identity.Pages.Account
 {
     public class ConfirmEmailModel : PageModel
     {
-        private readonly UserManager<NorthwindUser> _userManager;
-        private readonly SignInManager<NorthwindUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
 
-        public ConfirmEmailModel(UserManager<NorthwindUser> userManager, SignInManager<NorthwindUser> signInManager)
+        public ConfirmEmailModel(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;

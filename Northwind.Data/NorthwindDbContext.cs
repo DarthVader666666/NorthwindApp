@@ -1,14 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Northwind.Data.Entities;
 
 namespace Northwind.Data
 {
-    public class NorthwindDbContext : DbContext
+    public class NorthwindDbContext : IdentityDbContext<IdentityUser>
     {
-        public NorthwindDbContext()
-        {
-        }
-
         public NorthwindDbContext(DbContextOptions<NorthwindDbContext> options)
             : base(options)
         {
@@ -75,6 +73,8 @@ namespace Northwind.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<AlphabeticalListOfProduct>(entity =>
             {
                 entity
