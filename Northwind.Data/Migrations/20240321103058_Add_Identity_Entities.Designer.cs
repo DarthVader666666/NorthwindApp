@@ -11,9 +11,9 @@ using Northwind.Data;
 
 namespace Northwind.Data.Migrations.NorthwindIdentityDb
 {
-    [DbContext(typeof(NorthwindIdentityDbContext))]
-    [Migration("20240409095723_Add_Guest_role")]
-    partial class Add_Guest_role
+    [DbContext(typeof(NorthwindDbContext))]
+    [Migration("20240321103058_Add_Identity_Entities")]
+    partial class Add_Identity_Entities
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

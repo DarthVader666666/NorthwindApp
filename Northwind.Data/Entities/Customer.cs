@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 
 namespace Northwind.Data.Entities;
@@ -6,6 +7,8 @@ namespace Northwind.Data.Entities;
 public partial class Customer
 {
     public string CustomerId { get; set; } = null!;
+
+    public string? UserId { get; set; }
 
     public string CompanyName { get; set; } = null!;
 
@@ -30,4 +33,6 @@ public partial class Customer
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
     public virtual ICollection<CustomerDemographic> CustomerTypes { get; set; } = new List<CustomerDemographic>();
+
+    public virtual IdentityUser? User { get; set; }
 }

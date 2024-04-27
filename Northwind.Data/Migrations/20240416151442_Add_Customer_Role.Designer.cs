@@ -11,7 +11,7 @@ using Northwind.Data;
 
 namespace Northwind.Data.Migrations.NorthwindIdentityDb
 {
-    [DbContext(typeof(NorthwindIdentityDbContext))]
+    [DbContext(typeof(NorthwindDbContext))]
     [Migration("20240416151442_Add_Customer_Role")]
     partial class Add_Customer_Role
     {
