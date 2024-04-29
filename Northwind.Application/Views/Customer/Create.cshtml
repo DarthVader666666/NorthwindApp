@@ -1,0 +1,11 @@
+﻿@{
+    ViewData["ControllerName"] = "Customer";
+    ViewData["PreviousPage"] = ViewBag.PreviousPage;
+}
+
+<h1>Create</h1>
+
+<h4>Customer</h4>
+<hr />
+
+@await Html.PartialAsync("_CreateFormPartial", new Northwind.Application.Models.Customer.CustomerCreateModel())

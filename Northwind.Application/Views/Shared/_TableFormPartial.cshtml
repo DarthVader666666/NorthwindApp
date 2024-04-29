@@ -3,12 +3,12 @@
 @model IEnumerable<object>
 
 @functions {
-    string ControllerName => ViewData["ControllerName"].ToString().SplitForUpperCase(Model.FirstOrDefault());
-    string Method => ViewData["FormMethod"] == null ? "get" : ViewData["FormMethod"].ToString();
+    string? ControllerName => ViewData["ControllerName"].ToString().SplitForUpperCase(Model.FirstOrDefault());
+    string? Method => ViewData["FormMethod"] == null ? "get" : ViewData["FormMethod"].ToString();
     PropertyInfo[] Properties => Model.Any() ? Model.First().GetType().GetProperties() : new PropertyInfo[0];
     IEnumerable<string> PropertyNames => Properties.Select(x => x.Name).Where(x => !x.Contains("Id"));
     string Disabled => User.IsInRole("admin") ? "" : "disabled";
-    string Hidden => ViewData["Hidden"] == null ? "" : ViewData["Hidden"].ToString();
+    string? Hidden => ViewData["Hidden"] == null ? "" : ViewData["Hidden"].ToString();
 
     IEnumerable<object?> GetPropertyValues(object item)
     {
@@ -33,12 +33,12 @@
         }
     }
 
-    int GetId(object item)
+    object GetId(object item)
     {
-        return (int)(Properties.First(x => x.Name.Contains(ControllerName) && x.Name.Contains("Id")).GetValue(item) ?? 0);
+        return Properties.First(x => x.Name.Contains(ControllerName) && x.Name.Contains("Id")).GetValue(item);
     }
 
-    string GetDetailsLink(int id) => Url.ActionLink("Details", ControllerName, new { id = id }) ?? "/Home/Index";
+    string GetDetailsLink(object id) => Url.ActionLink("Details", ControllerName, new { id = id }) ?? "/Home/Index";
 }
 
 <div style="padding-top:20px;">

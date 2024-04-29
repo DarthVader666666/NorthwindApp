@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
 @using Northwind.Application.Models.Category
+@using Northwind.Application.Models.Customer
 @using Northwind.Application.Models.Employee
 @using System.Reflection
 @using Northwind.Application.Models.Product
@@ -136,5 +137,13 @@
     if (PropertyName == "ReorderLevel")
     {
         <span asp-validation-for="@((Model as ProductCreateModel).ReorderLevel)" class="text-danger float-end"></span>
+    }
+}
+
+@if (Model is CustomerCreateModel)
+{
+    if (PropertyName == "CompanyName")
+    {
+        <span asp-validation-for="@((Model as CustomerCreateModel).CompanyName)" class="text-danger float-end"></span>
     }
 }

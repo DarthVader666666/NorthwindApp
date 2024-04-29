@@ -11,9 +11,9 @@ namespace Northwind.Bll.Services
         {
         }
 
-        public async override Task<Employee?> GetAsync(int? id)
+        public async override Task<Employee?> GetAsync(object id)
         {
-            return await DbContext.Employees.Include(e => e.ReportsToNavigation).FirstAsync(e => e.EmployeeId == id);
+            return await DbContext.Employees.Include(e => e.ReportsToNavigation).FirstAsync(e => e.EmployeeId == (int?)id);
         }
     }
 }

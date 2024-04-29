@@ -8,7 +8,7 @@
         public bool HasNextPage => PageNumber < TotalPages;
         public int FkId { get; }
 
-        public PageViewModel(int count, int pageNumber, int pageSize, int fkId)
+        public PageViewModel(int count, int pageNumber, int pageSize, int fkId = 0)
         {
             PageNumber = pageNumber;
             TotalPages = (int)Math.Ceiling(count / (double)pageSize);
