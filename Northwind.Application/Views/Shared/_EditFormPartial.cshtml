@@ -13,7 +13,7 @@
     string ControllerName => ViewData["ControllerName"].ToString().SplitForUpperCase(Model);
     PropertyInfo[] Properties => Model.GetType().GetProperties();
     PropertyInfo[] Ids => Properties.Where(x => x.Name.Contains("Id")).ToArray();
-    int IdValue => (int)(Properties.First(x => x.Name.Contains(ControllerName) && x.Name.Contains("Id")).GetValue(Model) ?? 0);
+    object IdValue => Properties.First(x => x.Name.Contains(ControllerName) && x.Name.Contains("Id")).GetValue(Model);
     string Disabled => User.IsInRole("admin") ? "" : "disabled";
     PropertyInfo FormFileProperty => Properties.FirstOrDefault(x => x.GetValue(Model) is IFormFile);
     string? FormFile => FormFileProperty == null ? null : FormFileProperty.Name;
@@ -78,7 +78,7 @@
                         }
                         else
                         {
-                            <input value="@item.GetValue(Model)" name="@item.Name" class="form-control" />
+                            <input value="@item.GetValue(Model)" name="@item.Name" @(item.Name.Contains("Id") ? "hidden": "") class="form-control" />
                         }
                     }
 

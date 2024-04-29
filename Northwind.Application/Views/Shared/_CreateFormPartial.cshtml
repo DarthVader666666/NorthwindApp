@@ -42,7 +42,7 @@
             @foreach (var item in Properties.Where(x => !(x.GetValue(Model) is byte[])))
             {
                 var type = item.PropertyType.FullName;
-                var hidden = type.Contains("IFormFile") || SelectLists.Any(x => x.Name != item.Name && x.Name.Contains(item.Name)) ? "hidden" : "";
+                var hidden = type.Contains("FormFile") || type.Contains("Byte") || SelectLists.Any(x => x.Name != item.Name && x.Name.Contains(item.Name)) || item.Name.Contains("Id") ? "hidden" : "";
 
                 <div class="form-group">
                     <label class="control-label" @hidden>@item.Name.Replace("List", "").Replace("Id", "").SplitForUpperCase()</label>
@@ -55,7 +55,7 @@
 
                     @if (type.Contains("String"))
                     {
-                        <input name="@item.Name" class="form-control" />
+                        <input name="@item.Name" class="form-control" @(item.Name.Contains("Id") ? "hidden" : "") />
                     }
 
                     @if (type.Contains("SelectList"))
@@ -90,7 +90,7 @@
                         <input class="form-check-input" type="checkbox" name="@item.Name" />
                     }
 
-                    @if (type.Contains("IFormFile"))
+                    @if (type.Contains("FormFile"))
                     {
                         <input id="fileInput" name="@item.Name" type="file" class="form-control" accept="image/gif,image/bmp,image/jpeg,image/jpg,image/png" onchange="previewFile(this)" style="display:none" />
                     }

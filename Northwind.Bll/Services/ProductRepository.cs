@@ -15,16 +15,16 @@ namespace Northwind.Bll.Services
             return Task.Run(() => DbContext.Products.Where(x => fkId == 0 || x.CategoryId == fkId).AsEnumerable());
         }
 
-        public override Task<IEnumerable<Product?>> GetRangeAsync(params int?[] ids)
+        public override Task<IEnumerable<Product?>> GetRangeAsync(params object[] ids)
         {
             return Task.Run(async () => 
             {
                 var products = await GetListAsync();
-                return products.Where(x => ids.Any(id => id == x.ProductId));
+                return products.Where(x => ids.Any(id => (int?)id == x.ProductId));
             });
         }
 
-        public override async Task<int> DeleteSeveralAsync(int?[] ids)
+        public override async Task<int> DeleteSeveralAsync(object[] ids)
         {
             var products = await GetRangeAsync(ids);
             DbContext.RemoveRange(products);

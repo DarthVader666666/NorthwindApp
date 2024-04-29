@@ -10,12 +10,12 @@ namespace Northwind.Bll.Services
         {
         }
 
-        public override Task<IEnumerable<Category?>> GetRangeAsync(params int?[] ids)
+        public override Task<IEnumerable<Category?>> GetRangeAsync(params object[] ids)
         {
             return Task.Run(async () =>
             {
                 var categories = await GetListAsync();
-                return categories.Where(x => ids.Any(id => id == x.CategoryId));
+                return categories.Where(x => ids.Any(id => (int?)id == x.CategoryId));
             });
         }
     }

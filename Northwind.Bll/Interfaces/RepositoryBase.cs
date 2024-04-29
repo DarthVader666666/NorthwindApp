@@ -20,7 +20,7 @@ namespace Northwind.Bll.Interfaces
             return await SaveAsync(entity);
         }
 
-        public virtual async Task<TEntity?> DeleteAsync(int? id)
+        public virtual async Task<TEntity?> DeleteAsync(object id)
         {
             var item = await DbContext.FindAsync<TEntity>(id);
 
@@ -34,7 +34,7 @@ namespace Northwind.Bll.Interfaces
             return await SaveAsync(entity);
         }
 
-        public virtual async Task<int> DeleteSeveralAsync(int?[] ids)
+        public virtual async Task<int> DeleteSeveralAsync(object[] ids)
         {
             foreach (var id in ids!)
             {
@@ -49,14 +49,14 @@ namespace Northwind.Bll.Interfaces
             return await DbContext.SaveChangesAsync();
         }
 
-        public virtual async Task<TEntity?> GetAsync(int? id)
+        public virtual async Task<TEntity?> GetAsync(object id)
         {
             return await DbContext.FindAsync<TEntity>(id);
         }
 
         public Task<IEnumerable<TEntity?>> GetListAsync()
         {
-            return Task.Run(() => DbContext.Set<TEntity>().AsEnumerable());
+            return Task.Run(() => DbContext.Set<TEntity?>().AsEnumerable());
         }
 
         public virtual Task<IEnumerable<TEntity?>> GetListForAsync(int fkId)
@@ -64,9 +64,20 @@ namespace Northwind.Bll.Interfaces
             throw new NotImplementedException();
         }
 
-        public virtual Task<IEnumerable<TEntity?>> GetRangeAsync(params int?[] ids)
+        public virtual Task<IEnumerable<TEntity?>> GetRangeAsync(params object[] ids)
         {
-            throw new NotImplementedException();
+            return Task.Run(() =>
+            {
+                return GetEntities();
+
+                IEnumerable<TEntity?> GetEntities()
+                {
+                    foreach (var id in ids)
+                    {
+                        yield return GetAsync(id).Result;
+                    }
+                }                
+            });            
         }
 
         public async Task<TEntity?> UpdateAsync(TEntity item)

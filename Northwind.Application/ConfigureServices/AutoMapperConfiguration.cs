@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Northwind.Application.Models.Category;
+using Northwind.Application.Models.Customer;
 using Northwind.Application.Models.Employee;
 using Northwind.Application.Models.Product;
 using Northwind.Bll.Enums;
@@ -82,6 +83,17 @@ namespace NorthwindApp.ConfigureServices
                         .ForMember(dest => dest.SupplierId, opts => opts.MapFrom(src => src.Supplier == 0 ? null : src.Supplier))
                         .ForMember(dest => dest.Category, opts => opts.Ignore())
                         .ForMember(dest => dest.Supplier, opts => opts.Ignore());
+
+
+
+                    autoMapperConfig.CreateMap<Customer, CustomerIndexDataModel>();
+                    autoMapperConfig.CreateMap<CustomerCreateModel, Customer>()
+                        .ForMember(dest => dest.CustomerId, opts => opts.MapFrom(src => src.CustomerId.ToUpper()));
+
+                    autoMapperConfig.CreateMap<Customer, CustomerDeleteModel>();
+                    autoMapperConfig.CreateMap<Customer, CustomerDetailsModel>();
+                    autoMapperConfig.CreateMap<CustomerEditModel, Customer>();
+                    autoMapperConfig.CreateMap<Customer, CustomerEditModel> ();
                 });
 
                 return config.CreateMapper();
