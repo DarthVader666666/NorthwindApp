@@ -127,7 +127,7 @@ namespace Northwind.Application.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpGet]
-        public async Task<IActionResult> Delete([FromQuery] int?[] ids)
+        public async Task<IActionResult> Delete([FromQuery] int[] ids)
         {
             var categories = await _categoryRepository.GetRangeAsync(ids);
 
@@ -138,7 +138,7 @@ namespace Northwind.Application.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPost]
-        public async Task<IActionResult> DeleteConfirmed([FromForm] int?[] ids)
+        public async Task<IActionResult> DeleteConfirmed([FromForm] int[] ids)
         {
             await _categoryRepository.DeleteSeveralAsync(ids);
 

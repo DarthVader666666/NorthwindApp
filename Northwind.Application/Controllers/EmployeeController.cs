@@ -139,19 +139,7 @@ namespace Northwind.Application.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete([FromQuery] int[] ids)
         {
-            var employees = new List<Employee>();
-
-            foreach (var id in ids)
-            {
-                var employee = await _employeeRepository.GetAsync(id);
-
-                if (employee == null)
-                {
-                    return NotFound();
-                }
-
-                employees.Add(employee);
-            }
+            var employees = await _employeeRepository.GetRangeAsync(ids);
 
             ViewBag.PreviousPage = Url.ActionLink("Index", "Employee");
 
@@ -160,7 +148,7 @@ namespace Northwind.Application.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPost]
-        public async Task<IActionResult> DeleteConfirmed([FromForm] int?[] ids)
+        public async Task<IActionResult> DeleteConfirmed([FromForm] int[] ids)
         {
             await _employeeRepository.DeleteSeveralAsync(ids);
 
