@@ -10,7 +10,7 @@ namespace Northwind.Bll.Services
         {
         }
 
-        public override Task<IEnumerable<Category?>> GetRangeAsync(params object[] ids)
+        public override Task<IEnumerable<Category?>> GetRangeAsync(int[] ids)
         {
             return Task.Run(async () =>
             {

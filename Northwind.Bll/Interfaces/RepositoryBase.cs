@@ -34,7 +34,22 @@ namespace Northwind.Bll.Interfaces
             return await SaveAsync(entity);
         }
 
-        public virtual async Task<int> DeleteSeveralAsync(object[] ids)
+        public virtual async Task<int> DeleteSeveralAsync(int[] ids)
+        {
+            foreach (var id in ids!)
+            {
+                var item = await DbContext.FindAsync<TEntity>(id);
+
+                if (item != null)
+                {
+                    DbContext.Remove(item);
+                }
+            }
+
+            return await DbContext.SaveChangesAsync();
+        }
+
+        public virtual async Task<int> DeleteSeveralAsync(string[] ids)
         {
             foreach (var id in ids!)
             {
@@ -64,7 +79,7 @@ namespace Northwind.Bll.Interfaces
             throw new NotImplementedException();
         }
 
-        public virtual Task<IEnumerable<TEntity?>> GetRangeAsync(params object[] ids)
+        public virtual Task<IEnumerable<TEntity?>> GetRangeAsync(int[] ids)
         {
             return Task.Run(() =>
             {
@@ -78,6 +93,22 @@ namespace Northwind.Bll.Interfaces
                     }
                 }                
             });            
+        }
+
+        public Task<IEnumerable<TEntity?>> GetRangeAsync(string[] ids)
+        {
+            return Task.Run(() =>
+            {
+                return GetEntities();
+
+                IEnumerable<TEntity?> GetEntities()
+                {
+                    foreach (var id in ids)
+                    {
+                        yield return GetAsync(id).Result;
+                    }
+                }
+            });
         }
 
         public async Task<TEntity?> UpdateAsync(TEntity item)

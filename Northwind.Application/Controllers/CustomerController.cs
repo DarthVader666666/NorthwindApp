@@ -172,7 +172,7 @@ namespace Northwind.Application.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPost]
-        public async Task<IActionResult> DeleteConfirmed([FromForm] string?[] ids)
+        public async Task<IActionResult> DeleteConfirmed([FromForm] string[] ids)
         {
             await _customerRepository.DeleteSeveralAsync(ids);
 
