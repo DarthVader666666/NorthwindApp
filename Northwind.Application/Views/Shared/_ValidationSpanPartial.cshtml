@@ -3,6 +3,7 @@
 @using Northwind.Application.Models.Customer
 @using Northwind.Application.Models.Employee
 @using System.Reflection
+@using Northwind.Application.Models.Order
 @using Northwind.Application.Models.Product
 @model object
 
@@ -145,5 +146,31 @@
     if (PropertyName == "CompanyName")
     {
         <span asp-validation-for="@((Model as CustomerCreateModel).CompanyName)" class="text-danger float-end"></span>
+    }
+}
+
+@if (Model is OrderCreateModel)
+{
+    if (PropertyName == "Freight")
+    {
+        <span asp-validation-for="@((Model as OrderCreateModel).Freight)" class="text-danger float-end"></span>
+    }
+
+    if (PropertyName == "CustomerId")
+    {
+        <span asp-validation-for="@((Model as OrderCreateModel).CustomerId)" class="text-danger float-end"></span>
+    }
+}
+
+@if (Model is OrderEditModel)
+{
+    if (PropertyName == "Freight")
+    {
+        <span asp-validation-for="@((Model as OrderEditModel).Freight)" class="text-danger float-end"></span>
+    }
+
+    if (PropertyName == "CustomerId")
+    {
+        <span asp-validation-for="@((Model as OrderEditModel).CustomerId)" class="text-danger float-end"></span>
     }
 }

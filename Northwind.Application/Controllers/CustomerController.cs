@@ -1,17 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Northwind.Application.Models;
-using Northwind.Application.Models.Category;
 using Northwind.Application.Models.Customer;
-using Northwind.Application.Models.Employee;
-using Northwind.Application.Models.Product;
 using Northwind.Bll.Interfaces;
-using Northwind.Bll.Services;
 using Northwind.Data.Entities;
-using System.Drawing.Printing;
 
 namespace Northwind.Application.Controllers
 {
@@ -19,7 +13,7 @@ namespace Northwind.Application.Controllers
     {
         private readonly IRepository<Customer> _customerRepository;
         private readonly IMapper _mapper;
-        private const int pageSize = 7;
+        private const int pageSize = 6;
 
         public CustomerController(IRepository<Customer> customerRepository, IMapper mapper)
         {
@@ -63,7 +57,7 @@ namespace Northwind.Application.Controllers
         [Authorize(Roles = "admin")]
         public IActionResult Create()
         {
-            ViewBag.PreviousPage = Url.ActionLink("Index", "Create");
+            ViewBag.PreviousPage = Url.ActionLink("Index", "Customer");
 
             return View();
         }

@@ -26,6 +26,8 @@ builder.Services.AddScoped<IRepository<Category>, CategoryRepository>();
 builder.Services.AddScoped<IRepository<Product>, ProductRepository>();
 builder.Services.AddScoped<IRepository<Supplier>, SupplierRepository>();
 builder.Services.AddScoped<IRepository<Customer>, CustomerRepository>();
+builder.Services.AddScoped<IRepository<Order>, OrderRepository>();
+builder.Services.AddScoped<IRepository<Shipper>, ShipperRepository>();
 
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 

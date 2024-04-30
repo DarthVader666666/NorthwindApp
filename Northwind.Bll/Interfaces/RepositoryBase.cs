@@ -11,7 +11,7 @@ namespace Northwind.Bll.Interfaces
             DbContext = dbContext;
         }
 
-        public NorthwindDbContext DbContext { get; }
+        protected NorthwindDbContext DbContext { get; }
 
         public async Task<TEntity?> CreateAsync(TEntity item)
         {
@@ -75,6 +75,11 @@ namespace Northwind.Bll.Interfaces
         }
 
         public virtual Task<IEnumerable<TEntity?>> GetListForAsync(int fkId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual Task<IEnumerable<TEntity?>> GetListForAsync(string fkId)
         {
             throw new NotImplementedException();
         }
