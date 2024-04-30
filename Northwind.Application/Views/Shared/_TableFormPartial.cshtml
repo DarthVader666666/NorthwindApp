@@ -74,6 +74,11 @@
                                      @(value as string)
                                  }
 
+                                 @if (value is DateTime)
+                                 {
+                                     @(((DateTime)value).ToShortDateString())
+                                 }
+
                                  @if (value is byte[])
                                  {
                                      <img src="data:image/bmp;base64,@Convert.ToBase64String(value as byte[] ?? new byte[0])" style="height:60px;width:60px;" />

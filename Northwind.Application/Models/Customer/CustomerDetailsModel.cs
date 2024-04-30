@@ -26,6 +26,6 @@ namespace Northwind.Application.Models.Customer
 
         public string? Fax { get; set; }
 
-        public virtual ICollection<Order> Orders { get; set; }
+        public virtual ICollection<Northwind.Data.Entities.Order> Orders { get; set; }
     }
 }

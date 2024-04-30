@@ -12,14 +12,9 @@
 @functions {
     string ControllerName => ViewData["ControllerName"].ToString().SplitForUpperCase(Model);
     PropertyInfo[] Properties => Model.GetType().GetProperties();
-    PropertyInfo[] Ids => Properties.Where(x => x.Name.Contains("Id")).ToArray();
     object IdValue => Properties.First(x => x.Name.Contains(ControllerName) && x.Name.Contains("Id")).GetValue(Model);
-    string Disabled => User.IsInRole("admin") ? "" : "disabled";
-    PropertyInfo FormFileProperty => Properties.FirstOrDefault(x => x.GetValue(Model) is IFormFile);
-    string? FormFile => FormFileProperty == null ? null : FormFileProperty.Name;
     PropertyInfo Image => Properties.FirstOrDefault(x => (x.Name.Contains("Image") || x.Name.Contains("Picture") || x.Name.Contains("Photo")) && x.PropertyType.FullName.Contains("Byte"));
     PropertyInfo[] SelectLists => Properties.Where(x => x.PropertyType.FullName.Contains("SelectList")).ToArray();
-    PropertyInfo[] ForeignKeys => Properties.Where(x => x.PropertyType.FullName.Contains("Int") && SelectLists.Any(y => y.Name.Contains(x.Name))).ToArray();
 
     object SetPropertyName(string name)
     {
@@ -32,11 +27,6 @@
     <div class="col-md-4">
         <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            @foreach (var id in Ids)
-            {
-                <input type="hidden" name="@id.Name" value="@id.GetValue(Model)" />
-            }
 
             @{
                 if (Image != null)
@@ -58,34 +48,16 @@
             {
                 var value = item.GetValue(Model);
                 var type = item.PropertyType.FullName;
-                var hidden = type.Contains("IFormFile") || SelectLists.Any(x => x.Name != item.Name && x.Name.Contains(item.Name)) || item.Name == $"{ControllerName}Id" ? "hidden" : "";
+                var hidden = type.Contains("FormFile") || type.Contains("Byte") || SelectLists.Any(x => x.Name != item.Name && x.Name.Contains(item.Name)) || (item.Name.Contains("Id") && !item.Name.Contains("List")) ? "hidden" : "";
 
                 <div class="form-group">
                     <label class="control-label" @hidden>@item.Name.Replace("List", "").Replace("Id", "").SplitForUpperCase()</label>
                     @await Html.PartialAsync("_ValidationSpanPartial", Model, SetPropertyName(item.Name) as ViewDataDictionary)
 
-                    @if (type.Contains("DateTime"))
-                    {
-                        var date = (DateTime)value;
-                        <input name="@item.Name" value=@($"{date.Year:D4}-{date.Month:D2}-{date.Day:D2}") type="date" class="form-control" />
-                    }
-
-                    @if (type.Contains("String"))
-                    {
-                        if (value != null && (value as string).Length > 100)
-                        {
-                            <textarea name="@item.Name" class="form-control">@value</textarea>
-                        }
-                        else
-                        {
-                            <input value="@item.GetValue(Model)" name="@item.Name" @(item.Name.Contains("Id") ? "hidden": "") class="form-control" />
-                        }
-                    }
-
-                    @if (type.Contains("SelectList") && value != null)
+                    @if (type.Contains("SelectList"))
                     {
                         <select class="form-select" name="@item.Name.Replace("List", "")">
-                            @foreach (var option in value as SelectList)
+                            @foreach (var option in item.GetValue(Model) as SelectList)
                             {
                                 if (option.Selected)
                                 {
@@ -98,25 +70,48 @@
                             }
                         </select>
                     }
-
-                    @if (type.Contains("Int") && !ForeignKeys.Any(x => x.Name.Contains(item.Name)))
+                    else
                     {
-                        <input type="number" name="@item.Name" value="@value" @hidden class="form-control" />
-                    }
-
-                    @if (type.Contains("Decimal"))
-                    {
-                        <input type="text" name="@item.Name" value="@value" class="form-control" />
-                    }
-
-                    @if (type.Contains("Bool"))
-                    {
-                        <input class="form-check-input" type="checkbox" value="true" name="@item.Name" @((bool)value ? "checked" : "") />
-                    }
-
-                    @if (type.Contains("IFormFile"))
-                    {
-                        <input id="fileInput" name="@item.Name" type="file" class="form-control" accept="image/gif,image/bmp,image/jpeg,image/jpg,image/png" onchange="previewFile(this)" style="display:none" />
+                        if (type.Contains("Bool"))
+                        {
+                            <input class="form-check-input" type="checkbox" value="true" name="@item.Name" @((bool)value ? "checked" : "") />
+                        }
+                        else
+                        {
+                            if (type.Contains("FormFile"))
+                            {
+                                <input id="fileInput" name="@item.Name" type="file" class="form-control" accept="image/gif,image/bmp,image/jpeg,image/jpg,image/png" onchange="previewFile(this)" style="display:none" />
+                            }
+                            else
+                            {
+                                if (type.Contains("DateTime"))
+                                {
+                                    if (value != null)
+                                    {
+                                        var date = (DateTime)value;
+                                        <input name="@item.Name" value=@($"{date.Year:D4}-{date.Month:D2}-{date.Day:D2}") type="date" class="form-control" />
+                                    }
+                                    else
+                                    {
+                                        <input name="@item.Name" type="date" class="form-control" />
+                                    }
+                                }
+                                else
+                                {
+                                    if (type.Contains("String") && value != null && ((string)value).Length > 100)
+                                    {
+                                        <textarea class="form-control" name="@item.Name">@value</textarea>
+                                    }
+                                    else
+                                    {
+                                        if (!SelectLists.Any(x => x.Name.Contains(item.Name)))
+                                        {
+                                            <input class="form-control" name="@item.Name" value="@value" @hidden />
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 </div>
             }

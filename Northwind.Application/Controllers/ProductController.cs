@@ -12,7 +12,7 @@ namespace Northwind.Application.Controllers
 {
     public class ProductController : Controller
     {
-        private const int pageSize = 7;
+        private const int pageSize = 6;
 
         private readonly IMapper _mapper;
         private readonly IRepository<Product> _productRepository;
@@ -37,7 +37,11 @@ namespace Northwind.Application.Controllers
             var pageModel = new PageViewModel(allProducts.Count(), page, pageSize, fkId);
             var productIndexModel = new ProductIndexModel(productDataModels, pageModel);
 
-            ViewBag.PreviousPage = Url.ActionLink("Details", "Category", new { id = fkId });
+            if (fkId > 0)
+            {
+                ViewBag.PreviousPage = Url.ActionLink("Details", "Category", new { id = fkId });
+            }
+
             ViewBag.Id = fkId;
             var category = await _categoryRepository.GetAsync(fkId);
             ViewBag.CategoryName = category != null ? category.CategoryName : "";
@@ -114,8 +118,8 @@ namespace Northwind.Application.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            productEditModel.CategoryList = GetCategoryIdSelectList(productEditModel.Category);
-            productEditModel.SupplierList = GetSupplierIdSelectList(productEditModel.Supplier);
+            productEditModel.CategoryIdList = GetCategoryIdSelectList(productEditModel.CategoryId);
+            productEditModel.SupplierIdList = GetSupplierIdSelectList(productEditModel.SupplierId);
 
             return View(productEditModel);
         }
@@ -149,11 +153,11 @@ namespace Northwind.Application.Controllers
                     }
                 }
 
-                return RedirectToAction(nameof(Index), new { id = productEditModel.Category });
+                return RedirectToAction(nameof(Index), new { id = productEditModel.CategoryId });
             }
 
-            productEditModel.CategoryList = GetCategoryIdSelectList(productEditModel.Category);
-            productEditModel.SupplierList = GetSupplierIdSelectList(productEditModel.Supplier);
+            productEditModel.CategoryIdList = GetCategoryIdSelectList(productEditModel.CategoryId);
+            productEditModel.SupplierIdList = GetSupplierIdSelectList(productEditModel.SupplierId);
 
             return View(productEditModel);
         }

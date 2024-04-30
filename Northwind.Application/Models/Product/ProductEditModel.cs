@@ -10,9 +10,9 @@ namespace Northwind.Application.Models.Product
         [Required(ErrorMessage = "Product Name is required")]
         public string ProductName { get; set; } = null!;
 
-        public int? Supplier { get; set; }
+        public int? SupplierId { get; set; }
 
-        public int? Category { get; set; }
+        public int? CategoryId { get; set; }
 
         public string? QuantityPerUnit { get; set; }
 
@@ -30,8 +30,8 @@ namespace Northwind.Application.Models.Product
 
         public bool Discontinued { get; set; }
 
-        public SelectList? CategoryList { get; set; }
+        public SelectList? CategoryIdList { get; set; }
 
-        public SelectList? SupplierList { get; set; }
+        public SelectList? SupplierIdList { get; set; }
     }
 }

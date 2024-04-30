@@ -1,7 +1,7 @@
 ﻿@functions {
     string ControllerName => ViewData["ControllerName"].ToString() ?? this.Context.Request.Path.ToString().TrimStart('/');
     string Disabled => User.IsInRole("admin") ? "" : "disabled";
-    int Id => int.Parse(ViewData["id"] == null ? "0" : ViewData["id"].ToString());
+    object? Id => ViewData["id"];
 }
 
 <button class="btn btn-primary fw-bold" onclick="location.href = '@Url.ActionLink("Create", ControllerName, new { fkId = Id })'" @Disabled>
