@@ -42,6 +42,6 @@ namespace Northwind.Application.Models.Order
 
         public SelectList? ShipperIdList { get; set; }
 
-        public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
+        public virtual ICollection<Northwind.Data.Entities.OrderDetail> OrderDetails { get; set; } = new List<Northwind.Data.Entities.OrderDetail>();
     }
 }

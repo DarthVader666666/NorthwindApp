@@ -26,7 +26,7 @@ namespace Northwind.Application.Models.Product
 
         public Northwind.Data.Entities.Category? Category { get; set; }
 
-        public ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
+        public ICollection<Northwind.Data.Entities.OrderDetail> OrderDetails { get; set; } = new List<Northwind.Data.Entities.OrderDetail>();
 
         public Supplier? Supplier { get; set; }
     }

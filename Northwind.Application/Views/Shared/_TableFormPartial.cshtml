@@ -3,7 +3,7 @@
 @model IEnumerable<object>
 
 @functions {
-    string? ControllerName => ViewData["ControllerName"].ToString().SplitForUpperCase(Model.FirstOrDefault());
+    string? ControllerName => ViewData["ControllerName"].ToString();
     string? Method => ViewData["FormMethod"] == null ? "get" : ViewData["FormMethod"].ToString();
     PropertyInfo[] Properties => Model.Any() ? Model.First().GetType().GetProperties() : new PropertyInfo[0];
     IEnumerable<string> PropertyNames => Properties.Select(x => x.Name).Where(x => !x.Contains("Id"));
@@ -13,7 +13,7 @@
     IEnumerable<object?> GetPropertyValues(object item)
     {
         foreach (var propertyName in PropertyNames)
-        {
+        {  
             object value = null;
 
             try
@@ -33,9 +33,10 @@
         }
     }
 
-    object GetId(object item)
+    object? GetId(object item)
     {
-        return Properties.First(x => x.Name.Contains(ControllerName) && x.Name.Contains("Id")).GetValue(item);
+        var id = Properties.FirstOrDefault(x => x.Name.Contains("Id") && ControllerName.Contains(x.Name.Replace("Id", "")));
+        return id == null ? null : id.GetValue(item);
     }
 
     string GetDetailsLink(object id) => Url.ActionLink("Details", ControllerName, new { id = id }) ?? "/Home/Index";
@@ -44,7 +45,7 @@
 <div style="padding-top:20px;">
     <table class="table">
         <thead  style="height:60px;">
-            <tr >
+            <tr>
                 @foreach (var name in PropertyNames)
                 {
                     <th class="align-content-center">
@@ -65,25 +66,33 @@
                         <input value="@GetId(item)" name="ids" type="hidden" />
                     }
 
-                    <tr style="cursor:pointer">
+                    <tr class="@(!ControllerName.Contains("Detail") ? "change-background-color" : "")" style="@(!ControllerName.Contains("Detail") ? "cursor:pointer" : "")">
                          @foreach (var value in GetPropertyValues(item))
                          {
-                             <td class="align-content-center" onclick="location.href = '@GetDetailsLink(GetId(item))'">
-                                 @if (value is string)
-                                 {
-                                     @(value as string)
-                                 }
-
-                                 @if (value is DateTime)
-                                 {
-                                     @(((DateTime)value).ToShortDateString())
-                                 }
-
-                                 @if (value is byte[])
-                                 {
-                                     <img src="data:image/bmp;base64,@Convert.ToBase64String(value as byte[] ?? new byte[0])" style="height:60px;width:60px;" />
-                                 }
-                             </td>
+                             <td class="align-content-center" onclick=@(!ControllerName.Contains("Detail") ? $"location.href='{GetDetailsLink(GetId(item))}'" : "")>
+                                @if (value is byte[])
+                                {
+                                    <img src="data:image/bmp;base64,@Convert.ToBase64String(value as byte[] ?? new byte[0])" style="height:60px;width:60px;" />
+                                }
+                                else
+                                {
+                                    @if (value is DateTime)
+                                    {
+                                        @(((DateTime)value).ToShortDateString())
+                                    }
+                                    else
+                                    {
+                                        @if (value is decimal)
+                                        {
+                                            @(((decimal)value).ToString("f2"))
+                                        }
+                                        else
+                                        {
+                                            @value
+                                        }
+                                    }
+                                }
+                            </td>
                          }
                         <td class="text-center align-content-center">
                             <input name="ids" type="checkbox" id="@GetId(item)" value="@GetId(item)" style="margin-left:20px;" onclick="onChangeHandler(this)" @Disabled @Hidden />

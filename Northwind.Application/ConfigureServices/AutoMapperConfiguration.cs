@@ -3,6 +3,7 @@ using Northwind.Application.Models.Category;
 using Northwind.Application.Models.Customer;
 using Northwind.Application.Models.Employee;
 using Northwind.Application.Models.Order;
+using Northwind.Application.Models.OrderDetail;
 using Northwind.Application.Models.Product;
 using Northwind.Bll.Services;
 using Northwind.Data.Entities;
@@ -124,6 +125,11 @@ namespace NorthwindApp.ConfigureServices
                         .ForMember(dest => dest.ShipVia, opts => opts.MapFrom(src => src.ShipperId == 0 ? null : src.ShipperId))
                         .ForMember(dest => dest.EmployeeId, opts => opts.MapFrom(src => src.EmployeeId == 0 ? null : src.EmployeeId))
                         .ForMember(dest => dest.CustomerId, opts => opts.MapFrom(src => src.CustomerId == "" ? null : src.CustomerId));
+
+
+
+                    autoMapperConfig.CreateMap<OrderDetail, OrderDetailIndexDataModel>()
+                        .ForMember(dest => dest.ProductName, opts => opts.MapFrom(src => src.Product.ProductName));
                 });
 
                 return config.CreateMapper();
