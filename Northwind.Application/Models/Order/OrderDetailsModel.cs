@@ -31,5 +31,7 @@ namespace Northwind.Application.Models.Order
         public string? ShipPostalCode { get; set; }
 
         public string? ShipCountry { get; set; }
+
+        public virtual ICollection<Northwind.Data.Entities.OrderDetail> OrderDetails { get; set; } = new List<Northwind.Data.Entities.OrderDetail>();
     }
 }

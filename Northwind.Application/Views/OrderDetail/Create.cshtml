@@ -1,0 +1,12 @@
+﻿@model Northwind.Application.Models.OrderDetail.OrderDetailCreateModel
+@{
+    ViewData["ControllerName"] = "OrderDetail";
+    ViewData["PreviousPage"] = ViewBag.PreviousPage;
+}
+
+<h1>Create</h1>
+
+<h4>OrderDetail</h4>
+<hr />
+
+@await Html.PartialAsync("_CreateFormPartial", Model)

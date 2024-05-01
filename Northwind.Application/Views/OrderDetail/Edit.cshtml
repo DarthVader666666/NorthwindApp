@@ -1,0 +1,10 @@
+﻿@model Northwind.Application.Models.OrderDetail.OrderDetailEditModel
+@{
+    ViewData["ControllerName"] = "OrderDetail";
+}
+
+<h1>Edit</h1>
+<h4>Order Detail</h4>
+<hr />
+
+@await Html.PartialAsync("_EditFormPartial", Model)

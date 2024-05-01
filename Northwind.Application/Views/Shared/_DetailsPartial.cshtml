@@ -58,7 +58,7 @@
                     @(((DateTime)value).ToShortDateString())
                 }
 
-                @if (value != null && value.GetType().FullName.Contains(ControllerName))
+                @if (value != null && value.GetType().FullName.Contains(ControllerName) && !(value is IEnumerable<object>))
                 {
                     var id = value.GetType().GetProperty(IdName).GetValue(value);
 
@@ -71,7 +71,7 @@
                 {
                     var controller = item.Name;
 
-                    if (controller.Count(x => char.IsUpper(x)) > 1)
+                    if (controller.Count(x => char.IsUpper(x)) > 1 && controller != "OrderDetails")
                     {
                         controller = item.Name.SplitForUpperCase().Split(' ')[1];
                     }
