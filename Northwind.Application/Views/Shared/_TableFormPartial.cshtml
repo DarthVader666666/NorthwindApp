@@ -3,15 +3,20 @@
 @model IEnumerable<object>
 
 @functions {
-    string? ControllerName => ViewData["ControllerName"].ToString();
-    string? Method => ViewData["FormMethod"] == null ? "get" : ViewData["FormMethod"].ToString();
+    string? ControllerName => ViewData["ControllerName"] == null ? "" : ViewData["ControllerName"]!.ToString();
+    string? Method => ViewData["FormMethod"] == null ? "get" : ViewData["FormMethod"]!.ToString();
     PropertyInfo[] Properties => Model.Any() ? Model.First().GetType().GetProperties() : new PropertyInfo[0];
     IEnumerable<string> PropertyNames => Properties.Select(x => x.Name).Where(x => !x.Contains("Id"));
     string Disabled => User.IsInRole("admin") ? "" : "disabled";
-    string? Hidden => ViewData["Hidden"] == null ? "" : ViewData["Hidden"].ToString();
+    string? Hidden => ViewData["Hidden"] == null ? "" : ViewData["Hidden"]!.ToString();
 
-    IEnumerable<object?> GetPropertyValues(object item)
+    IEnumerable<object?> GetPropertyValues(object? item)
     {
+        if (item == null)
+        {
+            yield return null;
+        }
+
         foreach (var propertyName in PropertyNames)
         {  
             object value = null;
@@ -35,11 +40,18 @@
 
     object? GetId(object item)
     {
-        var id = Properties.FirstOrDefault(x => x.Name.Contains("Id") && ControllerName.Contains(x.Name.Replace("Id", "")));
-        return id == null ? null : id.GetValue(item);
+        var pk1 = Properties.FirstOrDefault(x => x.Name.Contains("Id") && ControllerName!.Contains(x.Name.Replace("Id", "")));
+        var pk1Value = pk1 == null ? null : pk1.GetValue(item);
+
+        var pk2 = Properties.FirstOrDefault(x => x.Name.Contains("Id") && !ControllerName!.Contains(x.Name.Replace("Id", "")));
+        var pk2Value = pk2 == null ? null : pk2.GetValue(item);
+
+        return IsDetail ? $"{pk1Value} {pk2Value}" : pk1Value;
     }
 
     string GetDetailsLink(object id) => Url.ActionLink("Details", ControllerName, new { id = id }) ?? "/Home/Index";
+
+    bool IsDetail => ControllerName!.Contains("Detail");
 }
 
 <div style="padding-top:20px;">
@@ -66,10 +78,10 @@
                         <input value="@GetId(item)" name="ids" type="hidden" />
                     }
 
-                    <tr class="@(!ControllerName.Contains("Detail") ? "change-background-color" : "")" style="@(!ControllerName.Contains("Detail") ? "cursor:pointer" : "")">
+                    <tr class="@(!IsDetail ? "change-background-color" : "")" style="@(!IsDetail ? "cursor:pointer" : "")">
                          @foreach (var value in GetPropertyValues(item))
                          {
-                             <td class="align-content-center" onclick=@(!ControllerName.Contains("Detail") ? $"location.href='{GetDetailsLink(GetId(item))}'" : "")>
+                             <td class="align-content-center" onclick=@(!IsDetail ? $"location.href='{GetDetailsLink(GetId(item)!)}'" : "")>
                                 @if (value is byte[])
                                 {
                                     <img src="data:image/bmp;base64,@Convert.ToBase64String(value as byte[] ?? new byte[0])" style="height:60px;width:60px;" />

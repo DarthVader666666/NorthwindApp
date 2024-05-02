@@ -33,5 +33,49 @@ namespace Northwind.Bll.Services
                 return orderDetails;
             });
         }
+
+        public override async Task<int> DeleteSeveralAsync(string[] ids)
+        {
+            var tuples = ConvertOrderDetailIds(ids);
+
+            foreach (var id in tuples!)
+            {
+                var item = await DbContext.OrderDetails.FirstOrDefaultAsync(x => x.OrderId == id.orderId && x.ProductId == id.productId);
+
+                if (item != null)
+                {
+                    DbContext.Remove(item);
+                }
+            }
+
+            return await DbContext.SaveChangesAsync();
+        }
+
+        public override Task<IEnumerable<OrderDetail?>> GetRangeAsync(string[] ids)
+        {
+            var tuples = ConvertOrderDetailIds(ids).ToArray();
+
+            return Task.Run(() =>
+            {
+                return GetEntities();
+
+                IEnumerable<OrderDetail?> GetEntities()
+                {
+                    foreach (var id in tuples)
+                    {
+                        yield return GetAsync(id).Result;
+                    }
+                }
+            });
+        }
+
+        private IEnumerable<(int orderId, int productId)> ConvertOrderDetailIds(string[] ids)
+        {
+            foreach (var id in ids)
+            {
+                var couple = id.Split(' ');
+                yield return (int.Parse(couple[0]), int.Parse(couple[1]));
+            }
+        }
     }
 }

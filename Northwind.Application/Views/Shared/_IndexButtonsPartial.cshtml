@@ -1,5 +1,5 @@
 ﻿@functions {
-    string ControllerName => ViewData["ControllerName"].ToString() ?? this.Context.Request.Path.ToString().TrimStart('/');
+    string? ControllerName => ViewData["ControllerName"] == null ? this.Context.Request.Path.ToString().TrimStart('/') : ViewData["ControllerName"]!.ToString();
     string Disabled => User.IsInRole("admin") ? "" : "disabled";
     object? Id => ViewData["id"];
 }
