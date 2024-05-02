@@ -24,27 +24,55 @@ namespace Northwind.Application.Controllers
             _customerRepository = customerRepository;
         }
 
-        public async Task<IActionResult> Index(int fkId = 0, int page = 1)
+        //public async Task<IActionResult> Index(int fkId = 0, int page = 1)
+        //{
+        //    var allOrderDetails = await _orderDetailRepository.GetListForAsync(fkId);
+        //    var orderDetails = allOrderDetails.Skip((page - 1) * pageSize).Take(pageSize);
+        //    var orderDetailDataModels = _mapper.Map<IEnumerable<OrderDetailIndexDataModel>>(orderDetails);
+
+        //    var pageModel = new PageViewModel(allOrderDetails.Count(), page, pageSize, fkId);
+        //    var orderDetailIndexModel = new OrderDetailIndexModel(orderDetailDataModels, pageModel);
+
+        //    if (fkId > 0)
+        //    {
+        //        ViewBag.PreviousPage = Url.ActionLink("Details", "Order", new { id = fkId });
+        //    }
+
+        //    if (!orderDetails.IsNullOrEmpty())
+        //    {
+        //        var customer = await _customerRepository.GetAsync(orderDetails.First()!.Order.CustomerId);
+        //        ViewBag.CompanyName = customer == null ? "" : customer.CompanyName;
+        //    }
+
+        //    ViewBag.Id = fkId;
+
+        //    return View(orderDetailIndexModel);
+        //}
+
+        public async Task<IActionResult> Index(int fkId = 0, int pk2 = 0, int page = 1)
         {
-            var allOrderDetails = await _orderDetailRepository.GetListForAsync(fkId);
+            var primaryKeys = $"{fkId} {pk2}";
+            var allOrderDetails = await _orderDetailRepository.GetListForAsync(primaryKeys);
             var orderDetails = allOrderDetails.Skip((page - 1) * pageSize).Take(pageSize);
             var orderDetailDataModels = _mapper.Map<IEnumerable<OrderDetailIndexDataModel>>(orderDetails);
 
-            var pageModel = new PageViewModel(allOrderDetails.Count(), page, pageSize, fkId);
+            var pageModel = new PageViewModel(allOrderDetails.Count(), page, pageSize, fkId, pk2);
             var orderDetailIndexModel = new OrderDetailIndexModel(orderDetailDataModels, pageModel);
 
             if (fkId > 0)
             {
                 ViewBag.PreviousPage = Url.ActionLink("Details", "Order", new { id = fkId });
+
+                if (!orderDetailDataModels.IsNullOrEmpty())
+                {
+                    ViewBag.CompanyName = orderDetailDataModels.First().CompanyName;
+                }
             }
 
-            if (!orderDetails.IsNullOrEmpty())
+            if (pk2 > 0)
             {
-                var customer = await _customerRepository.GetAsync(orderDetails.First()!.Order.CustomerId);
-                ViewBag.CompanyName = customer == null ? "" : customer.CompanyName;
+                ViewBag.PreviousPage = Url.ActionLink("Details", "Product", new { id = pk2 });
             }
-
-            ViewBag.Id = fkId;
 
             return View(orderDetailIndexModel);
         }

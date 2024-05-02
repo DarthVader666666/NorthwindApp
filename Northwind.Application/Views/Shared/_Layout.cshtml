@@ -33,18 +33,20 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Employee" asp-action="Index">Employees</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Customer" asp-action="Index">Customers</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Category" asp-action="Index">Categories</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Customer" asp-action="Index">Customers</a>
+                        </li>
                     </ul>
-                    <div class="text-text-middle">
-                        <partial name="_AdminPartial" />
-                    </div>
-                    <div class="align-content-end">
-                        <partial name="_LoginPartial" />
-                    </div>
+                    <ul class="navbar-nav float-end">
+                        <li>
+                            <partial name="_AdminPartial" />
+                        </li>
+                        <li>
+                            <partial name="_LoginPartial" />
+                        </li>
+                    </ul>
                 </div>
             </div>
         </nav>
@@ -69,3 +71,10 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
+<style>
+    ul li a:hover
+    {
+        font-weight:bold;
+    }
+</style>
