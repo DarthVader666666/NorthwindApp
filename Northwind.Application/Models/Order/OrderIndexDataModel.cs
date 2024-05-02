@@ -14,8 +14,6 @@ namespace Northwind.Application.Models.Order
 
         public DateTime? ShippedDate { get; set; }
 
-        public string? ShipName { get; set; }
-
         public string? ShipCity { get; set; }
 
         public string? ShipCountry { get; set; }

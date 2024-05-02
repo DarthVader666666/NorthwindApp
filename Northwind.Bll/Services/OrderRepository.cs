@@ -18,7 +18,7 @@ namespace Northwind.Bll.Services
                 return null;
             }
 
-            return await DbContext.Orders.Include(x => x.OrderDetails).FirstOrDefaultAsync(x => x.OrderId == (int)id);
+            return await DbContext.Orders.Include(x => x.OrderDetails).Include(x => x.Customer).FirstOrDefaultAsync(x => x.OrderId == (int)id);
         }
 
         public override Task<IEnumerable<Order?>> GetListForAsync(string fkId)

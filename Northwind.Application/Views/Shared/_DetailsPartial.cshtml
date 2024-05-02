@@ -14,6 +14,12 @@
     string IdName => Properties.First(x => x.Name.Contains(ControllerName) && x.Name.Contains("Id")).Name;
     object? IdValue => Properties.First(x => x.Name.Contains(ControllerName) && x.Name.Contains("Id")).GetValue(Model);
     string Disabled => User.IsInRole("admin") ? "" : "disabled";
+
+    string GetNames(Type type, object value)
+    {
+        var nameProperties = type.GetProperties().Where(x => x.Name.Contains("Name"));
+        return string.Join(" ", nameProperties.Select(x => x.GetValue(value) as string));
+    }
 }
 
 <div>
@@ -39,46 +45,51 @@
         @foreach (var item in Properties.Where(x => !x.Name.Contains("Id") && !(x.GetValue(Model) is byte[])))
         {
             var value = item.GetValue(Model);
+            var type = value != null ? value.GetType() : null;
+            var id = type != null ? type.GetProperty(type.Name + "Id") : null;
 
             <dt class="col-sm-2">@item.Name.SplitForUpperCase()</dt>
             <dd class="col-sm-10">
 
-                @if (value is string)
-                {
-                    @value
-                }
-
-                @if (value is int || value is decimal || value is short || value is bool)
-                {
-                    @value.ToString();
-                }
-
-                @if (value is DateTime)
-                {
-                    @(((DateTime)value).ToShortDateString())
-                }
-
-                @if (value != null && value.GetType().FullName.Contains(ControllerName) && !(value is IEnumerable<object>))
-                {
-                    var id = value.GetType().GetProperty(IdName).GetValue(value);
-
-                    <a href=@Url.ActionLink("Details", ControllerName, new { id = id }) class="fw-bold">
-                        @(string.Join("", value.GetType().GetProperties().Where(x => x.Name.Contains("Name") && x.PropertyType.FullName.Contains("String")).Select(x => x.GetValue(value) as string)).SplitForUpperCase())
-                    </a>
-                }
-
                 @if (value is IEnumerable<object>)
                 {
-                    var controller = item.Name;
+                    var controller = item.Name[^1] == 's' ? item.Name[..^1] : item.Name;
 
-                    if (controller.Count(x => char.IsUpper(x)) > 1 && controller != "OrderDetails")
+                    if (controller != "OrderDetail" || ControllerName == "Order")
                     {
-                        controller = item.Name.SplitForUpperCase().Split(' ')[1];
+                        <a href=@Url.ActionLink("Index", controller, new { fkId = IdValue }) class="fw-bold">Show @item.Name.SplitForUpperCase()</a>
                     }
-
-                    controller = controller[^1] == 's' ? controller[..^1] : controller;
-
-                    <a href=@Url.ActionLink("Index", controller, new { fkId = IdValue, page = 1 }) class="fw-bold">Show @item.Name.SplitForUpperCase()</a>
+                    else
+                    {
+                        <a href=@Url.ActionLink("Index", controller, new { fkId = 0, pk2 = ViewData["Id"], page = 1 }) class="fw-bold">Show @item.Name.SplitForUpperCase()</a>
+                    }
+                }
+                else
+                {
+                    @if (id != null && id.Name == type!.Name + "Id")
+                    {
+                        <a href=@Url.ActionLink("Details", type.Name, new { id = id.GetValue(value) }) class="fw-bold">
+                            @GetNames(type, value)
+                        </a>
+                    }
+                    else
+                    {
+                        @if (value is DateTime)
+                        {
+                            @(((DateTime)value).ToShortDateString())
+                        }
+                        else
+                        {
+                            @if (value is decimal)
+                            {
+                                @(((decimal)value).ToString("f2"))
+                            }
+                            else
+                            {
+                                @value
+                            }
+                        }
+                    }
                 }
             </dd>
         }

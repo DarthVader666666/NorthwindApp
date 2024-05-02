@@ -65,7 +65,7 @@ namespace Northwind.Application.TagHelpers
             }
             else
             {
-                link.Attributes["href"] = urlHelper.Action(PageAction, new { fkId = PageModel?.FkId, page = pageNumber });
+                link.Attributes["href"] = urlHelper.Action(PageAction, new { fkId = PageModel?.FkId, pk2 = PageModel?.Pk2, page = pageNumber });
             }
 
             item.AddCssClass("page-item");

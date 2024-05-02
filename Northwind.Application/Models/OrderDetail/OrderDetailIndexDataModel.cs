@@ -15,5 +15,7 @@ namespace Northwind.Application.Models.OrderDetail
         public float Discount { get; set; }
 
         public string ProductName { get; set; }
+
+        public string CompanyName {  get; set; }
     }
 }

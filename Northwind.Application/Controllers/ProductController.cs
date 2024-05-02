@@ -67,6 +67,7 @@ namespace Northwind.Application.Controllers
             product.Category = await _categoryRepository.GetAsync(product.CategoryId);
 
             ViewBag.PreviousPage = Url.ActionLink("Index", "Product", new { fkId = product.CategoryId });
+            ViewBag.Id = id;
 
             return View(_mapper.Map<ProductDetailsModel>(product));
         }

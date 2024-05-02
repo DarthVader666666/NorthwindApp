@@ -14,15 +14,15 @@ namespace Northwind.Application.Models.Product
 
         public string? QuantityPerUnit { get; set; }
 
-        public string? UnitPrice { get; set; }
+        public decimal? UnitPrice { get; set; }
 
-        public string? UnitsInStock { get; set; }
+        public short? UnitsInStock { get; set; }
 
-        public string? UnitsOnOrder { get; set; }
+        public short? UnitsOnOrder { get; set; }
 
-        public string? ReorderLevel { get; set; }
+        public short? ReorderLevel { get; set; }
 
-        public string Discontinued { get; set; }
+        public bool Discontinued { get; set; }
 
         public Northwind.Data.Entities.Category? Category { get; set; }
 

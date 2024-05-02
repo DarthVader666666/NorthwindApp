@@ -8,8 +8,11 @@ namespace Northwind.Bll.Services
 {
     public class OrderDetailRepository : RepositoryBase<OrderDetail, NorthwindDbContext>
     {
-        public OrderDetailRepository(NorthwindDbContext dbContext) : base(dbContext)
+        private readonly IRepository<Customer> _customerRepository;
+
+        public OrderDetailRepository(IRepository<Customer> customerRepository, NorthwindDbContext dbContext) : base(dbContext)
         {
+            _customerRepository = customerRepository;
         }
 
         public override async Task<OrderDetail?> GetAsync(object id)
@@ -19,19 +22,30 @@ namespace Northwind.Bll.Services
             return await DbContext.OrderDetails.Include(x => x.Product).FirstOrDefaultAsync(x => x.OrderId == ids.orderId && x.ProductId == ids.productId);
         }
 
-        public override Task<IEnumerable<OrderDetail?>> GetListForAsync(int fkId)
+        public override async Task<IEnumerable<OrderDetail?>> GetListForAsync(string? primaryKeys)
         {
-            var orderDetails = DbContext.OrderDetails.Include(x => x.Product).Include(x => x.Order).Where(x => x.OrderId == fkId).AsEnumerable();
+            var couple = primaryKeys.IsNullOrEmpty() ? new string[]{ "0", "0" } : primaryKeys!.Split(' ');
+            (int orderId, int productId) ids = (int.Parse(couple[0]), int.Parse(couple[1]));
 
-            return Task.Run(() => 
+            List<OrderDetail> orderDetails = ids switch
             {
-                if (orderDetails.IsNullOrEmpty())
-                { 
-                    return Enumerable.Empty<OrderDetail?>();
-                }
+                (> 0, 0) => DbContext.OrderDetails.Include(x => x.Product).Include(x => x.Order).Where(x => x.OrderId == ids.orderId).ToList(),
+                (0, > 0) => DbContext.OrderDetails.Include(x => x.Product).Include(x => x.Order).Where(x => x.ProductId == ids.productId).ToList(),
+                _ => new List<OrderDetail>()
+            };
 
-                return orderDetails;
-            });
+            if (!orderDetails.IsNullOrEmpty())
+            {
+                foreach (var item in orderDetails.Select(x => x!.Order))
+                {
+                    if (item != null)
+                    { 
+                        item.Customer = await _customerRepository.GetAsync(item.CustomerId);
+                    }
+                }
+            }
+
+            return orderDetails;
         }
 
         public override async Task<int> DeleteSeveralAsync(string[] ids)
