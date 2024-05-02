@@ -1,7 +1,6 @@
 const checkboxes = Array.from(document.querySelectorAll("input[type='checkbox']:not(#selectAllCheckbox)"));
 const deleteButton = document.getElementById("deleteButton");
 const selectAllCheckbox = document.getElementById("selectAllCheckbox");
-const selectAllSpan = document.getElementById("selectAllSpan");
 
 function onChangeSelectAllHandler(checked) {
     if (checked) {

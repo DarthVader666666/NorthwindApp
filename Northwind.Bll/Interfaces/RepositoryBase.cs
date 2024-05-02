@@ -64,7 +64,7 @@ namespace Northwind.Bll.Interfaces
             return await DbContext.SaveChangesAsync();
         }
 
-        public virtual async Task<TEntity?> GetAsync(object id)
+        public virtual async Task<TEntity?> GetAsync(object? id)
         {
             return await DbContext.FindAsync<TEntity>(id);
         }
@@ -100,7 +100,7 @@ namespace Northwind.Bll.Interfaces
             });            
         }
 
-        public Task<IEnumerable<TEntity?>> GetRangeAsync(string[] ids)
+        public virtual Task<IEnumerable<TEntity?>> GetRangeAsync(string[] ids)
         {
             return Task.Run(() =>
             {

@@ -1,12 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Northwind.Bll.Interfaces;
 using Northwind.Data.Entities;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Northwind.Application.Models.OrderDetail;
 using Northwind.Application.Models;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Northwind.Application.Controllers
@@ -42,7 +40,7 @@ namespace Northwind.Application.Controllers
 
             if (!orderDetails.IsNullOrEmpty())
             {
-                var customer = await _customerRepository.GetAsync(orderDetails.First().Order.CustomerId);
+                var customer = await _customerRepository.GetAsync(orderDetails.First()!.Order.CustomerId);
                 ViewBag.CompanyName = customer == null ? "" : customer.CompanyName;
             }
 
@@ -94,59 +92,59 @@ namespace Northwind.Application.Controllers
             return View(orderDetailCreateModel);
         }
 
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //public async Task<IActionResult> Edit(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var orderDetailEditModel = _mapper.Map<OrderDetailEditModel>(await _orderDetailRepository.GetAsync(id));
+        //    var orderDetailEditModel = _mapper.Map<OrderDetailEditModel>(await _orderDetailRepository.GetAsync(id));
 
-            if (orderDetailEditModel == null)
-            {
-                return RedirectToAction(nameof(Index));
-            }
+        //    if (orderDetailEditModel == null)
+        //    {
+        //        return RedirectToAction(nameof(Index));
+        //    }
 
-            return View(orderDetailEditModel);
-        }
+        //    return View(orderDetailEditModel);
+        //}
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, OrderDetailEditModel orderDetailEditModel)
-        {
-            if (id != orderDetailEditModel.OrderId)
-            {
-                return RedirectToAction(nameof(Index));
-            }
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Edit(int id, OrderDetailEditModel orderDetailEditModel)
+        //{
+        //    if (id != orderDetailEditModel.OrderId)
+        //    {
+        //        return RedirectToAction(nameof(Index));
+        //    }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    var orderDetail = _mapper.Map<OrderDetail>(orderDetailEditModel);
-                    await _orderDetailRepository.UpdateAsync(orderDetail);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!await OrderDetailExists(orderDetailEditModel.OrderId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            var orderDetail = _mapper.Map<OrderDetail>(orderDetailEditModel);
+        //            await _orderDetailRepository.UpdateAsync(orderDetail);
+        //        }
+        //        catch (DbUpdateConcurrencyException)
+        //        {
+        //            if (!await OrderDetailExists(orderDetailEditModel.OrderId))
+        //            {
+        //                return NotFound();
+        //            }
+        //            else
+        //            {
+        //                throw;
+        //            }
+        //        }
 
-                return RedirectToAction(nameof(Index));
-            }
+        //        return RedirectToAction(nameof(Index));
+        //    }
 
-            return View(orderDetailEditModel);
-        }
+        //    return View(orderDetailEditModel);
+        //}
 
         [HttpGet]
-        public async Task<IActionResult> Delete([FromQuery] int[] ids)
+        public async Task<IActionResult> Delete([FromQuery] string[] ids)
         {
             var orderDetails = await _orderDetailRepository.GetRangeAsync(ids);
 
@@ -156,11 +154,11 @@ namespace Northwind.Application.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeleteConfirmed([FromForm] int[] ids)
+        public async Task<IActionResult> DeleteConfirmed([FromForm] string[] ids)
         {
             await _orderDetailRepository.DeleteSeveralAsync(ids);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), new { fkId = ids[0].Split(' ')[0] });
         }
 
         private async Task<bool> OrderDetailExists(int id)
