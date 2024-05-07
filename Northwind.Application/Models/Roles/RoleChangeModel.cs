@@ -2,7 +2,7 @@
 
 namespace Northwind.Application.Models.Roles
 {
-    public class ChangeRoleViewModel
+    public class RoleChangeModel
     {
         public string? UserId { get; set; }
         public string? UserEmail { get; set; }
