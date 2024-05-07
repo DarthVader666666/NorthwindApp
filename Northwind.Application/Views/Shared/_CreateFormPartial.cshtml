@@ -8,15 +8,27 @@
 @functions {
     PropertyInfo[] Properties => Model.GetType().GetProperties();
     string Disabled => User.IsInRole("admin") ? "" : "disabled";
-    PropertyInfo FormFileProperty => Properties.FirstOrDefault(x => x.GetValue(Model) is IFormFile);
+    PropertyInfo? FormFileProperty => Properties.FirstOrDefault(x => x.GetValue(Model) is IFormFile);
     string? FormFile => FormFileProperty == null ? null : FormFileProperty.Name;
-    PropertyInfo Image => Properties.FirstOrDefault(x => (x.Name.Contains("Image") || x.Name.Contains("Picture") || x.Name.Contains("Photo")) && x.PropertyType.FullName.Contains("Byte"));
+    PropertyInfo? Image => Properties.FirstOrDefault(x => IsImage(x));
     PropertyInfo[] SelectLists => Properties.Where(x => x.PropertyType.FullName.Contains("SelectList")).ToArray();
+    bool IsAdmin => User.IsInRole("admin");
 
     object SetPropertyName(string name)
     {
         ViewData["PropertyName"] = name;
         return ViewData;
+    }
+
+    bool IsImage(PropertyInfo propertyInfo)
+    {
+        if (propertyInfo == null)
+        {
+            return false;    
+        }
+
+        return (propertyInfo.Name.Contains("Image") || propertyInfo.Name.Contains("Picture") || propertyInfo.Name.Contains("Photo")) &&
+            propertyInfo.PropertyType.FullName.Contains("Byte");
     }
 }
 
@@ -50,9 +62,9 @@
 
                     @if (type.Contains("SelectList"))
                     {
-                        <select class="form-select" name="@item.Name.Replace("List", "")">
+                        <select class="form-select" name="@item.Name.Replace("List", "")" @(IsAdmin ? "" : "disabled")>
                             @foreach (var option in item.GetValue(Model) as SelectList)
-                            {
+                            
                                 if (option.Selected)
                                 {
                                     <option value="@option.Value" selected>@option.Text</option>

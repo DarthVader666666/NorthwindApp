@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using Northwind.Data.Entities;
 using System.ComponentModel.DataAnnotations;
 
 namespace Northwind.Application.Models.Order
@@ -41,7 +40,5 @@ namespace Northwind.Application.Models.Order
         public SelectList? CustomerIdList { get; set; }
 
         public SelectList? ShipperIdList { get; set; }
-
-        public virtual ICollection<Northwind.Data.Entities.OrderDetail> OrderDetails { get; set; } = new List<Northwind.Data.Entities.OrderDetail>();
     }
 }

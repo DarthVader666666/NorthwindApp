@@ -4,12 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Northwind.Bll.Interfaces;
 using Northwind.Data.Entities;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Authorization;
 using Northwind.Application.Models.Order;
-using Northwind.Application.Models.Product;
 using Northwind.Application.Models;
-using Northwind.Bll.Services;
-using System.Drawing.Printing;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Northwind.Application.Controllers
@@ -22,7 +18,7 @@ namespace Northwind.Application.Controllers
         private readonly IRepository<Customer> _customerRepository;
         private readonly IRepository<Shipper> _shipperRepository;
         private readonly IRepository<Employee> _employeeRepository;
-        private const int pageSize = 6; 
+        private const int pageSize = 6;
 
         public OrderController(IRepository<Order> orderRepository, IRepository<Customer> customerRepository, IRepository<Shipper> shipperRepository,
             IRepository<Employee> employeeRepository, IMapper mapper)
@@ -81,9 +77,8 @@ namespace Northwind.Application.Controllers
             ViewBag.PreviousPage = Url.ActionLink("Index", "Order", new { fkId = fkId });
 
             var orderCreateModel = new OrderCreateModel();
-            orderCreateModel.EmployeeIdList = GetEmployeeIdSelectList();
-            orderCreateModel.CustomerIdList = GetCustomerIdSelectList(fkId);
-            orderCreateModel.ShipperIdList = GetShipperIdSelectList();
+
+            FillSelectLists(orderCreateModel, customerId: fkId);
 
             return View(orderCreateModel);
         }
@@ -100,9 +95,7 @@ namespace Northwind.Application.Controllers
                 return RedirectToAction(nameof(Index), new { fkId = order.CustomerId });
             }
 
-            orderCreateModel.EmployeeIdList = GetEmployeeIdSelectList(orderCreateModel.EmployeeId);
-            orderCreateModel.CustomerIdList = GetCustomerIdSelectList(orderCreateModel.CustomerId);
-            orderCreateModel.ShipperIdList = GetShipperIdSelectList(orderCreateModel.ShipperId);
+            FillSelectLists(orderCreateModel, orderCreateModel.EmployeeId, orderCreateModel.ShipperId, orderCreateModel.CustomerId);
 
             return View(orderCreateModel);
         }
@@ -121,9 +114,7 @@ namespace Northwind.Application.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            orderEditModel.EmployeeIdList = GetEmployeeIdSelectList(orderEditModel.EmployeeId);
-            orderEditModel.CustomerIdList = GetCustomerIdSelectList(orderEditModel.CustomerId);
-            orderEditModel.ShipperIdList = GetShipperIdSelectList(orderEditModel.ShipperId);
+            FillSelectLists(orderEditModel, orderEditModel.EmployeeId, orderEditModel.ShipperId, orderEditModel.CustomerId);
 
             return View(orderEditModel);
         }
@@ -156,12 +147,10 @@ namespace Northwind.Application.Controllers
                     }
                 }
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new { fkId = orderEditModel.CustomerId });
             }
 
-            orderEditModel.EmployeeIdList = GetEmployeeIdSelectList(orderEditModel.EmployeeId);
-            orderEditModel.CustomerIdList = GetCustomerIdSelectList(orderEditModel.CustomerId);
-            orderEditModel.ShipperIdList = GetShipperIdSelectList(orderEditModel.ShipperId);
+            FillSelectLists(orderEditModel, orderEditModel.EmployeeId, orderEditModel.ShipperId, orderEditModel.CustomerId);
 
             return View(orderEditModel);
         }
@@ -179,9 +168,11 @@ namespace Northwind.Application.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteConfirmed([FromForm] int[] ids)
         {
+            var customerId = (await _orderRepository.GetAsync(ids[0])).CustomerId;
+
             await _orderRepository.DeleteSeveralAsync(ids);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), new { fkId = customerId });
         }
 
         private async Task<bool> OrderExists(int id)
@@ -268,6 +259,28 @@ namespace Northwind.Application.Controllers
             }
 
             return selectList;
+        }
+
+        private void FillSelectLists<TOrderModel>(TOrderModel orderModel, int? employeeId = null, int? shipperId = null, string? customerId = null)
+        {
+            if (orderModel == null)
+            {
+                return;
+            }
+
+            if (orderModel is OrderEditModel)
+            {
+                (orderModel as OrderEditModel).EmployeeIdList = GetEmployeeIdSelectList(employeeId);
+                (orderModel as OrderEditModel).CustomerIdList = GetCustomerIdSelectList(customerId);
+                (orderModel as OrderEditModel).ShipperIdList = GetShipperIdSelectList(shipperId);
+            }
+
+            if (orderModel is OrderCreateModel)
+            {
+                (orderModel as OrderCreateModel).EmployeeIdList = GetEmployeeIdSelectList(employeeId);
+                (orderModel as OrderCreateModel).CustomerIdList = GetCustomerIdSelectList(customerId);
+                (orderModel as OrderCreateModel).ShipperIdList = GetShipperIdSelectList(shipperId);
+            }
         }
     }
 }
