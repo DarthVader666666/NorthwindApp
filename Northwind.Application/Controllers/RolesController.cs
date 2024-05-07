@@ -58,7 +58,20 @@ namespace Northwind.Application.Controllers
             return RedirectToAction("Index");
         }
 
-        public IActionResult UserList() => View(_userManager.Users.ToList());
+        public async Task<IActionResult> UserList()
+        {
+            var users = _userManager.Users.ToList();
+
+            IEnumerable<UserIndexModel> GetUserModels()
+            {
+                foreach (var user in users)
+                {
+                    yield return new UserIndexModel { Id = user.Id, UserName = user.UserName, RoleNames = _userManager.GetRolesAsync(user).Result };
+                }
+            }
+
+            return View(GetUserModels()); 
+        }
 
         public async Task<IActionResult> Edit(string userId)
         {
@@ -69,7 +82,7 @@ namespace Northwind.Application.Controllers
                 var userRoles = await _userManager.GetRolesAsync(user);
                 var allRoles = _roleManager.Roles.ToList();
 
-                ChangeRoleViewModel model = new ChangeRoleViewModel
+                RoleChangeModel model = new RoleChangeModel
                 {
                     UserId = user.Id,
                     UserEmail = user.Email,
