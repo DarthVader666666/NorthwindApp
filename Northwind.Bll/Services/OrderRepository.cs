@@ -30,5 +30,26 @@ namespace Northwind.Bll.Services
 
             return Task.Run(() => DbContext.Orders.Where(x => fkId == "" || x.CustomerId == fkId).AsEnumerable<Order?>());
         }
+
+        public override async Task<int> DeleteSeveralAsync(int[] ids)
+        {
+            int count = 0;
+
+            foreach (var id in ids!)
+            {
+                var order = await DbContext.Orders.Include(x => x.OrderDetails).FirstOrDefaultAsync(x => x.OrderId == id);
+
+                if (order != null)
+                {
+                    DbContext.OrderDetails.RemoveRange(order.OrderDetails);
+                    await DbContext.SaveChangesAsync();
+
+                    await DeleteAsync(id);
+                    count++;
+                }
+            }
+
+            return count;
+        }
     }
 }
