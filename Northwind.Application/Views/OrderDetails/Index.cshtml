@@ -1,0 +1,25 @@
+﻿@addTagHelper *, Northwind.Application
+@model Northwind.Application.Models.OrderDetail.OrderDetailIndexModel
+@{
+    ViewData["PreviousPage"] = ViewBag.PreviousPage;
+    ViewData["ControllerName"] = "OrderDetails";
+    ViewData["ActionName"] = "Delete";
+}
+
+<h1>@(ViewBag.CompanyName) Order Details</h1>
+
+@await Html.PartialAsync("_IndexButtonsPartial", ViewData)
+
+@if (Model.OrderDetails.Any())
+{
+    @await Html.PartialAsync("_TableFormPartial", Model.OrderDetails, ViewData)
+    <page-link page-model="Model.PageViewModel" page-action="Index" class="float-end"></page-link>
+}
+else
+{
+    <h1>List is empty</h1>
+    @if (ViewData["PreviousPage"] != null)
+    {
+        <button class="btn btn-primary fw-bold" onclick="location.href = '@ViewData["PreviousPage"]'">Back</button>
+    }
+}

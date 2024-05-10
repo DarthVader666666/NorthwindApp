@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Northwind.Application.Models;
+using Northwind.Application.Models.PageModels;
 
 namespace Northwind.Application.TagHelpers
 {
@@ -19,7 +19,7 @@ namespace Northwind.Application.TagHelpers
         [ViewContext]
         [HtmlAttributeNotBound]
         public ViewContext ViewContext { get; set; } = null;
-        public PageViewModel? PageModel { get; set; }
+        public PageModelBase? PageModel { get; set; }
         public string PageAction { get; set; } = "";
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
@@ -65,7 +65,32 @@ namespace Northwind.Application.TagHelpers
             }
             else
             {
-                link.Attributes["href"] = urlHelper.Action(PageAction, new { fkId = PageModel?.FkId, pk2 = PageModel?.Pk2, page = pageNumber });
+                link.Attributes["href"] = PageModel switch
+                {
+                    PageModelBase x when x is ProductPageModel => urlHelper.Action(PageAction, new 
+                    { 
+                        categoryId = ((ProductPageModel)PageModel).CategoryId, 
+                        page = pageNumber 
+                    }),
+
+                    PageModelBase x when x is OrderPageModel => urlHelper.Action(PageAction, new 
+                    { 
+                        customerId = ((OrderPageModel)PageModel).CustomerId, 
+                        page = pageNumber 
+                    }),
+
+                    PageModelBase x when x is OrderPageModel => urlHelper.Action(PageAction, new 
+                    { 
+                        orderId = ((OrderDetailsPageModel)PageModel).OrderId, 
+                        productId = ((OrderDetailsPageModel)PageModel).ProductId, 
+                        page = pageNumber
+                    }),
+
+                    _ => urlHelper.Action(PageAction, new
+                    {
+                        page = pageNumber
+                    }),
+                };
             }
 
             item.AddCssClass("page-item");

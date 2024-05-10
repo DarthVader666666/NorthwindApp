@@ -2,9 +2,17 @@
     string? ControllerName => ViewData["ControllerName"] == null ? this.Context.Request.Path.ToString().TrimStart('/') : ViewData["ControllerName"]!.ToString();
     string Disabled => User.IsInRole("admin") ? "" : "disabled";
     object? Id => ViewData["id"];
+
+    string? CreateLink =>
+        ControllerName switch
+        {
+            "Products" => Url.ActionLink("Create", ControllerName, new { categoryId = Id }),
+            "Orders" => Url.ActionLink("Create", ControllerName, new { customerId = Id }),
+            _ => Url.ActionLink("Create", ControllerName)
+        };
 }
 
-<button class="btn btn-primary fw-bold" onclick="location.href = '@Url.ActionLink("Create", ControllerName, new { fkId = Id })'" @Disabled>
+<button class="btn btn-primary fw-bold" onclick="location.href = '@CreateLink'" @Disabled>
     Create
 </button>
 

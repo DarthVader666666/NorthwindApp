@@ -7,11 +7,12 @@
 
 @functions {
     PropertyInfo[] Properties => Model.GetType().GetProperties();
-    string Disabled => User.IsInRole("admin") ? "" : "disabled";
-    PropertyInfo? FormFileProperty => Properties.FirstOrDefault(x => x.GetValue(Model) is IFormFile);
-    string? FormFile => FormFileProperty == null ? null : FormFileProperty.Name;
     PropertyInfo? Image => Properties.FirstOrDefault(x => IsImage(x));
     PropertyInfo[] SelectLists => Properties.Where(x => x.PropertyType.FullName.Contains("SelectList")).ToArray();
+    PropertyInfo? FormFileProperty => Properties.FirstOrDefault(x => x.GetValue(Model) is IFormFile);
+    string Disabled => User.IsInRole("admin") ? "" : "disabled";
+    string? FormFile => FormFileProperty == null ? null : FormFileProperty.Name;
+
     bool IsAdmin => User.IsInRole("admin");
 
     object SetPropertyName(string name)

@@ -5,17 +5,25 @@
 @using Northwind.Bll.Services.Extensions
 @model object
 
-@{
-    var idName = Properties.First(x => x.Name.Contains(ControllerName) && x.Name.Contains("Id")).Name;
-}
-
 @functions {
-    string ControllerName => ViewData["ControllerName"].ToString();
+    string? ControllerName => ViewData["ControllerName"] != null ? ViewData["ControllerName"].ToString() : "";
     PropertyInfo[] Properties => Model.GetType().GetProperties();
-    string IdName => Properties.First(x => x.Name.Contains(ControllerName) && x.Name.Contains("Id")).Name;
-    object? IdValue => Properties.First(x => x.Name.Contains(ControllerName) && x.Name.Contains("Id")).GetValue(Model);
+    string IdName => Properties.First(x => ControllerName.Contains(x.Name[..^3]) && x.Name.Contains("Id")).Name;
+    object? IdValue => Properties.First(x => ControllerName.Contains(x.Name[..^3]) && x.Name.Contains("Id")).GetValue(Model);
     bool IsAdmin => User.IsInRole("admin");
     bool IsCustomer => User.IsInRole("customer");
+
+    string GetLink(string forController = "")
+    {
+        return (forController, ControllerName) switch
+        {
+            ("OrderDetails", "Orders") => Url.ActionLink("Index", forController, new { orderId = IdValue }),
+            ("OrderDetails", "Products") => Url.ActionLink("Index", forController, new { productId = IdValue }),
+            ("Products", "Categories") => Url.ActionLink("Index", forController, new { categoryId = IdValue }),
+            ("Orders", "Customers") => Url.ActionLink("Index", forController, new { customerId = IdValue }),
+            _ => Url.ActionLink("Index", forController)
+        };
+    }
 
     string GetNames(Type type, object value)
     {
@@ -55,22 +63,13 @@
 
                 @if (value is IEnumerable<object>)
                 {
-                    var controller = item.Name[^1] == 's' ? item.Name[..^1] : item.Name;
-
-                    if (controller != "OrderDetail" || ControllerName == "Order")
-                    {
-                        <a href=@Url.ActionLink("Index", controller, new { fkId = IdValue }) class="fw-bold">Show @item.Name.SplitForUpperCase()</a>
-                    }
-                    else
-                    {
-                        <a href=@Url.ActionLink("Index", controller, new { fkId = 0, pk2 = ViewData["Id"], page = 1 }) class="fw-bold">Show @item.Name.SplitForUpperCase()</a>
-                    }
+                    <a href=@GetLink(item.Name) class="fw-bold">Show @item.Name.SplitForUpperCase()</a>
                 }
                 else
                 {
                     @if (id != null && id.Name == type!.Name + "Id")
                     {
-                        <a href=@Url.ActionLink("Details", type.Name, new { id = id.GetValue(value) }) class="fw-bold">
+                        <a href=@Url.ActionLink("Details", type.Name[^1] == 'y' ? type.Name[..^1] + "ies" : type.Name + "s", new { id = id.GetValue(value) }) class="fw-bold">
                             @GetNames(type, value)
                         </a>
                     }
@@ -100,10 +99,10 @@
 
 <button class="btn btn-primary fw-bold" @(IsAdmin ? "" : "disabled") onclick="location.href = '@Url.ActionLink("Edit", ControllerName, new { id = IdValue })'">Edit</button>
 
-@if (ControllerName == "Product")
+@if (ControllerName == "Products")
 {
     <button class="btn btn-primary fw-bold" @(IsCustomer || IsAdmin ? "" : "disabled") 
-        onclick="location.href = '@Url.ActionLink("Create", "OrderDetail", new { productId = IdValue })'" style="margin-left:10px;">
+        onclick="location.href = '@Url.ActionLink("Create", "OrderDetails", new { productId = IdValue })'" style="margin-left:10px;">
             Order
     </button>
 }

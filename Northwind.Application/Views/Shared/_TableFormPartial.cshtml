@@ -40,10 +40,10 @@
 
     object? GetId(object item)
     {
-        var pk1 = Properties.FirstOrDefault(x => x.Name.Contains("Id") && ControllerName!.Contains(x.Name.Replace("Id", "")));
+        var pk1 = Properties.FirstOrDefault(x => x.Name.Contains("Id") && ControllerName!.Contains(x.Name[..^3]));
         var pk1Value = pk1 == null ? null : pk1.GetValue(item);
 
-        var pk2 = Properties.FirstOrDefault(x => x.Name.Contains("Id") && !ControllerName!.Contains(x.Name.Replace("Id", "")));
+        var pk2 = Properties.FirstOrDefault(x => x.Name.Contains("Id") && !ControllerName!.Contains(x.Name[..^3]));
         var pk2Value = pk2 == null ? null : pk2.GetValue(item);
 
         return IsDetail ? $"{pk1Value} {pk2Value}" : pk1Value;

@@ -17,7 +17,7 @@
 
     int GetId(object item)
     {
-        return (int)(Properties.First(x => x.Name.Contains(ControllerName) && x.Name.Contains("Id")).GetValue(item) ?? 0);
+        return (int)(Properties.First(x => ControllerName.Contains(x.Name[..^3]) && x.Name.Contains("Id")).GetValue(item) ?? 0);
     }
 
     string GetDetailsLink(int id) => Url.ActionLink("Details", ControllerName, new { id = id }) ?? "/Home/Index";
