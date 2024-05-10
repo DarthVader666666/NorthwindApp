@@ -9,9 +9,7 @@
     var count = Model.Count();
 }
 
-<h1>Delete</h1>
-<h3>Are you sure you want to delete @(count > 1 ? "these" : "this")</h3>
-<h4>@(count > 1 ? "Customers" : "Customer")?</h4>
+<h1>Are you sure you want to delete @(count > 1 ? "these" : "this") @(count > 1 ? "Customers" : "Customer")?</h1>
 <hr />
 
 @await Html.PartialAsync("_TableFormPartial")

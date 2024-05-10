@@ -1,8 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Northwind.Application.Models.Roles;
+using Northwind.Bll.Interfaces;
+using Northwind.Bll.Services;
+using Northwind.Data;
 using Northwind.Data.Entities;
+using System.Linq;
 
 namespace Northwind.Application.Controllers
 {
@@ -11,11 +17,16 @@ namespace Northwind.Application.Controllers
     {
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IRepository<Customer> _customerRepository;
+        private readonly IServiceProvider _serviceProvider;
 
-        public RolesController(RoleManager<IdentityRole> roleManager, UserManager<IdentityUser> userManager)
+        public RolesController(RoleManager<IdentityRole> roleManager, UserManager<IdentityUser> userManager, IRepository<Customer> customerRepository,
+            IServiceProvider serviceProvider)
         {
             _roleManager = roleManager;
             _userManager = userManager;
+            _customerRepository = customerRepository;
+            _serviceProvider = serviceProvider;
         }
 
         public IActionResult Index() => View(_roleManager.Roles.ToList());
@@ -87,7 +98,8 @@ namespace Northwind.Application.Controllers
                     UserId = user.Id,
                     UserEmail = user.Email,
                     UserRoles = userRoles,
-                    AllRoles = allRoles
+                    AllRoles = allRoles,
+                    CustomerList = GetCustomerIdSelectList(userId)
                 };
 
                 return View(model);
@@ -97,24 +109,78 @@ namespace Northwind.Application.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(string userId, List<string> roles)
+        public async Task<IActionResult> Edit(RoleChangeModel roleChangeModel)
         {
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(roleChangeModel.UserId);
+
             if (user != null)
             {
-                var userRoles = await _userManager.GetRolesAsync(user);
-                //var allRoles = _roleManager.Roles.ToList();
-                var addedRoles = roles.Except(userRoles);
-                var removedRoles = userRoles.Except(roles);
+                using var scope = _serviceProvider.CreateScope();
+                var services = scope.ServiceProvider;
+                var dbContext = services.GetRequiredService<NorthwindDbContext>();
 
-                await _userManager.AddToRolesAsync(user, addedRoles);
+                using var transaction = dbContext.Database.BeginTransaction();
 
-                await _userManager.RemoveFromRolesAsync(user, removedRoles);
+                try
+                {
+                    var userRoles = await _userManager.GetRolesAsync(user);
+                    var addedRoles = roleChangeModel.UserRoles.Except(userRoles);
+                    var removedRoles = userRoles.Except(roleChangeModel.UserRoles);
+
+                    await _userManager.AddToRolesAsync(user, addedRoles);
+                    await _userManager.RemoveFromRolesAsync(user, removedRoles);
+
+                    var customer = await dbContext.Customers.AsNoTracking().FirstOrDefaultAsync(x => x.UserId == roleChangeModel.UserId);
+
+                    if (roleChangeModel.CustomerId == null && customer != null)
+                    {
+                        customer.UserId = null;
+                        await _customerRepository.UpdateAsync(customer);
+                    }
+                    else
+                    {
+                        customer = dbContext.Customers.AsNoTracking().First(x => x.CustomerId == roleChangeModel.CustomerId);
+                        customer.UserId = roleChangeModel.UserId;
+                        await _customerRepository.UpdateAsync(customer);
+                    }
+
+                    dbContext.SaveChanges();
+                    transaction.Commit();
+                }
+                catch(Exception ex)
+                {
+                    transaction.Rollback();
+                }
 
                 return RedirectToAction("UserList");
             }
 
             return NotFound();
+        }
+
+        private SelectList GetCustomerIdSelectList(string? userId = null)
+        {
+            var customers = _customerRepository.GetListAsync().Result;
+            var dictionary = customers.ToDictionary(c => c.CustomerId, c => c.CompanyName);
+
+            var selectList = new SelectList(dictionary, "Key", "Value", dictionary);
+
+            var customer = customers.FirstOrDefault(x => x.UserId == userId);
+            var customerId = customer?.CustomerId;
+
+            SelectListItem? selectedItem = null;
+
+            if (customerId != null)
+            {
+                selectedItem = selectList.FirstOrDefault(x => x.Value == customerId.ToString());
+            }
+
+            if (selectedItem != null)
+            {
+                selectedItem.Selected = true;
+            }
+
+            return selectList;
         }
     }
 }
