@@ -1,0 +1,10 @@
+﻿@model Northwind.Application.Models.Category.CategoryCreateModel
+@{
+    ViewData["ControllerName"] = "Categories";
+    ViewData["PreviousPage"] = ViewBag.PreviousPage;
+}
+
+<h1>Create new Category</h1>
+<hr />
+
+@await Html.PartialAsync("_CreateFormPartial", Model)

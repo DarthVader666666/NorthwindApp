@@ -19,7 +19,7 @@ namespace NorthwindApp.Controllers
 
         public IActionResult Index()
         {
-            return RedirectToAction("Index", "Category");
+            return RedirectToAction("Index", "Categories");
         }
 
         [Authorize]

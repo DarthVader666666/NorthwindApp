@@ -1,5 +1,4 @@
-﻿using Northwind.Bll.Validation;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Northwind.Application.Models.Customer
 {

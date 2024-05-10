@@ -1,0 +1,17 @@
+﻿@model IEnumerable<Northwind.Application.Models.Product.ProductDeleteModel>
+@{
+    ViewData["PreviousPage"] = ViewBag.PreviousPage;
+    ViewData["ControllerName"] = "Products";
+    ViewData["ActionName"] = "DeleteConfirmed";
+    ViewData["FormMethod"] = "post";
+    ViewData["Hidden"] = "hidden";
+
+    var count = Model.Count();
+}
+
+<h1>Are you sure you want to delete @(count > 1 ? "these" : "this")</h1>
+<h1>@(count > 1 ? "Products" : "Product")?</h1>
+<hr />
+
+@await Html.PartialAsync("_TableFormPartial")
+<button form="form" class="btn btn-danger float-end" type="submit">Delete</button>

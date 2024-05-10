@@ -5,14 +5,11 @@
 @using Northwind.Bll.Services.Extensions
 @model object
 
-@{
-    var idName = Properties.First(x => x.Name.Contains(ControllerName) && x.Name.Contains("Id")).Name;
-}
-
 @functions {
     string ControllerName => ViewData["ControllerName"].ToString().SplitForUpperCase(Model);
     PropertyInfo[] Properties => Model.GetType().GetProperties();
-    object IdValue => Properties.First(x => x.Name.Contains(ControllerName) && x.Name.Contains("Id")).GetValue(Model);
+    string IdName => Properties.First(x => ControllerName.Contains(x.Name[..^3]) && x.Name.Contains("Id")).Name;
+    object IdValue => Properties.First(x => ControllerName.Contains(x.Name[..^3]) && x.Name.Contains("Id")).GetValue(Model);
     PropertyInfo Image => Properties.FirstOrDefault(x => (x.Name.Contains("Image") || x.Name.Contains("Picture") || x.Name.Contains("Photo")) && x.PropertyType.FullName.Contains("Byte"));
     PropertyInfo[] SelectLists => Properties.Where(x => x.PropertyType.FullName.Contains("SelectList")).ToArray();
 

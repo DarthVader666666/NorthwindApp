@@ -1,0 +1,10 @@
+﻿@model Northwind.Application.Models.Category.CategoryEditModel
+@{
+    ViewData["ControllerName"] = "Categories";
+}
+
+<h1>Edit</h1>
+<h4>Category</h4>
+<hr />
+
+@await Html.PartialAsync("_EditFormPartial", Model)

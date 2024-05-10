@@ -1,0 +1,10 @@
+﻿@model Northwind.Application.Models.Category.CategoryDetailsModel
+
+@{
+    ViewData["PreviousPage"] = ViewBag.PreviousPage;
+    ViewData["ControllerName"] = "Categories";
+}
+
+<h1>Category Details</h1>
+
+@await Html.PartialAsync("_DetailsPartial", Model, ViewData)
