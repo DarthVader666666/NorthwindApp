@@ -4,9 +4,7 @@
     ViewData["PreviousPage"] = ViewBag.PreviousPage;
 }
 
-<h1>Create</h1>
-
-<h4>OrderDetail</h4>
+<h1>Form @ViewBag.ProductName Order</h1>
 <hr />
 
 @await Html.PartialAsync("_CreateFormPartial", Model)

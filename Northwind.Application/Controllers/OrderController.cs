@@ -7,10 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Northwind.Application.Models.Order;
 using Northwind.Application.Models;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Northwind.Application.Controllers
 {
-    //[Authorize(Roles ="admin, customer")]
+    [Authorize(Roles ="admin")]
     public class OrderController : Controller
     {
         private readonly IMapper _mapper;
@@ -30,6 +31,8 @@ namespace Northwind.Application.Controllers
             _employeeRepository = employeeRepository;
         }
 
+        // Gets list of orders for particular customer
+        // fkId - CustomerId
         public async Task<IActionResult> Index(string fkId = "", int page = 1)
         {
             var allOrders = await _orderRepository.GetListForAsync(fkId);
@@ -72,7 +75,7 @@ namespace Northwind.Application.Controllers
             return View(orderDetailsModel);
         }
 
-        public IActionResult Create(string fkId)
+        public async Task<IActionResult> Create(string fkId, int? productId = null)
         {
             ViewBag.PreviousPage = Url.ActionLink("Index", "Order", new { fkId = fkId });
 

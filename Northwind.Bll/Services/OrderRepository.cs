@@ -21,6 +21,8 @@ namespace Northwind.Bll.Services
             return await DbContext.Orders.Include(x => x.OrderDetails).Include(x => x.Customer).FirstOrDefaultAsync(x => x.OrderId == (int)id);
         }
 
+        // Gets list of orders for particular customer
+        // fkId - CustomerId
         public override Task<IEnumerable<Order?>> GetListForAsync(string fkId)
         {
             if (fkId == null)

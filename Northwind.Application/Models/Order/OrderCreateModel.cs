@@ -11,8 +11,6 @@ namespace Northwind.Application.Models.Order
 
         public int? EmployeeId { get; set; }
 
-        public DateTime? OrderDate { get; set; } = DateTime.UtcNow;
-
         public DateTime? RequiredDate { get; set; }
 
         public DateTime? ShippedDate { get; set; }

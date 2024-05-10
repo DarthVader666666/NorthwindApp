@@ -13,7 +13,7 @@ namespace Northwind.Bll.Interfaces
 
         protected NorthwindDbContext DbContext { get; }
 
-        public async Task<TEntity?> CreateAsync(TEntity item)
+        public virtual async Task<TEntity?> CreateAsync(TEntity item)
         {
             var entity = (await DbContext.AddAsync(item)).Entity;
 
@@ -117,6 +117,12 @@ namespace Northwind.Bll.Interfaces
             DbContext.Update(item);
 
             return await SaveAsync(item);
+        }
+
+        public async Task<bool> ExistsAsync(TEntity item)
+        {
+            var result = await DbContext.FindAsync<TEntity>(item);
+            return result != null;
         }
 
         protected async Task<TEntity?> SaveAsync(TEntity? item)
