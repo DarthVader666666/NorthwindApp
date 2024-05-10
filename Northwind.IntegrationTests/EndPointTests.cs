@@ -25,13 +25,5 @@ namespace Northwind.IntegrationTests
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.NotNull(response.Content);
         }
-
-        private async Task<HttpClient> GetGuestHttpClientAsync()
-        {
-            var client = _factory.CreateClient();
-            await client.GetAsync("/Guest/Register");
-
-            return client;
-        }
     }
 }
