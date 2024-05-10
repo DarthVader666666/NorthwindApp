@@ -6,22 +6,29 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Northwind.Application.Models.OrderDetail;
 using Northwind.Application.Models;
 using Microsoft.IdentityModel.Tokens;
+using Northwind.Application.Constants;
+using Microsoft.CodeAnalysis;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Data.SqlClient;
 
 namespace Northwind.Application.Controllers
 {
-    //[Authorize(Roles ="admin, customer")]
+    [Authorize(Roles ="admin, customer")]
     public class OrderDetailController : Controller
     {
         private readonly IMapper _mapper;
         private readonly IRepository<OrderDetail> _orderDetailRepository;
-        private readonly IRepository<Customer> _customerRepository;
+        private readonly IRepository<Product> _productRepository;
+        private readonly IRepository<Order> _orderRepository;
         private const int pageSize = 6;
 
-        public OrderDetailController(IRepository<OrderDetail> orderDetailRepository, IRepository<Customer> customerRepository, IMapper mapper)
+        public OrderDetailController(IRepository<OrderDetail> orderDetailRepository, IRepository<Product> productRepository, 
+            IRepository<Order> orderRepository, IMapper mapper)
         {
             _mapper = mapper;
             _orderDetailRepository = orderDetailRepository;
-            _customerRepository = customerRepository;
+            _productRepository = productRepository;
+            _orderRepository = orderRepository;
         }
 
         //public async Task<IActionResult> Index(int fkId = 0, int page = 1)
@@ -96,13 +103,25 @@ namespace Northwind.Application.Controllers
             return View(orderDetail);
         }
 
-        public IActionResult Create(string fkId)
+        public async Task<IActionResult> Create(int? productId = null)
         {
-            ViewBag.PreviousPage = Url.ActionLink("Index", "OrderDetail", new { fkId = fkId });
+            ViewBag.PreviousPage = Url.ActionLink("Index", "OrderDetail");
 
-            var orderDetailCreateModel = new OrderDetailCreateModel();
+            if(productId != null) 
+            {
+                var product = await _productRepository.GetAsync(productId);
 
-            return View(orderDetailCreateModel);
+                if (product == null) 
+                {
+                    return NotFound("Product not found");
+                }
+
+                ViewBag.ProductName = product.ProductName;
+                var orderDetailCreateModel = new OrderDetailCreateModel { ProductId = productId, UnitPrice = product.UnitPrice };
+                return View(orderDetailCreateModel);
+            }
+            
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
@@ -111,10 +130,41 @@ namespace Northwind.Application.Controllers
         {
             if (ModelState.IsValid)
             {
-                var orderDetail = _mapper.Map<OrderDetail>(orderDetailCreateModel);
-                await _orderDetailRepository.CreateAsync(orderDetail);
+                var customerId = this.HttpContext.Session.GetString(SessionValues.CustomerId);
 
-                return RedirectToAction(nameof(Index), new { fkId = orderDetail.OrderId });
+                if (!customerId.IsNullOrEmpty() && this.HttpContext.Session.GetString(SessionValues.OrderStatus) != SessionValues.InProgress)
+                {
+                    this.HttpContext.Session.SetString(SessionValues.OrderStatus, SessionValues.InProgress);
+                    var order = await _orderRepository.CreateAsync(new Order { CustomerId = customerId, OrderDate = DateTime.UtcNow });
+
+                    if (order != null)
+                    {
+                        this.HttpContext.Session.SetInt32(SessionValues.OrderId, order.OrderId);
+                    }
+                }
+
+                var orderId = this.HttpContext.Session.GetInt32(SessionValues.OrderId);
+
+                if (orderId == null)
+                {
+                    this.HttpContext.Session.SetString(SessionValues.OrderStatus, SessionValues.InProgress);
+                    return NotFound("Order not found");
+                }
+
+                orderDetailCreateModel.OrderId = orderId;
+
+                var orderDetail = _mapper.Map<OrderDetail>(orderDetailCreateModel);
+
+                if (await _orderDetailRepository.GetAsync((orderDetail.OrderId, orderDetail.ProductId)) == null)
+                {
+                    await _orderDetailRepository.CreateAsync(orderDetail);
+                }
+                else 
+                { 
+                    await _orderDetailRepository.UpdateAsync(orderDetail);
+                }
+
+                return RedirectToAction("Details", "Product", new { id = orderDetailCreateModel.ProductId });
             }
 
             return View(orderDetailCreateModel);

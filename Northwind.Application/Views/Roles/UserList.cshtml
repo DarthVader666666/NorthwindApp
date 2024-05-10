@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Northwind.Application.Models.Roles.UserIndexModel>
 
 <h2>User List</h2>
-<table class="table">
+<table class="table-bordered">
     <thead>
         <tr>
             <th>
@@ -29,10 +29,29 @@
                         }
                     </ul>
                 </td>
-                <td class="align-content-center">
+                <td class="align-content-center" style="text-align:center;">
                     <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-userid="@user.Id">Change Role</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+<style>
+    td{
+        padding: 10px;
+        min-width: 10rem;
+    }
+
+    th{
+        align-content:center;
+        text-align:center;
+        padding:3px;
+    }
+
+    ul {
+        list-style: none;
+        padding-left: 0px;
+        margin-bottom: 0px;
+    }
+</style>

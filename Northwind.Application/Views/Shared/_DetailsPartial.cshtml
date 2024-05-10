@@ -1,4 +1,5 @@
 ﻿@using System.Reflection;
+@using Northwind.Application.Constants
 @using Northwind.Bll.Enums
 @using Northwind.Bll.Services
 @using Northwind.Bll.Services.Extensions
@@ -101,7 +102,10 @@
 
 @if (ControllerName == "Product")
 {
-    <button class="btn btn-primary fw-bold" @(IsCustomer || IsAdmin ? "" : "disabled") onclick="location.href = '@Url.ActionLink("Create", "Order")'" style="margin-left:10px;">Order</button>
+    <button class="btn btn-primary fw-bold" @(IsCustomer || IsAdmin ? "" : "disabled") 
+        onclick="location.href = '@Url.ActionLink("Create", "OrderDetail", new { productId = IdValue })'" style="margin-left:10px;">
+            Order
+    </button>
 }
 
 @if (ViewData["PreviousPage"] != null)

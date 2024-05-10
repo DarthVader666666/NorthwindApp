@@ -120,13 +120,16 @@ namespace NorthwindApp.ConfigureServices
                     autoMapperConfig.CreateMap<OrderCreateModel, Order>()
                         .ForMember(dest => dest.ShipVia, opts => opts.MapFrom(src => src.ShipperId == 0 ? null : src.ShipperId))
                         .ForMember(dest => dest.EmployeeId, opts => opts.MapFrom(src => src.EmployeeId == 0 ? null : src.EmployeeId))
-                        .ForMember(dest => dest.CustomerId, opts => opts.MapFrom(src => src.CustomerId == "" ? null : src.CustomerId));
+                        .ForMember(dest => dest.CustomerId, opts => opts.MapFrom(src => src.CustomerId == "" ? null : src.CustomerId))
+                        .ForMember(dest => dest.OrderDate, opts => opts.MapFrom(src => DateTime.UtcNow));
 
 
 
                     autoMapperConfig.CreateMap<OrderDetail, OrderDetailIndexDataModel>()
                         .ForMember(dest => dest.ProductName, opts => opts.MapFrom(src => src.Product.ProductName))
                         .ForMember(dest => dest.CompanyName, opts => opts.MapFrom(src => src.Order.Customer == null ? "" : src.Order.Customer.CompanyName));
+
+                    autoMapperConfig.CreateMap<OrderDetailCreateModel, OrderDetail>();
                 });
 
                 return config.CreateMapper();

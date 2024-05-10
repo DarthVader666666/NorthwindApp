@@ -19,7 +19,7 @@ namespace Northwind.Bll.Services
         {
             var ids = ((int orderId, int productId))id;
 
-            return await DbContext.OrderDetails.Include(x => x.Product).FirstOrDefaultAsync(x => x.OrderId == ids.orderId && x.ProductId == ids.productId);
+            return await DbContext.OrderDetails.AsNoTracking().Include(x => x.Product).FirstOrDefaultAsync(x => x.OrderId == ids.orderId && x.ProductId == ids.productId);
         }
 
         public override async Task<IEnumerable<OrderDetail?>> GetListForAsync(string? primaryKeys)

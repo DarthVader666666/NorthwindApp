@@ -17,17 +17,25 @@ using Microsoft.Extensions.Logging;
 using Northwind.Bll.Interfaces;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Northwind.Data.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Northwind.Application.Constants;
 
 namespace Northwind.Application.Areas.Identity.Pages.Account
 {
     public class LoginModel : PageModel
     {
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IRepository<Customer> _customerRepository;
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, IRepository<Customer> customerRepository, 
+            ILogger<LoginModel> logger)
         {
             _signInManager = signInManager;
+            _userManager = userManager;
+            _customerRepository = customerRepository;
             _logger = logger;
         }
 
@@ -117,6 +125,22 @@ namespace Northwind.Application.Areas.Identity.Pages.Account
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
+                    var user = await _userManager.FindByNameAsync(Input.Email);
+                    var customer = (await _customerRepository.GetListAsync()).FirstOrDefault(x => x.UserId == user.Id);
+                    var customerId = customer == null ? "" : customer.CustomerId;
+
+                    if (!customerId.IsNullOrEmpty()) 
+                    {
+                        try 
+                        {
+                            this.HttpContext.Session.SetString(SessionValues.CustomerId, customerId);
+                        }
+                        catch (InvalidOperationException ex) 
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
+                    }
+
                     _logger.LogInformation("User logged in.");
                     return LocalRedirect(returnUrl);
                 }

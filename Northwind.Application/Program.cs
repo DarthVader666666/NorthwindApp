@@ -12,6 +12,7 @@ var config = builder.Configuration;
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddLogging(builder => builder.AddConsole());
+builder.Services.AddSession();
 
 var connectionString = config["ConnectionStrings:SQL_Server"];
 
@@ -107,6 +108,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseSession();
 
 app.UseAuthentication();
 app.UseAuthorization();

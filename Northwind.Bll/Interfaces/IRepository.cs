@@ -13,5 +13,6 @@
         Task<int> DeleteSeveralAsync(string[] ids);
         Task<IEnumerable<TEntity?>> GetListForAsync(int fkId);
         Task<IEnumerable<TEntity?>> GetListForAsync(string fkId);
+        Task<bool> ExistsAsync(TEntity item);
     }
 }

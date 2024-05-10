@@ -55,6 +55,7 @@
             {
                 var type = item.PropertyType.FullName;
                 var hidden = type.Contains("FormFile") || type.Contains("Byte") || SelectLists.Any(x => x.Name != item.Name && x.Name.Contains(item.Name)) || (item.Name.Contains("Id") && !item.Name.Contains("List")) ? "hidden" : "";
+                var value = item.GetValue(Model);
 
                 <div class="form-group">
                     <label class="control-label" @hidden>@item.Name.Replace("List", "").Replace("Id", "").SplitForUpperCase()</label>
@@ -92,13 +93,13 @@
                             {
                                 if (type.Contains("DateTime"))
                                 {
-                                    <input class="form-control" type="date" name="@item.Name" />
+                                    <input class="form-control" type="date" name="@item.Name" @Disabled />
                                 }
                                 else
                                 {
                                     if (!SelectLists.Any(x => x.Name.Contains(item.Name)))
                                     {
-                                        <input class="form-control" name="@item.Name" @hidden />
+                                        <input class="form-control" value="@value" name="@item.Name" @hidden />
                                     }
                                 }
                             }
