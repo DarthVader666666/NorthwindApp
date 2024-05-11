@@ -16,17 +16,14 @@ namespace Northwind.Application.Controllers
     public class RolesController : Controller
     {
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<NorthwindUser> _userManager;
         private readonly IRepository<Customer> _customerRepository;
-        private readonly IServiceProvider _serviceProvider;
 
-        public RolesController(RoleManager<IdentityRole> roleManager, UserManager<IdentityUser> userManager, IRepository<Customer> customerRepository,
-            IServiceProvider serviceProvider)
+        public RolesController(RoleManager<IdentityRole> roleManager, UserManager<NorthwindUser> userManager, IRepository<Customer> customerRepository)
         {
             _roleManager = roleManager;
             _userManager = userManager;
             _customerRepository = customerRepository;
-            _serviceProvider = serviceProvider;
         }
 
         public IActionResult Index() => View(_roleManager.Roles.ToList());
@@ -99,7 +96,7 @@ namespace Northwind.Application.Controllers
                     UserEmail = user.Email,
                     UserRoles = userRoles,
                     AllRoles = allRoles,
-                    CustomerList = GetCustomerIdSelectList(userId)
+                    CustomerList = await GetCustomerIdSelectList(userId)
                 };
 
                 return View(model);
@@ -109,48 +106,21 @@ namespace Northwind.Application.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(RoleChangeModel roleChangeModel)
+        public async Task<IActionResult> Edit(RoleChangeModel? roleChangeModel)
         {
-            var user = await _userManager.FindByIdAsync(roleChangeModel.UserId);
+            var user = await _userManager.FindByIdAsync(roleChangeModel?.UserId);
 
             if (user != null)
             {
-                using var scope = _serviceProvider.CreateScope();
-                var services = scope.ServiceProvider;
-                var dbContext = services.GetRequiredService<NorthwindDbContext>();
+                var userRoles = await _userManager.GetRolesAsync(user);
+                var addedRoles = roleChangeModel.UserRoles.Except(userRoles);
+                var removedRoles = userRoles.Except(roleChangeModel.UserRoles);
 
-                using var transaction = dbContext.Database.BeginTransaction();
+                await _userManager.AddToRolesAsync(user, addedRoles);
+                await _userManager.RemoveFromRolesAsync(user, removedRoles);
 
-                try
-                {
-                    var userRoles = await _userManager.GetRolesAsync(user);
-                    var addedRoles = roleChangeModel.UserRoles.Except(userRoles);
-                    var removedRoles = userRoles.Except(roleChangeModel.UserRoles);
-
-                    await _userManager.AddToRolesAsync(user, addedRoles);
-                    await _userManager.RemoveFromRolesAsync(user, removedRoles);
-
-                    var customer = await dbContext.Customers.AsNoTracking().FirstOrDefaultAsync(x => x.UserId == roleChangeModel.UserId);
-
-                    if (roleChangeModel.CustomerId == null && customer != null)
-                    {
-                        customer.UserId = null;
-                        await _customerRepository.UpdateAsync(customer);
-                    }
-                    else
-                    {
-                        customer = dbContext.Customers.AsNoTracking().First(x => x.CustomerId == roleChangeModel.CustomerId);
-                        customer.UserId = roleChangeModel.UserId;
-                        await _customerRepository.UpdateAsync(customer);
-                    }
-
-                    dbContext.SaveChanges();
-                    transaction.Commit();
-                }
-                catch(Exception ex)
-                {
-                    transaction.Rollback();
-                }
+                user.CustomerId = roleChangeModel.CustomerId;
+                await _userManager.UpdateAsync(user);
 
                 return RedirectToAction("UserList");
             }
@@ -158,15 +128,15 @@ namespace Northwind.Application.Controllers
             return NotFound();
         }
 
-        private SelectList GetCustomerIdSelectList(string? userId = null)
+        private async Task<SelectList> GetCustomerIdSelectList(string userId)
         {
             var customers = _customerRepository.GetListAsync().Result;
             var dictionary = customers.ToDictionary(c => c.CustomerId, c => c.CompanyName);
 
             var selectList = new SelectList(dictionary, "Key", "Value", dictionary);
 
-            var customer = customers.FirstOrDefault(x => x.UserId == userId);
-            var customerId = customer?.CustomerId;
+            var user = await _userManager.FindByIdAsync(userId);
+            var customerId = user?.CustomerId;
 
             SelectListItem? selectedItem = null;
 

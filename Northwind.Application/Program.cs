@@ -18,7 +18,7 @@ var connectionString = config["ConnectionStrings:SQL_Server"];
 
 builder.Services.AddDbContext<NorthwindDbContext>(options => options.UseSqlServer(connectionString));
 //builder.Services.AddDbContext<NorthwindInMemoryDbContext>();
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<NorthwindUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<NorthwindDbContext>();
 

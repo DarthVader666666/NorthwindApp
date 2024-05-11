@@ -25,12 +25,12 @@ namespace Northwind.Application.Areas.Identity.Pages.Account
 {
     public class LoginModel : PageModel
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<NorthwindUser> _signInManager;
+        private readonly UserManager<NorthwindUser> _userManager;
         private readonly IRepository<Customer> _customerRepository;
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, IRepository<Customer> customerRepository, 
+        public LoginModel(SignInManager<NorthwindUser> signInManager, UserManager<NorthwindUser> userManager, IRepository<Customer> customerRepository, 
             ILogger<LoginModel> logger)
         {
             _signInManager = signInManager;
@@ -126,8 +126,8 @@ namespace Northwind.Application.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     var user = await _userManager.FindByNameAsync(Input.Email);
-                    var customer = (await _customerRepository.GetListAsync()).FirstOrDefault(x => x.UserId == user.Id);
-                    var customerId = customer == null ? "" : customer.CustomerId;
+                    //var customer = (await _customerRepository.GetListAsync()).FirstOrDefault(x => x.UserId == user.Id);
+                    var customerId = user.CustomerId;
 
                     if (!customerId.IsNullOrEmpty()) 
                     {
