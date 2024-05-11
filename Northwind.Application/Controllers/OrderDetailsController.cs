@@ -73,13 +73,14 @@ namespace Northwind.Application.Controllers
 
                 if (!orderDetailDataModels.IsNullOrEmpty())
                 {
-                    ViewBag.CompanyName = orderDetailDataModels.First().CompanyName;
+                    ViewBag.ProductOrCompanyName = orderDetailDataModels.First().CompanyName;
                 }
             }
 
             if (productId > 0)
             {
                 ViewBag.PreviousPage = Url.ActionLink("Details", "Products", new { id = productId });
+                ViewBag.ProductOrCompanyName = orderDetailDataModels.First().ProductName;
             }
 
             return View(orderDetailIndexModel);

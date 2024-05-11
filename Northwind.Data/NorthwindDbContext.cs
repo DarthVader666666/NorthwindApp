@@ -5,7 +5,7 @@ using Northwind.Data.Entities;
 
 namespace Northwind.Data
 {
-    public class NorthwindDbContext : IdentityDbContext<IdentityUser>
+    public class NorthwindDbContext : IdentityDbContext<NorthwindUser>
     {
         public NorthwindDbContext(DbContextOptions<NorthwindDbContext> options)
             : base(options)

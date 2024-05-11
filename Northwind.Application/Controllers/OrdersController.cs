@@ -9,10 +9,11 @@ using Northwind.Application.Models;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
 using Northwind.Application.Models.PageModels;
+using Microsoft.AspNetCore.Identity;
 
 namespace Northwind.Application.Controllers
 {
-    [Authorize(Roles ="admin")]
+    [Authorize(Roles ="admin,customer")]
     public class OrdersController : Controller
     {
         private readonly IMapper _mapper;
@@ -20,20 +21,20 @@ namespace Northwind.Application.Controllers
         private readonly IRepository<Customer> _customerRepository;
         private readonly IRepository<Shipper> _shipperRepository;
         private readonly IRepository<Employee> _employeeRepository;
+        private readonly UserManager<NorthwindUser> _userManager;
         private const int pageSize = 6;
 
         public OrdersController(IRepository<Order> orderRepository, IRepository<Customer> customerRepository, IRepository<Shipper> shipperRepository,
-            IRepository<Employee> employeeRepository, IMapper mapper)
+            IRepository<Employee> employeeRepository, UserManager<NorthwindUser> userManager, IMapper mapper)
         {
             _mapper = mapper;
             _orderRepository = orderRepository;
             _customerRepository = customerRepository;
             _shipperRepository = shipperRepository;
             _employeeRepository = employeeRepository;
+            _userManager = userManager;
         }
-
-        // Gets list of orders for particular customer
-        // fkId - CustomerId
+        
         public async Task<IActionResult> Index(string customerId = "", int page = 1)
         {
             var allOrders = await _orderRepository.GetListForAsync(customerId);
@@ -52,7 +53,9 @@ namespace Northwind.Application.Controllers
             var customer = await _customerRepository.GetAsync(customerId);
             ViewBag.CompanyName = customer != null ? customer.CompanyName : "";
 
-            return View(orderIndexModel);
+            var user = await _userManager.GetUserAsync(User);
+
+            return user?.CustomerId == customerId ? View(orderIndexModel) : Redirect("/Identity/Account/AccessDenied");
         }
 
         public async Task<IActionResult> Details(int? id)

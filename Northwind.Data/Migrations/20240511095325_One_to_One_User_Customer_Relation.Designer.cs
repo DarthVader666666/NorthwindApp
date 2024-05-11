@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Northwind.Data;
 
@@ -11,9 +12,11 @@ using Northwind.Data;
 namespace Northwind.Data.Migrations
 {
     [DbContext(typeof(NorthwindDbContext))]
-    partial class NorthwindDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240511095325_One_to_One_User_Customer_Relation")]
+    partial class One_to_One_User_Customer_Relation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
