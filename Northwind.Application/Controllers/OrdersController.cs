@@ -44,6 +44,11 @@ namespace Northwind.Application.Controllers
             var pageModel = new OrderPageModel(allOrders.Count(), page, pageSize, customerId);
             var orderIndexModel = new OrderIndexModel(orderDataModels, pageModel);
 
+            if (User.IsInRole("admin"))
+            { 
+                orderIndexModel.CustomerList = GetCustomerIdSelectList(customerId);
+            }
+
             if (!customerId.IsNullOrEmpty())
             { 
                 ViewBag.PreviousPage = Url.ActionLink("Details", "Customers", new { id = customerId });
@@ -53,9 +58,7 @@ namespace Northwind.Application.Controllers
             var customer = await _customerRepository.GetAsync(customerId);
             ViewBag.CompanyName = customer != null ? customer.CompanyName : "";
 
-            var user = await _userManager.GetUserAsync(User);
-
-            return user?.CustomerId == customerId ? View(orderIndexModel) : Redirect("/Identity/Account/AccessDenied");
+            return View(orderIndexModel);
         }
 
         public async Task<IActionResult> Details(int? id)
@@ -74,7 +77,7 @@ namespace Northwind.Application.Controllers
 
             var orderDetailsModel = _mapper.Map<OrderDetailsModel>(order);
 
-            ViewBag.PreviousPage = Url.ActionLink("Index", "Orders", new { fkId = order.CustomerId });
+            ViewBag.PreviousPage = Url.ActionLink("Index", "Orders", new { customerId = order.CustomerId });
 
             return View(orderDetailsModel);
         }
