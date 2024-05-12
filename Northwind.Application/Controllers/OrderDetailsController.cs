@@ -128,7 +128,7 @@ namespace Northwind.Application.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(OrderDetailCreateModel orderDetailCreateModel)
+        public async Task<IActionResult> Create([FromForm] OrderDetailCreateModel orderDetailCreateModel)
         {
             if (ModelState.IsValid)
             {
