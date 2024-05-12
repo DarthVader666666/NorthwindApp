@@ -41,24 +41,26 @@
         <button type="submit" class="btn btn-primary">Save</button>
         <a asp-action="UserList" class="float-end fw-bold btn btn-primary">Back</a>
     </div>
-    
 </form>
 
 <script type="text/javascript">
     const customerCheckBox = document.getElementById('customer');
     const customerSelectList = document.getElementById('customerSelectList');
+    let customerId;
 
     if (!customerCheckBox.checked) {
         customerSelectList.value = null;
         customerSelectList.hidden = true;
     }
+    else { 
+        customerId = customerSelectList.value;
+    }
 
     customerCheckBox.addEventListener('change', (event) => {
-        const checked = event.target.checked;        
-        const firstOptionValue = customerSelectList.getElementsByTagName('option')[0].value;
+        const checked = event.target.checked;
 
         if (checked === true) {
-            customerSelectList.value = firstOptionValue;
+            customerSelectList.value = customerId;
             customerSelectList.hidden = false;
         }
         else {

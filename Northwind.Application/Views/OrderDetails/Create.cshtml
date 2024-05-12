@@ -1,10 +1,109 @@
-﻿@model Northwind.Application.Models.OrderDetail.OrderDetailCreateModel
+﻿@using Microsoft.AspNetCore.Components
+@model Northwind.Application.Models.OrderDetail.OrderDetailCreateModel
 @{
     ViewData["ControllerName"] = "OrderDetails";
     ViewData["PreviousPage"] = ViewBag.PreviousPage;
 }
 
-<h1>Form @ViewBag.ProductName Order</h1>
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+
+<h1>Form "@ViewBag.ProductName" Order</h1>
 <hr />
 
-@await Html.PartialAsync("_CreateFormPartial", Model)
+<div class="form-group" style="max-width:400px;">
+    <form asp-action="Create" id="form" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <input name="OrderId" value="@Model.OrderId" hidden />
+        <input name="ProductId" value="@Model.ProductId" hidden />
+        <input name="UnitPrice" id="unitPrice" value="@Model.UnitPrice" hidden />
+        <input name="TotalCost" id="totalCost" hidden />
+
+        <div>
+            <label class="fw-bold">Unit Price: </label>
+            <labe>@Model.UnitPrice</labe>
+        </div>        
+
+        <label class="fw-bold">Discount</label>
+        <input id="discount" onchange="onDiscountChange(value)" type="number" name="Discount" value="@Model.Discount" class="form-control" />
+
+        <label class="fw-bold">Quantity</label>
+
+        <div>
+            <button id="minus" onclick="onMinusClick()" type="button" class="btn btn-default btn-number" disabled="disabled" data-type="minus" data-field="Quantity">
+                <span class="glyphicon glyphicon-minus"></span>
+            </button>
+
+            <input id="quantity" name="Quantity" value="@Model.Quantity" class="quantity-border"/>
+
+            <button id="plus" onclick="onPlusClick()" type="button" class="btn btn-default btn-number" data-type="plus" data-field="Quantity">
+                <span class="glyphicon glyphicon-plus"></span>
+            </button>
+        </div>
+        
+        <div class="pt-3">
+            <label class="fw-bold">Total Cost: </label>
+            <label id="totalCostLabel"></label>
+        </div>
+    </form>
+
+    <div class="pt-3">
+        <button type="submit" form="form" class="btn btn-primary fw-bold">Save</button>
+        <button class="btn btn-primary fw-bold float-end" onclick="location.href='@Url.ActionLink("Details", "Products", new { id = Model.ProductId })'">Back</button>
+    </div>
+</div>
+
+<script>
+    const totalCost = document.getElementById('totalCost');
+    const unitPrice = document.getElementById('unitPrice');
+    const quantity = document.getElementById('quantity');
+    const discount = document.getElementById('discount');
+    const minus = document.getElementById('minus');
+    const totalCostLabel = document.getElementById('totalCostLabel');
+
+    function onMinusClick() {
+        if (Number(quantity.value) === 0) { 
+            minus.disabled = true;
+            return;
+        }
+
+        quantity.value = Number(quantity.value) - 1;
+        totalCost.value = calculateCost(discount.value);
+        totalCostLabel.textContent = totalCost.value;
+    }
+
+    function onPlusClick() {
+        if (Number(quantity.value) === 0) {
+            minus.disabled = false;
+        }
+
+        quantity.value = Number(quantity.value) + 1;
+        totalCost.value = calculateCost(discount.value);
+        totalCostLabel.textContent = totalCost.value;
+    }
+
+    function calculateCost(discountValue) {
+        const cost = parseFloat(unitPrice.value) * parseFloat(quantity.value);
+        return parseFloat(cost) - (parseFloat(cost) / 100) * parseFloat(discountValue)
+    }
+
+    function onDiscountChange(value) {
+        if (Number(value) < 0) { 
+            discount.value = 0;
+            return;
+        }
+
+        totalCost.value = calculateCost(value);
+        totalCostLabel.textContent = totalCost.value;
+    }
+</script>
+
+<style>
+    .quantity-border {
+        border: 1px solid;
+        border-radius: 3px;
+        border-color: darkgray;
+        height: 34px;
+        max-width: 500px
+    }
+</style>

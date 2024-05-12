@@ -1,7 +1,12 @@
 ﻿@model IEnumerable<Northwind.Application.Models.Roles.UserIndexModel>
 
 <h2>User List</h2>
-<table class="table-bordered">
+<table class="table table-striped" style="width:100%;max-width:600px;">
+    <colgroup>
+        <col span="1" style="width:70%;">
+        <col span="1" style="width:30%;">
+    </colgroup>
+
     <thead>
         <tr>
             <th>
@@ -10,14 +15,12 @@
             <th>
                 Roles
             </th>
-            <th>
-            </th>
         </tr>
     </thead>
     <tbody>
         @foreach (var user in Model)
         {
-            <tr>
+            <tr style="cursor:pointer;" onclick="location.href='@Url.ActionLink("Edit", "Roles", new { userId = user.Id })'">
                 <td>@user.UserName</td>
                 <td>
                     <ul>
@@ -29,9 +32,6 @@
                         }
                     </ul>
                 </td>
-                <td class="align-content-center" style="text-align:center;">
-                    <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-userid="@user.Id">Change Role</a>
-                </td>
             </tr>
         }
     </tbody>
@@ -39,13 +39,12 @@
 
 <style>
     td{
+        align-content: center;
         padding: 10px;
-        min-width: 10rem;
     }
 
     th{
         align-content:center;
-        text-align:center;
         padding:3px;
     }
 
