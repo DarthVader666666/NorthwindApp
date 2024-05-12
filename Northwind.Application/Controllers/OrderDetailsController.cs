@@ -120,6 +120,7 @@ namespace Northwind.Application.Controllers
 
                 ViewBag.ProductName = product.ProductName;
                 var orderDetailCreateModel = new OrderDetailCreateModel { ProductId = productId, UnitPrice = product.UnitPrice };
+
                 return View(orderDetailCreateModel);
             }
             
@@ -133,8 +134,9 @@ namespace Northwind.Application.Controllers
             if (ModelState.IsValid)
             {
                 var customerId = this.HttpContext.Session.GetString(SessionValues.CustomerId);
+                var orderStatus = this.HttpContext.Session.GetString(SessionValues.OrderStatus);
 
-                if (!customerId.IsNullOrEmpty() && this.HttpContext.Session.GetString(SessionValues.OrderStatus) != SessionValues.InProgress)
+                if (!customerId.IsNullOrEmpty() && (orderStatus == null || orderStatus != SessionValues.InProgress))
                 {
                     this.HttpContext.Session.SetString(SessionValues.OrderStatus, SessionValues.InProgress);
                     var order = await _orderRepository.CreateAsync(new Order { CustomerId = customerId, OrderDate = DateTime.UtcNow });
@@ -150,7 +152,7 @@ namespace Northwind.Application.Controllers
                 if (orderId == null)
                 {
                     this.HttpContext.Session.SetString(SessionValues.OrderStatus, SessionValues.InProgress);
-                    return NotFound("Order not found");
+                    return NotFound("No created orders were found");
                 }
 
                 orderDetailCreateModel.OrderId = orderId;

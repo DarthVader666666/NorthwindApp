@@ -126,7 +126,6 @@ namespace Northwind.Application.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     var user = await _userManager.FindByNameAsync(Input.Email);
-                    //var customer = (await _customerRepository.GetListAsync()).FirstOrDefault(x => x.UserId == user.Id);
                     var customerId = user.CustomerId;
 
                     if (!customerId.IsNullOrEmpty()) 
