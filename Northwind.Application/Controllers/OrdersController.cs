@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
 using Northwind.Application.Models.PageModels;
 using Northwind.Application.Services;
+using Northwind.Application.Constants;
 
 namespace Northwind.Application.Controllers
 {
@@ -30,7 +31,7 @@ namespace Northwind.Application.Controllers
             _selectListFiller = selectListFiller;
         }
         
-        public async Task<IActionResult> Index(string customerId = "", int page = 1)
+        public async Task<IActionResult> Index(string? customerId, int page = 1)
         {
             var allOrders = await _orderRepository.GetListForAsync(customerId);
             var orders = allOrders.Skip((page - 1) * pageSize).Take(pageSize);
@@ -177,11 +178,17 @@ namespace Northwind.Application.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteConfirmed([FromForm] int[] ids)
         {
-            var customerId = (await _orderRepository.GetAsync(ids[0])).CustomerId;
+            var customerId = (await _orderRepository.GetAsync(ids.First())).CustomerId;
 
             await _orderRepository.DeleteSeveralAsync(ids);
 
             return RedirectToAction(nameof(Index), new { fkId = customerId });
+        }
+
+        public IActionResult ThankYou()
+        {
+            ViewBag.Link = Url.ActionLink("Index", "Categories");
+            return View();
         }
 
         private async Task<bool> OrderExists(int id)

@@ -14,8 +14,6 @@ namespace Northwind.Application.Models.OrderDetail
 
         public short Quantity { get; set; }
 
-        public float Discount { get; set; }
-
-        public string TotalCost { get; set; }
+        public short Discount { get; set; }
     }
 }

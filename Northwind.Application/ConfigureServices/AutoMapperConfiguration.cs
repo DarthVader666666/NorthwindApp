@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Northwind.Application.Constants;
 using Northwind.Application.Models.Category;
 using Northwind.Application.Models.Customer;
 using Northwind.Application.Models.Employee;
@@ -95,7 +96,11 @@ namespace NorthwindApp.ConfigureServices
 
 
 
-                    autoMapperConfig.CreateMap<Order, OrderIndexDataModel>();
+                    autoMapperConfig.CreateMap<Order, OrderIndexDataModel>()
+                        .ForMember(dest => dest.TotalCost, opts => opts.MapFrom(
+                            src => src.OrderDetails.Select(x => x.Quantity * x.UnitPrice - x.Quantity * x.UnitPrice * (decimal)x.Discount).Sum()))
+                        .ForMember(dest => dest.OrderStatus, opts => opts.MapFrom(src => GetStatus(src)));
+
                     autoMapperConfig.CreateMap<Order, OrderDetailsModel>()
                         .ForMember(dest => dest.ShipperId, opts => opts.MapFrom(src => src.ShipVia));
 
@@ -127,13 +132,25 @@ namespace NorthwindApp.ConfigureServices
 
                     autoMapperConfig.CreateMap<OrderDetail, OrderDetailIndexDataModel>()
                         .ForMember(dest => dest.ProductName, opts => opts.MapFrom(src => src.Product.ProductName))
-                        .ForMember(dest => dest.CompanyName, opts => opts.MapFrom(src => src.Order.Customer == null ? "" : src.Order.Customer.CompanyName));
+                        .ForMember(dest => dest.TotalPrice, opts => opts.MapFrom(src => src.Quantity * src.UnitPrice - (src.Quantity * src.UnitPrice) * (decimal)src.Discount));
 
-                    autoMapperConfig.CreateMap<OrderDetailCreateModel, OrderDetail>();
+                    autoMapperConfig.CreateMap<OrderDetailCreateModel, OrderDetail>()
+                    .ForMember(dest => dest.Discount, opts => opts.MapFrom(src => src.Discount/100));
                 });
 
                 return config.CreateMapper();
             });
+        }
+
+        private static string? GetStatus(Order? order)
+        { 
+            return order switch
+                {
+                    Order x when x.RequiredDate == null && x.ShippedDate == null => SessionValues.Started,
+                    Order x when x.RequiredDate != null && x.ShippedDate == null => SessionValues.InProgress,
+                    Order x when x.RequiredDate != null && x.ShippedDate != null => SessionValues.Completed,
+                    _ => "x"
+                };
         }
     }
 }

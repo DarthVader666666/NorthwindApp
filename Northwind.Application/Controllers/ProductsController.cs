@@ -29,7 +29,7 @@ namespace Northwind.Application.Controllers
             _selectListFiller = selectListFiller;
         }
 
-        public async Task<IActionResult> Index(int categoryId = 0, int page = 1)
+        public async Task<IActionResult> Index(int? categoryId, int page = 1)
         {
             var allProducts = await _productRepository.GetListForAsync(categoryId);
             var products = allProducts.Skip((page - 1) * pageSize).Take(pageSize);
@@ -37,6 +37,7 @@ namespace Northwind.Application.Controllers
 
             var pageModel = new ProductPageModel(allProducts.Count(), page, pageSize, categoryId);
             var productIndexModel = new ProductIndexModel(productDataModels, pageModel);
+            _selectListFiller.FillSelectLists(productIndexModel, categoryId: categoryId);
 
             if (categoryId > 0)
             {
@@ -64,7 +65,7 @@ namespace Northwind.Application.Controllers
                 return NotFound();
             }
 
-            ViewBag.PreviousPage = Url.ActionLink("Index", "Products", new { fkId = product.CategoryId });
+            ViewBag.PreviousPage = Url.ActionLink("Index", "Products", new { categoryId = product.CategoryId });
             ViewBag.Id = id;
 
             return View(_mapper.Map<ProductDetailsModel>(product));

@@ -73,6 +73,13 @@ namespace Northwind.Application.Services
                 productEditModel!.CategoryIdList = GetCategoryIdSelectList(categoryId);
                 productEditModel.SupplierIdList = GetSupplierIdSelectList(supplierId);
             }
+
+            if (model is ProductIndexModel)
+            {
+                var productIndexModel = model as ProductIndexModel;
+
+                productIndexModel!.CategoryList = GetCategoryIdSelectList(categoryId, true);
+            }
         }
 
         private SelectList GetEmployeeIdSelectList(int? employeeId = null)
@@ -88,7 +95,7 @@ namespace Northwind.Application.Services
             var customer = _customerRepository.GetListAsync().Result;
             var dictionary = customer.ToDictionary(c => c.CustomerId, c => c.CompanyName);
 
-            return GetSelectList(dictionary, customerId, all);
+            return GetSelectList(dictionary, customerId, all: all);
         }
 
         private SelectList GetShipperIdSelectList(int? shipperId = 0)
@@ -99,12 +106,12 @@ namespace Northwind.Application.Services
             return GetSelectList(dictionary, shipperId);
         }
 
-        private SelectList GetCategoryIdSelectList(int? categoryId = null)
+        private SelectList GetCategoryIdSelectList(int? categoryId = null, bool all = false)
         {
             var categories = _categoryRepository.GetListAsync().Result;
             var dictionary = categories.ToDictionary(c => c.CategoryId, c => c.CategoryName);
 
-            return GetSelectList(dictionary, categoryId);
+            return GetSelectList(dictionary, categoryId, all: all);
         }
 
         private SelectList GetSupplierIdSelectList(int? supplierId = null)

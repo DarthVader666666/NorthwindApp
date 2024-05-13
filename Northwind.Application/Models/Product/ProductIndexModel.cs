@@ -1,4 +1,5 @@
-﻿using Northwind.Application.Models.PageModels;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Northwind.Application.Models.PageModels;
 
 namespace Northwind.Application.Models.Product
 {
@@ -6,6 +7,7 @@ namespace Northwind.Application.Models.Product
     {
         public IEnumerable<ProductIndexDataModel> Products { get; }
         public PageModelBase PageViewModel { get; }
+        public SelectList? CategoryList { get; set; }
 
         public ProductIndexModel(IEnumerable<ProductIndexDataModel> products, PageModelBase viewModel)
         {

@@ -79,7 +79,7 @@ namespace Northwind.Application.TagHelpers
                         page = pageNumber 
                     }),
 
-                    PageModelBase x when x is OrderPageModel => urlHelper.Action(PageAction, new 
+                    PageModelBase x when x is OrderDetailsPageModel => urlHelper.Action(PageAction, new 
                     { 
                         orderId = ((OrderDetailsPageModel)PageModel).OrderId, 
                         productId = ((OrderDetailsPageModel)PageModel).ProductId, 

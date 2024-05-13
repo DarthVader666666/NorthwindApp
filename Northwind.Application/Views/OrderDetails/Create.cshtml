@@ -17,15 +17,14 @@
         <input name="OrderId" value="@Model.OrderId" hidden />
         <input name="ProductId" value="@Model.ProductId" hidden />
         <input name="UnitPrice" id="unitPrice" value="@Model.UnitPrice" hidden />
-        <input name="TotalCost" id="totalCost" hidden />
 
         <div>
             <label class="fw-bold">Unit Price: </label>
-            <labe>@Model.UnitPrice</labe>
-        </div>        
+            <label>@(((decimal)(Model.UnitPrice ?? 0m)).ToString("f2")) $</label>
+        </div>
 
-        <label class="fw-bold">Discount</label>
-        <input id="discount" onchange="onDiscountChange(value)" type="number" name="Discount" value="@Model.Discount" class="form-control" />
+        <label class="fw-bold">Discount, %</label>
+        <input id="discount" onchange="onDiscountChange(value)" type="number" name="Discount" value="@Model.Discount" class="form-control" disabled/>
 
         <label class="fw-bold">Quantity</label>
 
@@ -49,12 +48,13 @@
 
     <div class="pt-3">
         <button type="submit" form="form" class="btn btn-primary fw-bold">Save</button>
-        <button class="btn btn-primary fw-bold float-end" onclick="location.href='@Url.ActionLink("Details", "Products", new { id = Model.ProductId })'">Back</button>
+        <button class="btn btn-primary fw-bold float-end" onclick="location.href='@Url.ActionLink("Details", "Products", new { id = Model.ProductId })'">
+            Back
+        </button>
     </div>
 </div>
 
 <script>
-    const totalCost = document.getElementById('totalCost');
     const unitPrice = document.getElementById('unitPrice');
     const quantity = document.getElementById('quantity');
     const discount = document.getElementById('discount');
@@ -68,8 +68,7 @@
         }
 
         quantity.value = Number(quantity.value) - 1;
-        totalCost.value = calculateCost(discount.value);
-        totalCostLabel.textContent = totalCost.value;
+        totalCostLabel.textContent = calculateCost(discount.value);
     }
 
     function onPlusClick() {
@@ -78,23 +77,21 @@
         }
 
         quantity.value = Number(quantity.value) + 1;
-        totalCost.value = calculateCost(discount.value);
-        totalCostLabel.textContent = totalCost.value;
-    }
-
-    function calculateCost(discountValue) {
-        const cost = parseFloat(unitPrice.value) * parseFloat(quantity.value);
-        return parseFloat(cost) - (parseFloat(cost) / 100) * parseFloat(discountValue)
+        totalCostLabel.textContent = calculateCost(discount.value);
     }
 
     function onDiscountChange(value) {
         if (Number(value) < 0) { 
             discount.value = 0;
-            return;
+            value = 0;
         }
 
-        totalCost.value = calculateCost(value);
-        totalCostLabel.textContent = totalCost.value;
+        totalCostLabel.textContent = calculateCost(value);
+    }
+
+    function calculateCost(discountValue) {
+        const cost = parseFloat(unitPrice.value) * parseFloat(quantity.value);
+        return cost - (cost / 100) * parseFloat(discountValue)
     }
 </script>
 

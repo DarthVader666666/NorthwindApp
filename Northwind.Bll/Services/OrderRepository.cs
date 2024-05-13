@@ -18,19 +18,14 @@ namespace Northwind.Bll.Services
                 return null;
             }
 
-            return await DbContext.Orders.Include(x => x.OrderDetails).Include(x => x.Customer).FirstOrDefaultAsync(x => x.OrderId == (int)id);
+            return await DbContext.Orders.AsNoTracking().Include(x => x.OrderDetails).Include(x => x.Customer).FirstOrDefaultAsync(x => x.OrderId == (int)id);
         }
 
         // Gets list of orders for particular customer
         // fkId - CustomerId
-        public override Task<IEnumerable<Order?>> GetListForAsync(string fkId)
+        public override Task<IEnumerable<Order?>> GetListForAsync(string? customerId)
         {
-            if (fkId == null)
-            {
-                return Task.FromResult<IEnumerable<Order?>>(null);
-            }
-
-            return Task.Run(() => DbContext.Orders.Where(x => fkId == "" || x.CustomerId == fkId).AsEnumerable<Order?>());
+            return Task.Run(() => DbContext.Orders.Include(x => x.OrderDetails).Where(x => customerId == null || x.CustomerId == customerId).AsEnumerable<Order?>());
         }
 
         public override async Task<int> DeleteSeveralAsync(int[] ids)

@@ -4,7 +4,7 @@
     {
         public int? CategoryId { get; }
         
-        public ProductPageModel(int count, int pageNumber, int pageSize, int categoryId) : base(count, pageNumber, pageSize)
+        public ProductPageModel(int count, int pageNumber, int pageSize, int? categoryId) : base(count, pageNumber, pageSize)
         {
             CategoryId = categoryId;
         }
