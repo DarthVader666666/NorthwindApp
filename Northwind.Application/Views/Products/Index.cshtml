@@ -7,7 +7,31 @@
     ViewData["Id"] = ViewBag.Id;
 }
 
-<h1>"@(ViewBag.CategoryName)" Product List</h1>
+<h1>@(ViewBag.CategoryName != "" ? $"\"{ViewBag.CategoryName}\"" : string.Empty) Product List</h1>
+
+@if (User.IsInRole("admin"))
+{
+    <div class="pb-3 pt-3 row" style="max-width:500px;">
+        <div class="col-md-3">
+            <h4>Category:</h4>
+        </div>
+        <div class="col-md-9">
+            <select onchange="onCategorySelectListChange(value)" class="form-select">
+                @foreach (var option in Model.CategoryList!)
+                {
+                    if (option.Selected)
+                    {
+                        <option value="@option.Value" selected>@option.Text</option>
+                    }
+                    else
+                    {
+                        <option value="@option.Value">@option.Text</option>
+                    }
+                }
+            </select>
+        </div>
+    </div>
+}
 
 @await Html.PartialAsync("_IndexButtonsPartial", ViewData)
 
@@ -24,3 +48,10 @@ else
         <button class="btn btn-primary fw-bold" onclick="location.href = '@ViewData["PreviousPage"]'">Back</button>
     }
 }
+
+<script>
+    function onCategorySelectListChange(value) {
+        console.log(value)
+        window.location.href = `Products?categoryId=${value}`;
+    }
+</script>

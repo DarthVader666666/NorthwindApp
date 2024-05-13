@@ -16,9 +16,9 @@ namespace Northwind.Bll.Services
             return await DbContext.Products.Include(x => x.Category).Include(x => x.Supplier).FirstOrDefaultAsync(x => x.ProductId == (int?)id);
         }
 
-        public override Task<IEnumerable<Product?>> GetListForAsync(int fkId)
+        public override Task<IEnumerable<Product?>> GetListForAsync(int? fkId)
         {
-            return Task.Run(() => DbContext.Products.Where(x => fkId == 0 || x.CategoryId == fkId).AsEnumerable());
+            return Task.Run(() => DbContext.Products.Where(x => fkId == null || x.CategoryId == fkId).AsEnumerable());
         }
 
         public override Task<IEnumerable<Product?>> GetRangeAsync(int[] ids)

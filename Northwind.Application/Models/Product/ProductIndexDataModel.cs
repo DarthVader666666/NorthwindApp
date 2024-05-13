@@ -12,6 +12,6 @@
 
         public short? UnitsInStock { get; set; }
 
-        public short? UnitsOnOrder { get; set; }
+        public decimal? UnitPrice { get; set; }
     }
 }

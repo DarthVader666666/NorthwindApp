@@ -21,15 +21,17 @@ namespace Northwind.Application.Controllers
         private readonly IRepository<OrderDetail> _orderDetailRepository;
         private readonly IRepository<Product> _productRepository;
         private readonly IRepository<Order> _orderRepository;
+        private readonly IRepository<Customer> _customerRepository;
         private const int pageSize = 6;
 
         public OrderDetailsController(IRepository<OrderDetail> orderDetailRepository, IRepository<Product> productRepository, 
-            IRepository<Order> orderRepository, IMapper mapper)
+            IRepository<Order> orderRepository, IRepository<Customer> customerRepository, IMapper mapper)
         {
             _mapper = mapper;
             _orderDetailRepository = orderDetailRepository;
             _productRepository = productRepository;
             _orderRepository = orderRepository;
+            _customerRepository = customerRepository;
         }
 
         //public async Task<IActionResult> Index(int fkId = 0, int page = 1)
@@ -73,14 +75,14 @@ namespace Northwind.Application.Controllers
 
                 if (!orderDetailDataModels.IsNullOrEmpty())
                 {
-                    ViewBag.ProductOrCompanyName = orderDetailDataModels.First().CompanyName;
+                    ViewBag.ProductOrCompanyName = orderDetails.FirstOrDefault()?.Order?.Customer?.CompanyName ?? "";
                 }
             }
 
             if (productId > 0)
             {
                 ViewBag.PreviousPage = Url.ActionLink("Details", "Products", new { id = productId });
-                ViewBag.ProductOrCompanyName = orderDetailDataModels.First().ProductName;
+                ViewBag.ProductOrCompanyName = orderDetails.FirstOrDefault()?.Product?.ProductName ?? "";
             }
 
             return View(orderDetailIndexModel);
@@ -139,7 +141,18 @@ namespace Northwind.Application.Controllers
                 if (!customerId.IsNullOrEmpty() && (orderStatus == null || orderStatus != SessionValues.InProgress))
                 {
                     this.HttpContext.Session.SetString(SessionValues.OrderStatus, SessionValues.InProgress);
-                    var order = await _orderRepository.CreateAsync(new Order { CustomerId = customerId, OrderDate = DateTime.UtcNow });
+                    var customer = await _customerRepository.GetAsync(customerId);
+                    var order = await _orderRepository.CreateAsync(
+                        new Order 
+                        { 
+                            CustomerId = customerId, 
+                            OrderDate = DateTime.UtcNow, 
+                            ShipAddress = customer?.Address,
+                            ShipCity = customer?.City,
+                            ShipRegion = customer?.Region,
+                            ShipPostalCode = customer?.PostalCode,
+                            ShipCountry = customer?.Country
+                        });
 
                     if (order != null)
                     {
@@ -159,16 +172,16 @@ namespace Northwind.Application.Controllers
 
                 var orderDetail = _mapper.Map<OrderDetail>(orderDetailCreateModel);
 
-                if (await _orderDetailRepository.GetAsync((orderDetail.OrderId, orderDetail.ProductId)) == null)
-                {
-                    await _orderDetailRepository.CreateAsync(orderDetail);
-                }
-                else 
+                if (await OrderDetailExists(orderDetail))
                 {
                     await _orderDetailRepository.UpdateAsync(orderDetail);
                 }
+                else 
+                {
+                    await _orderDetailRepository.CreateAsync(orderDetail);
+                }
 
-                return RedirectToAction("Details", "Products", new { id = orderDetailCreateModel.ProductId });
+                return RedirectToAction("Details", "Orders", new { id = orderDetailCreateModel.OrderId });
             }
 
             return View(orderDetailCreateModel);
@@ -241,6 +254,11 @@ namespace Northwind.Application.Controllers
             await _orderDetailRepository.DeleteSeveralAsync(ids);
 
             return RedirectToAction(nameof(Index), new { fkId = ids[0].Split(' ')[0] });
+        }
+
+        private async Task<bool> OrderDetailExists(OrderDetail orderDetail)
+        {
+            return await _orderDetailRepository.GetAsync((orderDetail.OrderId, orderDetail.ProductId)) != null;
         }
     }
 }

@@ -1,10 +1,33 @@
-﻿@model Northwind.Application.Models.Order.OrderDetailsModel
+﻿@using Northwind.Application.Constants
+@model Northwind.Application.Models.Order.OrderDetailsModel
 
 @{
     ViewData["PreviousPage"] = ViewBag.PreviousPage;
     ViewData["ControllerName"] = "Orders";
+
+    var orderId = this.Context.Session.GetInt32(SessionValues.OrderId);
 }
+@functions{
+    object? SubmitOrder()
+    {
+        this.Context.Session.Remove(SessionValues.OrderId);
+        this.Context.Session.Remove(SessionValues.OrderStatus);
+        return null;
+    }
+}
+
 
 <h1>Order</h1>
 
 @await Html.PartialAsync("_DetailsPartial", Model, ViewData)
+
+<button id="orderSubmitButton" class="btn btn-info pl-3" onclick="submitOrder()" @(User.IsInRole("customer") && Model.OrderId == orderId ? "" : "hidden")>Submit Order</button>
+
+<script>
+    function submitOrder() { 
+        $('fff').html('@SubmitOrder()');
+        document.getElementById("orderSubmitButton").hidden = true;
+        location.href = '@Url.ActionLink("ThankYou", "Orders")';
+    }
+
+</script>

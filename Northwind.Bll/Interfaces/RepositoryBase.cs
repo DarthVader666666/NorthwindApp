@@ -70,7 +70,7 @@ namespace Northwind.Bll.Interfaces
             return Task.Run(() => DbContext.Set<TEntity?>().AsEnumerable());
         }
 
-        public virtual Task<IEnumerable<TEntity?>> GetListForAsync(int fkId)
+        public virtual Task<IEnumerable<TEntity?>> GetListForAsync(int? fkId)
         {
             throw new NotImplementedException();
         }
