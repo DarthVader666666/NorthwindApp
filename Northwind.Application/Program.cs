@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Northwind.Application.Services;
 using Northwind.Bll.Interfaces;
 using Northwind.Bll.Services;
 using Northwind.Data;
@@ -17,7 +18,6 @@ builder.Services.AddSession();
 var connectionString = config["ConnectionStrings:SQL_Server"];
 
 builder.Services.AddDbContext<NorthwindDbContext>(options => options.UseSqlServer(connectionString));
-//builder.Services.AddDbContext<NorthwindInMemoryDbContext>();
 builder.Services.AddDefaultIdentity<NorthwindUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<NorthwindDbContext>();
@@ -32,6 +32,7 @@ builder.Services.AddScoped<IRepository<OrderDetail>, OrderDetailRepository>();
 builder.Services.AddScoped<IRepository<Shipper>, ShipperRepository>();
 
 builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.AddScoped<ISelectListFiller, SelectListFiller>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
