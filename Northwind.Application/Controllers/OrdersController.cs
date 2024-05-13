@@ -77,11 +77,12 @@ namespace Northwind.Application.Controllers
             return View(orderDetailsModel);
         }
 
-        public async Task<IActionResult> Create(string customerId, int? productId = null)
+        public async Task<IActionResult> Create(string? customerId, int? productId = null)
         {
             ViewBag.PreviousPage = Url.ActionLink("Index", "Orders", new { customerId = customerId });
 
             var orderCreateModel = new OrderCreateModel();
+            orderCreateModel.CustomerId = customerId;
 
             _selectListFiller.FillSelectLists(orderCreateModel, customerId: customerId);
 
@@ -100,7 +101,8 @@ namespace Northwind.Application.Controllers
                 return RedirectToAction(nameof(Index), new { customerId = order.CustomerId });
             }
 
-            _selectListFiller.FillSelectLists(orderCreateModel, orderCreateModel.EmployeeId, orderCreateModel.ShipperId, orderCreateModel.CustomerId);
+            _selectListFiller.FillSelectLists(orderCreateModel, employeeId: orderCreateModel.EmployeeId, shipperId: orderCreateModel.ShipperId, 
+                customerId: orderCreateModel.CustomerId);
 
             return View(orderCreateModel);
         }
@@ -119,7 +121,8 @@ namespace Northwind.Application.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            _selectListFiller.FillSelectLists(orderEditModel, orderEditModel.EmployeeId, orderEditModel.ShipperId, orderEditModel.CustomerId);
+            _selectListFiller.FillSelectLists(orderEditModel, employeeId: orderEditModel.EmployeeId, shipperId: orderEditModel.ShipperId, 
+                customerId: orderEditModel.CustomerId);
 
             return View(orderEditModel);
         }
@@ -155,7 +158,8 @@ namespace Northwind.Application.Controllers
                 return RedirectToAction(nameof(Index), new { customerId = orderEditModel.CustomerId });
             }
 
-            _selectListFiller.FillSelectLists(orderEditModel, orderEditModel.EmployeeId, orderEditModel.ShipperId, orderEditModel.CustomerId);
+            _selectListFiller.FillSelectLists(orderEditModel, employeeId: orderEditModel.EmployeeId, shipperId: orderEditModel.ShipperId, 
+                customerId: orderEditModel.CustomerId);
 
             return View(orderEditModel);
         }

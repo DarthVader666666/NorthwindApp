@@ -2,7 +2,6 @@
 using Northwind.Application.Models.Order;
 using Northwind.Application.Models.Product;
 using Northwind.Bll.Interfaces;
-using Northwind.Bll.Services;
 using Northwind.Data.Entities;
 
 namespace Northwind.Application.Services
@@ -76,132 +75,60 @@ namespace Northwind.Application.Services
             }
         }
 
-        private SelectList GetEmployeeIdSelectList(int? selectedEmployeeId = null)
+        private SelectList GetEmployeeIdSelectList(int? employeeId = null)
         {
             var employees = _employeeRepository.GetListAsync().Result;
             var dictionary = employees.ToDictionary(e => e.EmployeeId, e => e.FirstName + " " + e.LastName);
-            dictionary.Add(0, "");
 
-            var selectList = new SelectList(dictionary, "Key", "Value", dictionary);
-
-            SelectListItem? selectedItem = null;
-
-            if (selectedEmployeeId != null)
-            {
-                selectedItem = selectList.FirstOrDefault(x => x.Value == selectedEmployeeId.ToString());
-            }
-            else
-            {
-                selectedItem = selectList.FirstOrDefault(x => x.Value == 0.ToString());
-            }
-
-            if (selectedItem != null)
-            {
-                selectedItem.Selected = true;
-            }
-
-            return selectList;
+            return GetSelectList(dictionary, employeeId);
         }
 
-        private SelectList GetCustomerIdSelectList(string? selectedCustomerId = null, bool all = false)
+        private SelectList GetCustomerIdSelectList(string? customerId = null, bool all = false)
         {
             var customer = _customerRepository.GetListAsync().Result;
             var dictionary = customer.ToDictionary(c => c.CustomerId, c => c.CompanyName);
-            string defaultValue = all ? "All" : "";
-            dictionary.Add("", defaultValue);
 
-            var selectList = new SelectList(dictionary, "Key", "Value", dictionary);
-
-            SelectListItem? selectedItem = null;
-
-            if (selectedCustomerId != null)
-            {
-                selectedItem = selectList.FirstOrDefault(x => x.Value == selectedCustomerId.ToString());
-            }
-            else
-            {
-                selectedItem = selectList.FirstOrDefault(x => x.Value == defaultValue.ToString());
-            }
-
-            if (selectedItem != null)
-            {
-                selectedItem.Selected = true;
-            }
-
-            return selectList;
+            return GetSelectList(dictionary, customerId, all);
         }
 
-        private SelectList GetShipperIdSelectList(int? selectedShipperId = 0)
+        private SelectList GetShipperIdSelectList(int? shipperId = 0)
         {
             var shippers = _shipperRepository.GetListAsync().Result;
             var dictionary = shippers.ToDictionary(s => s.ShipperId, s => s.CompanyName);
-            dictionary.Add(0, "");
 
-            var selectList = new SelectList(dictionary, "Key", "Value", dictionary);
-
-            SelectListItem? selectedItem = null;
-
-            if (selectedShipperId != null)
-            {
-                selectedItem = selectList.FirstOrDefault(x => x.Value == selectedShipperId.ToString());
-            }
-            else
-            {
-                selectedItem = selectList.FirstOrDefault(x => x.Value == 0.ToString());
-            }
-
-            if (selectedItem != null)
-            {
-                selectedItem.Selected = true;
-            }
-
-            return selectList;
+            return GetSelectList(dictionary, shipperId);
         }
 
         private SelectList GetCategoryIdSelectList(int? categoryId = null)
         {
             var categories = _categoryRepository.GetListAsync().Result;
             var dictionary = categories.ToDictionary(c => c.CategoryId, c => c.CategoryName);
-            dictionary.Add(0, "");
 
-            var selectList = new SelectList(dictionary, "Key", "Value", dictionary);
-
-            SelectListItem selectedItem = null;
-
-            if (categoryId != null)
-            {
-                selectedItem = selectList.FirstOrDefault(x => x.Value == categoryId.ToString());
-            }
-            else
-            {
-                selectedItem = selectList.FirstOrDefault(x => x.Value == 0.ToString());
-            }
-
-            if (selectedItem != null)
-            {
-                selectedItem.Selected = true;
-            }
-
-            return selectList;
+            return GetSelectList(dictionary, categoryId);
         }
 
         private SelectList GetSupplierIdSelectList(int? supplierId = null)
         {
             var suppliers = _supplierRepository.GetListAsync().Result;
             var dictionary = suppliers.ToDictionary(c => c.SupplierId, c => c.CompanyName);
-            dictionary.Add(0, "");
 
+            return GetSelectList(dictionary, supplierId);
+        }
+
+        SelectList GetSelectList<TKey>(IDictionary<TKey,string> dictionary, object? id, bool all = false)
+        {
+            dynamic defaultKeyValue = typeof(TKey) == typeof(int) ? 0 : "";
+            dictionary.Add(defaultKeyValue, all ? "All" : "");
             var selectList = new SelectList(dictionary, "Key", "Value", dictionary);
+            SelectListItem? selectedItem = null;
 
-            SelectListItem selectedItem = null;
-
-            if (supplierId != null)
+            if (id != null)
             {
-                selectedItem = selectList.FirstOrDefault(x => x.Value == supplierId.ToString());
+                selectedItem = selectList.FirstOrDefault(x => x.Value == ((TKey)id).ToString());
             }
             else
             {
-                selectedItem = selectList.FirstOrDefault(x => x.Value == 0.ToString());
+                selectedItem = selectList.FirstOrDefault(x => x.Value == (defaultKeyValue is int ? ((int)defaultKeyValue).ToString() : (string)defaultKeyValue));
             }
 
             if (selectedItem != null)
