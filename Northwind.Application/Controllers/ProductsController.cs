@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Northwind.Application.Models;
 using Northwind.Application.Models.PageModels;
 using Northwind.Application.Models.Product;
+using Northwind.Application.Services;
 using Northwind.Bll.Interfaces;
 using Northwind.Data.Entities;
 
@@ -19,15 +18,15 @@ namespace Northwind.Application.Controllers
         private readonly IMapper _mapper;
         private readonly IRepository<Product> _productRepository;
         private readonly IRepository<Category> _categoryRepository;
-        private readonly IRepository<Supplier> _supplierRepository;
+        private readonly ISelectListFiller _selectListFiller;
 
-        public ProductsController(IRepository<Product> productRepository, IRepository<Category> categoryRepository, 
-            IRepository<Supplier> supplierRepository, IMapper mapper)
+        public ProductsController(IRepository<Product> productRepository, IRepository<Category> categoryRepository, ISelectListFiller selectListFiller, 
+            IMapper mapper)
         {
             _mapper = mapper;
             _productRepository = productRepository;
             _categoryRepository = categoryRepository;
-            _supplierRepository = supplierRepository;
+            _selectListFiller = selectListFiller;
         }
 
         public async Task<IActionResult> Index(int categoryId = 0, int page = 1)
@@ -65,9 +64,6 @@ namespace Northwind.Application.Controllers
                 return NotFound();
             }
 
-            product.Supplier = await _supplierRepository.GetAsync(product.SupplierId);
-            product.Category = await _categoryRepository.GetAsync(product.CategoryId);
-
             ViewBag.PreviousPage = Url.ActionLink("Index", "Products", new { fkId = product.CategoryId });
             ViewBag.Id = id;
 
@@ -75,13 +71,12 @@ namespace Northwind.Application.Controllers
         }
 
         [Authorize(Roles = "admin")]
-        public IActionResult Create(int categoryId)
+        public IActionResult Create(int? categoryId)
         {
             ViewBag.PreviousPage = Url.ActionLink("Index", "Products", new { categoryId });
 
             var productCreateModel = new ProductCreateModel();
-            productCreateModel.CategoryIdList = GetCategoryIdSelectList(categoryId);
-            productCreateModel.SupplierIdList = GetSupplierIdSelectList();
+            _selectListFiller.FillSelectLists(productCreateModel, categoryId: categoryId);
 
             return View(productCreateModel);
         }
@@ -100,8 +95,7 @@ namespace Northwind.Application.Controllers
             }
 
             ViewBag.PreviousPage = Url.ActionLink("Index", "Products", new { categoryId = productCreateModel.CategoryId });
-            productCreateModel.CategoryIdList = GetCategoryIdSelectList(productCreateModel.CategoryId);
-            productCreateModel.SupplierIdList = GetSupplierIdSelectList(productCreateModel.SupplierId);
+            _selectListFiller.FillSelectLists(productCreateModel, categoryId: productCreateModel.CategoryId, supplierId: productCreateModel.SupplierId);
 
             return View(productCreateModel);
         }
@@ -121,8 +115,7 @@ namespace Northwind.Application.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            productEditModel.CategoryIdList = GetCategoryIdSelectList(productEditModel.CategoryId);
-            productEditModel.SupplierIdList = GetSupplierIdSelectList(productEditModel.SupplierId);
+            _selectListFiller.FillSelectLists(productEditModel, categoryId: productEditModel.CategoryId, supplierId: productEditModel.SupplierId);
 
             return View(productEditModel);
         }
@@ -159,8 +152,7 @@ namespace Northwind.Application.Controllers
                 return RedirectToAction(nameof(Index), new { categoryId = productEditModel.CategoryId });
             }
 
-            productEditModel.CategoryIdList = GetCategoryIdSelectList(productEditModel.CategoryId);
-            productEditModel.SupplierIdList = GetSupplierIdSelectList(productEditModel.SupplierId);
+            _selectListFiller.FillSelectLists(productEditModel, categoryId: productEditModel.CategoryId, supplierId: productEditModel.SupplierId);
 
             return View(productEditModel);
         }
@@ -188,60 +180,6 @@ namespace Northwind.Application.Controllers
         private async Task<bool> ProductExists(int id)
         {
             return (await _productRepository.GetAsync(id)) != null;
-        }
-
-        private SelectList GetCategoryIdSelectList(int? categoryId = null)
-        {
-            var categories = _categoryRepository.GetListAsync().Result;
-            var dictionary = categories.ToDictionary(c => c.CategoryId, c => c.CategoryName);
-            dictionary.Add(0, "");
-
-            var selectList = new SelectList(dictionary, "Key", "Value", dictionary);
-
-            SelectListItem selectedItem = null;
-
-            if (categoryId != null)
-            {
-                selectedItem = selectList.FirstOrDefault(x => x.Value == categoryId.ToString());
-            }
-            else
-            {
-                selectedItem = selectList.FirstOrDefault(x => x.Value == 0.ToString());
-            }
-
-            if (selectedItem != null)
-            {
-                selectedItem.Selected = true;
-            }
-
-            return selectList;
-        }
-
-        private SelectList GetSupplierIdSelectList(int? supplierId = null)
-        {
-            var suppliers = _supplierRepository.GetListAsync().Result;
-            var dictionary = suppliers.ToDictionary(c => c.SupplierId, c => c.CompanyName);
-            dictionary.Add(0, "");
-
-            var selectList = new SelectList(dictionary, "Key", "Value", dictionary);
-
-            SelectListItem selectedItem = null;
-
-            if (supplierId != null)
-            {
-                selectedItem = selectList.FirstOrDefault(x => x.Value == supplierId.ToString());
-            }
-            else
-            {
-                selectedItem = selectList.FirstOrDefault(x => x.Value == 0.ToString());
-            }
-
-            if (selectedItem != null)
-            {
-                selectedItem.Selected = true;
-            }
-
-            return selectList;
         }
     }
 }

@@ -7,24 +7,29 @@
     ViewData["Id"] = ViewBag.Id;
 }
 
-<h1>"@ViewBag.CompanyName" Order List</h1>
+<h1>@(ViewBag.CompanyName != "" ? $"\"{ViewBag.CompanyName}\"" : string.Empty) Order List</h1>
 
 @if (User.IsInRole("admin"))
 {
-    <div class="pb-3 pt-3" style="max-width:500px;">
-        <select onchange="onCustomerSelectListChange(value)" class="form-select">
-            @foreach (var option in Model.CustomerList)
-            {
-                if (option.Selected)
+    <div class="pb-3 pt-3 row" style="max-width:500px;">
+        <div class="col-md-3">
+            <h4>Customer:</h4>
+        </div>
+        <div class="col-md-9">
+            <select onchange="onCustomerSelectListChange(value)" class="form-select">
+                @foreach (var option in Model.CustomerList)
                 {
-                    <option value="@option.Value" selected>@option.Text</option>
+                    if (option.Selected)
+                    {
+                        <option value="@option.Value" selected>@option.Text</option>
+                    }
+                    else
+                    {
+                        <option value="@option.Value">@option.Text</option>
+                    }
                 }
-                else
-                {
-                    <option value="@option.Value">@option.Text</option>
-                }
-            }
-        </select>
+            </select>
+        </div>        
     </div>
 }
 
@@ -52,6 +57,7 @@ else
 
 <script>
     function onCustomerSelectListChange(value) {
+        console.log(value)
         window.location.href = `Orders?customerId=${value}`;
     }
 </script>
