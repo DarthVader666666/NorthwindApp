@@ -185,13 +185,25 @@ namespace Northwind.Application.Controllers
             return RedirectToAction(nameof(Index), new { fkId = customerId });
         }
 
-        public IActionResult ThankYou()
+        public async Task<IActionResult> Confirm(int? orderId)
         {
-            ViewBag.Link = Url.ActionLink("Index", "Categories");
+            if (orderId == null && !await OrderExists(orderId))
+            { 
+                return View("Error");
+            }
+
+            var order = await _orderRepository.GetAsync(orderId);
+            order!.OrderDate = DateTime.UtcNow;
+            await _orderRepository.UpdateAsync(order);
+
+            this.HttpContext.Session.Remove(SessionValues.OrderId);
+            this.HttpContext.Session.Remove(SessionValues.OrderStatus);
+
+            ViewBag.Link = Url.ActionLink("Index", "OrderDetails", new { orderId = orderId });
             return View();
         }
 
-        private async Task<bool> OrderExists(int id)
+        private async Task<bool> OrderExists(int? id)
         {
             return (await _orderRepository.GetAsync(id)) != null;
         }

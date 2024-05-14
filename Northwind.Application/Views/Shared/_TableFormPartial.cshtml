@@ -1,4 +1,5 @@
 ﻿@using System.Reflection;
+@using Northwind.Application.Constants
 @using Northwind.Bll.Services.Extensions
 @model IEnumerable<object>
 
@@ -52,16 +53,45 @@
     string GetDetailsLink(object id) => Url.ActionLink("Details", ControllerName, new { id = id }) ?? "/Home/Index";
 
     bool IsDetail => ControllerName!.Contains("Detail");
+
+    string GetStyle(object? value)
+    {
+        var status = value != null && value is string ? value as string : "";
+
+        var color = value switch
+        {
+            SessionValues.Confirmed => "black",
+            SessionValues.InProgress => "goldenrod",
+            SessionValues.Completed => "forestgreen",
+            SessionValues.NotConfirmed => "gray",
+            _ => ""
+        };
+
+        return color.Length > 0 ? $"color:{color};font-weight:bold;" : "";
+    }
 }
 
 <div style="padding-top:20px;">
     <table class="table">
-        <thead  style="height:60px;">
+        <thead style="height:60px;">
             <tr>
                 @foreach (var name in PropertyNames)
                 {
                     <th class="align-content-center">
-                        @name.SplitForUpperCase()
+                        @{
+                            var ending = "";
+
+                            if (name.Contains("Price") || name.Contains("Cost"))
+                            {
+                                ending = ", $";    
+                            }
+
+                            if (name.Contains("Discount"))
+                            {
+                                ending = ", %";
+                            }
+                        }
+                        @(name.SplitForUpperCase() + ending)
                     </th>
                 }
                 <th class="text-center align-content-center">
@@ -81,10 +111,10 @@
                     <tr class="@(!IsDetail ? "change-background-color" : "")" style="@(!IsDetail ? "cursor:pointer" : "")">
                          @foreach (var value in GetPropertyValues(item))
                          {
-                             <td class="align-content-center" onclick=@(!IsDetail ? $"location.href='{GetDetailsLink(GetId(item)!)}'" : "")>
+                             <td class="align-content-center" style="@(GetStyle(value))" onclick=@(!IsDetail ? $"location.href='{GetDetailsLink(GetId(item)!)}'" : "")>
                                 @if (value is byte[])
                                 {
-                                    <img src="data:image/bmp;base64,@Convert.ToBase64String(value as byte[] ?? new byte[0])" style="height:60px;width:60px;" />
+                                    <img src="data:image/bmp;base64,@Convert.ToBase64String(value as byte[] ?? new byte[0])" style="color: height:60px;width:60px;" />
                                 }
                                 else
                                 {
@@ -100,7 +130,14 @@
                                         }
                                         else
                                         {
-                                            @value
+                                            @if (value is float)
+                                            {
+                                                @(((float)value).ToString("f2"))
+                                            }
+                                            else
+                                            {
+                                                @value
+                                            }
                                         }
                                     }
                                 }

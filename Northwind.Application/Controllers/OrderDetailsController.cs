@@ -137,16 +137,16 @@ namespace Northwind.Application.Controllers
             {
                 var customerId = this.HttpContext.Session.GetString(SessionValues.CustomerId);
                 var orderStatus = this.HttpContext.Session.GetString(SessionValues.OrderStatus);
+                var orderId = this.HttpContext.Session.GetInt32(SessionValues.OrderId);
 
-                if (!customerId.IsNullOrEmpty() && (orderStatus == null || orderStatus != SessionValues.InProgress))
+                if (!customerId.IsNullOrEmpty() && (orderStatus == null || orderStatus == SessionValues.NotConfirmed) && (orderId == null))
                 {
-                    this.HttpContext.Session.SetString(SessionValues.OrderStatus, SessionValues.InProgress);
+                    this.HttpContext.Session.SetString(SessionValues.OrderStatus, SessionValues.NotConfirmed);
                     var customer = await _customerRepository.GetAsync(customerId);
                     var order = await _orderRepository.CreateAsync(
                         new Order 
                         { 
                             CustomerId = customerId, 
-                            OrderDate = DateTime.UtcNow, 
                             ShipAddress = customer?.Address,
                             ShipCity = customer?.City,
                             ShipRegion = customer?.Region,
@@ -160,11 +160,11 @@ namespace Northwind.Application.Controllers
                     }
                 }
 
-                var orderId = this.HttpContext.Session.GetInt32(SessionValues.OrderId);
+                orderId = this.HttpContext.Session.GetInt32(SessionValues.OrderId);
 
                 if (orderId == null)
                 {
-                    this.HttpContext.Session.SetString(SessionValues.OrderStatus, SessionValues.InProgress);
+                    this.HttpContext.Session.SetString(SessionValues.OrderStatus, SessionValues.Failed);
                     return NotFound("No created orders were found");
                 }
 
