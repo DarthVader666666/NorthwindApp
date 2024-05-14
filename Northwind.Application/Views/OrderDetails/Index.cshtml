@@ -10,7 +10,7 @@
 
 @functions {
     int? OrderId => this.Context.Session.GetInt32(SessionValues.OrderId);
-    string Hidden => User.IsInRole(UserRoles.Customer) && OrderId != null && ViewData["Id"] as int? == OrderId ? "" : "hidden";
+    string Hidden => (User.IsInRole(UserRoles.Customer) && OrderId != null) || ViewData["Id"] as int? == OrderId ? "" : "hidden";
 }
 
 <h1>"@(ViewBag.ProductOrCompanyName)" Order Details</h1>
