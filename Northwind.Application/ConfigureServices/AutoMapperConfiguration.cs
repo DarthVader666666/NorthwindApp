@@ -129,13 +129,16 @@ namespace NorthwindApp.ConfigureServices
                         .ForMember(dest => dest.OrderDate, opts => opts.MapFrom(src => DateTime.UtcNow));
 
 
+                    autoMapperConfig.CreateMap<OrderDetailIndexDataModel, OrderDetail>()
+                        .ForMember(dest => dest.Discount, opts => opts.MapFrom(src => Math.Round(src.Discount / 100, 2)));
 
                     autoMapperConfig.CreateMap<OrderDetail, OrderDetailIndexDataModel>()
                         .ForMember(dest => dest.ProductName, opts => opts.MapFrom(src => src.Product.ProductName))
+                        .ForMember(dest => dest.Discount, opts => opts.MapFrom(src => src.Discount * 100))
                         .ForMember(dest => dest.TotalPrice, opts => opts.MapFrom(src => src.Quantity * src.UnitPrice - (src.Quantity * src.UnitPrice) * (decimal)src.Discount));
 
                     autoMapperConfig.CreateMap<OrderDetailCreateModel, OrderDetail>()
-                    .ForMember(dest => dest.Discount, opts => opts.MapFrom(src => src.Discount/100));
+                    .ForMember(dest => dest.Discount, opts => opts.MapFrom(src => Math.Round((float)src.Discount / 100, 2)));
                 });
 
                 return config.CreateMapper();
@@ -146,10 +149,10 @@ namespace NorthwindApp.ConfigureServices
         { 
             return order switch
                 {
-                    Order x when x.RequiredDate == null && x.ShippedDate == null => SessionValues.Started,
-                    Order x when x.RequiredDate != null && x.ShippedDate == null => SessionValues.InProgress,
-                    Order x when x.RequiredDate != null && x.ShippedDate != null => SessionValues.Completed,
-                    _ => "x"
+                    Order x when x.OrderDate != null && x.RequiredDate == null && x.ShippedDate == null => SessionValues.Confirmed,
+                    Order x when x.OrderDate != null && x.RequiredDate != null && x.ShippedDate == null => SessionValues.InProgress,
+                    Order x when x.OrderDate != null && x.RequiredDate != null && x.ShippedDate != null => SessionValues.Completed,
+                    _ => SessionValues.NotConfirmed,
                 };
         }
     }
