@@ -72,6 +72,7 @@ namespace Northwind.Application.Controllers
             if (orderId > 0)
             {
                 ViewBag.PreviousPage = Url.ActionLink("Details", "Orders", new { id = orderId });
+                ViewBag.Id = orderId;
 
                 if (!orderDetailDataModels.IsNullOrEmpty())
                 {
