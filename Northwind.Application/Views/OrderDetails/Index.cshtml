@@ -1,18 +1,36 @@
-﻿@addTagHelper *, Northwind.Application
+﻿@using Northwind.Application.Constants
+@addTagHelper *, Northwind.Application
 @model Northwind.Application.Models.OrderDetail.OrderDetailIndexModel
 @{
     ViewData["PreviousPage"] = ViewBag.PreviousPage;
     ViewData["ControllerName"] = "OrderDetails";
     ViewData["ActionName"] = "Delete";
+    ViewData["Id"] = ViewBag.Id;
+}
+
+@functions {
+    int? OrderId => this.Context.Session.GetInt32(SessionValues.OrderId);
+    string Hidden => User.IsInRole(UserRoles.Customer) && OrderId != null && ViewData["Id"] as int? == OrderId ? "" : "hidden";
 }
 
 <h1>"@(ViewBag.ProductOrCompanyName)" Order Details</h1>
 
-@await Html.PartialAsync("_IndexButtonsPartial", ViewData)
+@if (User.IsInRole(UserRoles.Admin))
+{
+    @await Html.PartialAsync("_IndexButtonsPartial")
+}
 
 @if (Model.OrderDetails.Any())
 {
     @await Html.PartialAsync("_TableFormPartial", Model.OrderDetails, ViewData)
+
+    if (User.IsInRole(UserRoles.Customer) && !User.IsInRole(UserRoles.Admin))
+    {
+        var customerId = this.Context.Session.GetString(SessionValues.CustomerId);
+        <button class="btn btn-primary fw-bold" onclick="@($"location.href = '{Url.ActionLink("Index", "Categories")}'")">Back</button>
+    }
+
+    <button id="orderSubmitButton" class="btn btn-info pl-5" onclick="submitOrder()" @Hidden>Confirm</button>
     <page-link page-model="Model.PageViewModel" page-action="Index" class="float-end"></page-link>
 }
 else
@@ -23,3 +41,10 @@ else
         <button class="btn btn-primary fw-bold" onclick="location.href = '@ViewData["PreviousPage"]'">Back</button>
     }
 }
+
+<script>
+    function submitOrder() {
+        document.getElementById("orderSubmitButton").hidden = true;
+        location.href = '@Url.ActionLink("Confirm", "Orders", new { orderId = OrderId })';
+    }
+</script>

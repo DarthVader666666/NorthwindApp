@@ -1,4 +1,5 @@
-﻿@addTagHelper *, Northwind.Application
+﻿@using Northwind.Application.Constants
+@addTagHelper *, Northwind.Application
 @model Northwind.Application.Models.Customer.CustomerIndexModel
 @{
     ViewData["PreviousPage"] = ViewBag.PreviousPage;
@@ -8,7 +9,10 @@
 
 <h1>Customers</h1>
 
-@await Html.PartialAsync("_IndexButtonsPartial")
+@if (User.IsInRole(UserRoles.Admin))
+{
+    @await Html.PartialAsync("_IndexButtonsPartial")
+}
 
 @if (Model.Customers.Any())
 {

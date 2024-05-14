@@ -5,21 +5,7 @@
     ViewData["PreviousPage"] = ViewBag.PreviousPage;
     ViewData["ControllerName"] = "Orders";
 }
-@functions{
-    int? OrderId => Model.OrderDate == null ? Model.OrderId : this.Context.Session.GetInt32(SessionValues.OrderId);
-    string Hidden => User.IsInRole("customer") && Model.OrderId == OrderId ? "" : "hidden";
-}
 
 <h1>Order</h1>
 
 @await Html.PartialAsync("_DetailsPartial", Model, ViewData)
-
-<button id="orderSubmitButton" class="btn btn-info pl-5" onclick="submitOrder()" @Hidden>Confirm</button>
-
-<script>
-    function submitOrder() { 
-        document.getElementById("orderSubmitButton").hidden = true;
-        location.href = '@Url.ActionLink("Confirm", "Orders", new { orderId = OrderId })';
-    }
-
-</script>
