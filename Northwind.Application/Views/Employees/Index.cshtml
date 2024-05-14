@@ -1,4 +1,5 @@
-﻿@model IEnumerable<Northwind.Application.Models.Employee.EmployeeIndexModel>
+﻿@using Northwind.Application.Constants
+@model IEnumerable<Northwind.Application.Models.Employee.EmployeeIndexModel>
 @{
     ViewData["PreviousPage"] = ViewBag.PreviousPage;
     ViewData["ControllerName"] = "Employees";
@@ -7,5 +8,8 @@
 
 <h1>Employees</h1>
 
-@await Html.PartialAsync("_IndexButtonsPartial")
+@if (User.IsInRole(UserRoles.Admin))
+{
+    @await Html.PartialAsync("_IndexButtonsPartial")
+}
 @await Html.PartialAsync("_TableFormPartial", Model, ViewData)

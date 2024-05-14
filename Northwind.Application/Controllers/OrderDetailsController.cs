@@ -22,7 +22,7 @@ namespace Northwind.Application.Controllers
         private readonly IRepository<Product> _productRepository;
         private readonly IRepository<Order> _orderRepository;
         private readonly IRepository<Customer> _customerRepository;
-        private const int pageSize = 6;
+        private const int pageSize = 7;
 
         public OrderDetailsController(IRepository<OrderDetail> orderDetailRepository, IRepository<Product> productRepository, 
             IRepository<Order> orderRepository, IRepository<Customer> customerRepository, IMapper mapper)
@@ -181,7 +181,7 @@ namespace Northwind.Application.Controllers
                     await _orderDetailRepository.CreateAsync(orderDetail);
                 }
 
-                return RedirectToAction("Details", "Orders", new { id = orderDetailCreateModel.OrderId });
+                return RedirectToAction("Index", "OrderDetails", new { orderId = orderDetailCreateModel.OrderId });
             }
 
             return View(orderDetailCreateModel);

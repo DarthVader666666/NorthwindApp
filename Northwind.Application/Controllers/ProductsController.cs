@@ -13,7 +13,7 @@ namespace Northwind.Application.Controllers
 {
     public class ProductsController : Controller
     {
-        private const int pageSize = 6;
+        private const int pageSize = 7;
 
         private readonly IMapper _mapper;
         private readonly IRepository<Product> _productRepository;

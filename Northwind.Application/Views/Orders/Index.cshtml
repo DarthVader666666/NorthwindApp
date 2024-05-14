@@ -1,4 +1,5 @@
-﻿@addTagHelper *, Northwind.Application
+﻿@using Northwind.Application.Constants
+@addTagHelper *, Northwind.Application
 @model Northwind.Application.Models.Order.OrderIndexModel
 @{
     ViewData["PreviousPage"] = ViewBag.PreviousPage;
@@ -9,13 +10,13 @@
 
 <h1>@(ViewBag.CompanyName != "" ? $"\"{ViewBag.CompanyName}\"" : string.Empty) Order List</h1>
 
-@if (User.IsInRole("admin"))
+@if (User.IsInRole(UserRoles.Admin))
 {
-    <div class="pb-3 pt-3 row" style="max-width:500px;">
-        <div class="col-md-3">
-            <h4>Customer:</h4>
+    <div class="row">
+        <div class="col-3 align-content-center">
+            <h5 class="float-end">Customer:</h5>
         </div>
-        <div class="col-md-9">
+        <div class="col-6">
             <select onchange="onCustomerSelectListChange(value)" class="form-select">
                 @foreach (var option in Model.CustomerList)
                 {
@@ -29,11 +30,12 @@
                     }
                 }
             </select>
-        </div>        
+        </div>
+        <div class="col-2">
+            @await Html.PartialAsync("_IndexButtonsPartial")
+        </div>
     </div>
 }
-
-@await Html.PartialAsync("_IndexButtonsPartial", ViewData)
 
 @if (Model.Orders.Any())
 {

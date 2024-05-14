@@ -20,7 +20,7 @@ namespace Northwind.Application.Controllers
         private readonly IRepository<Order> _orderRepository;
         private readonly IRepository<Customer> _customerRepository;
         private readonly ISelectListFiller _selectListFiller;
-        private const int pageSize = 6;
+        private const int pageSize = 11;
 
         public OrdersController(IRepository<Order> orderRepository, IRepository<Customer> customerRepository, ISelectListFiller selectListFiller, 
             IMapper mapper)

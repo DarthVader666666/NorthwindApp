@@ -6,14 +6,14 @@
 @model object
 
 @functions {
-    string? ControllerName => ViewData["ControllerName"] != null ? ViewData["ControllerName"].ToString() : "";
+    string? ControllerName => ViewData["ControllerName"] != null ? ViewData["ControllerName"]?.ToString() : "";
     PropertyInfo[] Properties => Model.GetType().GetProperties();
-    string IdName => Properties.First(x => ControllerName.Contains(x.Name[..^3]) && x.Name.Contains("Id")).Name;
-    object? IdValue => Properties.First(x => ControllerName.Contains(x.Name[..^3]) && x.Name.Contains("Id")).GetValue(Model);
+    string IdName => Properties.First(x => ControllerName!.Contains(x.Name[..^3]) && x.Name.Contains("Id")).Name;
+    object? IdValue => Properties.First(x => ControllerName!.Contains(x.Name[..^3]) && x.Name.Contains("Id")).GetValue(Model);
     bool IsAdmin => User.IsInRole("admin");
     bool IsCustomer => User.IsInRole("customer");
 
-    string GetLink(string forController = "")
+    string? GetLink(string forController = "")
     {
         return (forController, ControllerName) switch
         {
@@ -25,7 +25,7 @@
         };
     }
 
-    string GetNames(Type type, object value)
+    string GetNames(Type type, object? value)
     {
         var nameProperties = type.GetProperties().Where(x => x.Name.Contains("Name"));
         return string.Join(" ", nameProperties.Select(x => x.GetValue(value) as string));
@@ -97,7 +97,10 @@
     </dl>
 </div>
 
-<button class="btn btn-primary fw-bold" @(IsAdmin ? "" : "disabled") onclick="location.href = '@Url.ActionLink("Edit", ControllerName, new { id = IdValue })'">Edit</button>
+@if(User.IsInRole(UserRoles.Admin))
+{
+    <button class="btn btn-primary fw-bold" @(IsAdmin ? "" : "disabled") onclick="location.href = '@Url.ActionLink("Edit", ControllerName, new { id = IdValue })'">Edit</button>
+}
 
 @if (ControllerName == "Products")
 {

@@ -24,3 +24,9 @@ body {
 .change-background-color:hover {
     background-color: lightgray;
 }
+
+.pagination {
+    position: absolute;
+    bottom: 45px;
+    right: 11rem;
+}
