@@ -40,7 +40,7 @@ namespace Northwind.Application.Controllers
             var pageModel = new OrderPageModel(allOrders.Count(), page, pageSize, customerId);
             var orderIndexModel = new OrderIndexModel(orderDataModels, pageModel);
 
-            if (User.IsInRole("admin"))
+            if (User.IsInRole(UserRoles.Admin))
             {
                 _selectListFiller.FillSelectLists(orderIndexModel, customerId: customerId);
             }
@@ -50,7 +50,7 @@ namespace Northwind.Application.Controllers
                 ViewBag.PreviousPage = Url.ActionLink("Details", "Customers", new { id = customerId });
             }
 
-            ViewBag.Id = customerId;
+            ViewBag.CustomerId = customerId;
             var customer = await _customerRepository.GetAsync(customerId);
             ViewBag.CompanyName = customer != null ? customer.CompanyName : "";
 
@@ -78,7 +78,7 @@ namespace Northwind.Application.Controllers
             return View(orderDetailsModel);
         }
 
-        public async Task<IActionResult> Create(string? customerId, int? productId = null)
+        public IActionResult Create(string? customerId)
         {
             ViewBag.PreviousPage = Url.ActionLink("Index", "Orders", new { customerId = customerId });
 
@@ -178,7 +178,7 @@ namespace Northwind.Application.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteConfirmed([FromForm] int[] ids)
         {
-            var customerId = (await _orderRepository.GetAsync(ids.First())).CustomerId;
+            var customerId = (await _orderRepository.GetAsync(ids.FirstOrDefault()))?.CustomerId;
 
             await _orderRepository.DeleteSeveralAsync(ids);
 
@@ -201,6 +201,14 @@ namespace Northwind.Application.Controllers
 
             ViewBag.Link = Url.ActionLink("Index", "OrderDetails", new { orderId = orderId });
             return View();
+        }
+
+        public async Task<IActionResult> Cancel(int? id)
+        {
+            await _orderRepository.DeleteAsync(id);
+            var customerId = this.HttpContext.Session.GetString(SessionValues.CustomerId);
+
+            return RedirectToAction(nameof(Index), new { customerId = customerId });
         }
 
         private async Task<bool> OrderExists(int? id)

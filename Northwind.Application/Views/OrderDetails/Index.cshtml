@@ -5,12 +5,13 @@
     ViewData["PreviousPage"] = ViewBag.PreviousPage;
     ViewData["ControllerName"] = "OrderDetails";
     ViewData["ActionName"] = "Delete";
-    ViewData["Id"] = ViewBag.Id;
+    ViewData["OrderId"] = ViewBag.OrderId;
+    ViewData["Confirmed"] = ViewBag.Confirmed;
 }
 
 @functions {
-    int? OrderId => this.Context.Session.GetInt32(SessionValues.OrderId);
-    string Hidden => (User.IsInRole(UserRoles.Customer) && OrderId != null) || ViewData["Id"] as int? == OrderId ? "" : "hidden";
+    int? OrderId => this.Context.Session.GetInt32(SessionValues.OrderId) ?? Model.OrderDetails.FirstOrDefault()?.OrderId;
+    string Hidden => User.IsInRole(UserRoles.Customer) && OrderId != null && (!(ViewData["Confirmed"] as bool?) ?? false) ? "" : "hidden";
 }
 
 <h1>"@(ViewBag.ProductOrCompanyName)" Order Details</h1>
@@ -27,10 +28,12 @@
     if (User.IsInRole(UserRoles.Customer) && !User.IsInRole(UserRoles.Admin))
     {
         var customerId = this.Context.Session.GetString(SessionValues.CustomerId);
-        <button class="btn btn-primary fw-bold" onclick="@($"location.href = '{Url.ActionLink("Index", "Categories")}'")">Back</button>
+        <button class="btn btn-primary fw-bold" onclick="@($"location.href = '{Url.ActionLink("Index", "Orders", new { customerId = customerId })}'")">Back To Orders</button>
     }
 
-    <button id="orderSubmitButton" class="btn btn-info pl-5" onclick="submitOrder()" @Hidden>Confirm</button>
+    <button id="orderConfirmButton" class="btn btn-info pl-5" onclick="confirmOrder()" @Hidden>Confirm</button>
+    <button class="btn btn-danger pl-5 float-end" onclick="@($"location.href = '{Url.ActionLink("Cancel", "Orders", new { id = OrderId })}'")" @Hidden>Cancel</button>
+
     <page-link page-model="Model.PageViewModel" page-action="Index" class="float-end"></page-link>
 }
 else
@@ -43,8 +46,8 @@ else
 }
 
 <script>
-    function submitOrder() {
-        document.getElementById("orderSubmitButton").hidden = true;
+    function confirmOrder() {
+        document.getElementById("orderConfirmButton").hidden = true;
         location.href = '@Url.ActionLink("Confirm", "Orders", new { orderId = OrderId })';
     }
 </script>
