@@ -34,31 +34,6 @@ namespace Northwind.Application.Controllers
             _customerRepository = customerRepository;
         }
 
-        //public async Task<IActionResult> Index(int fkId = 0, int page = 1)
-        //{
-        //    var allOrderDetails = await _orderDetailRepository.GetListForAsync(fkId);
-        //    var orderDetails = allOrderDetails.Skip((page - 1) * pageSize).Take(pageSize);
-        //    var orderDetailDataModels = _mapper.Map<IEnumerable<OrderDetailIndexDataModel>>(orderDetails);
-
-        //    var pageModel = new PageViewModel(allOrderDetails.Count(), page, pageSize, fkId);
-        //    var orderDetailIndexModel = new OrderDetailIndexModel(orderDetailDataModels, pageModel);
-
-        //    if (fkId > 0)
-        //    {
-        //        ViewBag.PreviousPage = Url.ActionLink("Details", "Order", new { id = fkId });
-        //    }
-
-        //    if (!orderDetails.IsNullOrEmpty())
-        //    {
-        //        var customer = await _customerRepository.GetAsync(orderDetails.First()!.Order.CustomerId);
-        //        ViewBag.CompanyName = customer == null ? "" : customer.CompanyName;
-        //    }
-
-        //    ViewBag.Id = fkId;
-
-        //    return View(orderDetailIndexModel);
-        //}
-
         public async Task<IActionResult> Index(int orderId = 0, int productId = 0, int page = 1)
         {
             var primaryKeys = $"{orderId} {productId}";
@@ -71,9 +46,12 @@ namespace Northwind.Application.Controllers
 
             if (orderId > 0)
             {
+                var order = await _orderRepository.GetAsync(orderId);
+
                 ViewBag.PreviousPage = Url.ActionLink("Details", "Orders", new { id = orderId });
                 ViewBag.OrderId = orderId;
-                ViewBag.Confirmed = !orderDetails.IsNullOrEmpty() && (await _orderRepository.GetAsync(orderId))?.OrderDate != null;
+                ViewBag.Confirmed = !orderDetails.IsNullOrEmpty() && order?.OrderDate != null;
+                ViewBag.CustomerId = order?.CustomerId;
 
                 if (!orderDetailDataModels.IsNullOrEmpty())
                 {
@@ -190,57 +168,6 @@ namespace Northwind.Application.Controllers
 
             return View(orderDetailCreateModel);
         }
-
-        //public async Task<IActionResult> Edit(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var orderDetailEditModel = _mapper.Map<OrderDetailEditModel>(await _orderDetailRepository.GetAsync(id));
-
-        //    if (orderDetailEditModel == null)
-        //    {
-        //        return RedirectToAction(nameof(Index));
-        //    }
-
-        //    return View(orderDetailEditModel);
-        //}
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Edit(int id, OrderDetailEditModel orderDetailEditModel)
-        //{
-        //    if (id != orderDetailEditModel.OrderId)
-        //    {
-        //        return RedirectToAction(nameof(Index));
-        //    }
-
-        //    if (ModelState.IsValid)
-        //    {
-        //        try
-        //        {
-        //            var orderDetail = _mapper.Map<OrderDetail>(orderDetailEditModel);
-        //            await _orderDetailRepository.UpdateAsync(orderDetail);
-        //        }
-        //        catch (DbUpdateConcurrencyException)
-        //        {
-        //            if (!await OrderDetailExists(orderDetailEditModel.OrderId))
-        //            {
-        //                return NotFound();
-        //            }
-        //            else
-        //            {
-        //                throw;
-        //            }
-        //        }
-
-        //        return RedirectToAction(nameof(Index));
-        //    }
-
-        //    return View(orderDetailEditModel);
-        //}
 
         [HttpGet]
         public async Task<IActionResult> Delete([FromQuery] string[] ids)
