@@ -85,7 +85,7 @@ namespace Northwind.Application.Services
         private SelectList GetEmployeeIdSelectList(int? employeeId = null)
         {
             var employees = _employeeRepository.GetListAsync().Result;
-            var dictionary = employees.ToDictionary(e => e.EmployeeId, e => e.FirstName + " " + e.LastName);
+            var dictionary = employees.ToDictionary(e => e?.EmployeeId ?? 0, e => e?.FirstName ?? "" + " " + e?.LastName ?? "");
 
             return GetSelectList(dictionary, employeeId);
         }
@@ -93,7 +93,7 @@ namespace Northwind.Application.Services
         private SelectList GetCustomerIdSelectList(string? customerId = null, bool all = false)
         {
             var customer = _customerRepository.GetListAsync().Result;
-            var dictionary = customer.ToDictionary(c => c.CustomerId, c => c.CompanyName);
+            var dictionary = customer.ToDictionary(c => c?.CustomerId ?? "", c => c?.CompanyName ?? "");
 
             return GetSelectList(dictionary, customerId, all: all);
         }
@@ -101,7 +101,7 @@ namespace Northwind.Application.Services
         private SelectList GetShipperIdSelectList(int? shipperId = 0)
         {
             var shippers = _shipperRepository.GetListAsync().Result;
-            var dictionary = shippers.ToDictionary(s => s.ShipperId, s => s.CompanyName);
+            var dictionary = shippers.ToDictionary(s => s?.ShipperId ?? 0, s => s?.CompanyName ?? "");
 
             return GetSelectList(dictionary, shipperId);
         }
@@ -109,7 +109,7 @@ namespace Northwind.Application.Services
         private SelectList GetCategoryIdSelectList(int? categoryId = null, bool all = false)
         {
             var categories = _categoryRepository.GetListAsync().Result;
-            var dictionary = categories.ToDictionary(c => c.CategoryId, c => c.CategoryName);
+            var dictionary = categories.ToDictionary(c => c?.CategoryId ?? 0, c => c?.CategoryName ?? "");
 
             return GetSelectList(dictionary, categoryId, all: all);
         }
@@ -117,12 +117,12 @@ namespace Northwind.Application.Services
         private SelectList GetSupplierIdSelectList(int? supplierId = null)
         {
             var suppliers = _supplierRepository.GetListAsync().Result;
-            var dictionary = suppliers.ToDictionary(c => c.SupplierId, c => c.CompanyName);
+            var dictionary = suppliers.ToDictionary(c => c?.SupplierId ?? 0, c => c?.CompanyName ?? "");
 
             return GetSelectList(dictionary, supplierId);
         }
 
-        SelectList GetSelectList<TKey>(IDictionary<TKey,string> dictionary, object? id, bool all = false)
+        SelectList GetSelectList<TKey>(IDictionary<TKey, string> dictionary, object? id, bool all = false)
         {
             dynamic defaultKeyValue = typeof(TKey) == typeof(int) ? 0 : "";
             dictionary.Add(defaultKeyValue, all ? "All" : "");

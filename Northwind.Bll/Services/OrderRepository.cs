@@ -31,9 +31,13 @@ namespace Northwind.Bll.Services
         {
             var order = await DbContext.Orders.Include(x => x.OrderDetails).FirstOrDefaultAsync(x => x.OrderId == (int?)id);
 
-            if (order != null && !order.OrderDetails.IsNullOrEmpty())
+            if (order != null)
             {
-                DbContext.OrderDetails.RemoveRange(order.OrderDetails);
+                if (!order.OrderDetails.IsNullOrEmpty())
+                {
+                    DbContext.OrderDetails.RemoveRange(order.OrderDetails);
+                }
+                
                 DbContext.Orders.Remove(order);
                 await DbContext.SaveChangesAsync();
             }
@@ -47,16 +51,8 @@ namespace Northwind.Bll.Services
 
             foreach (var id in ids!)
             {
-                var order = await DbContext.Orders.Include(x => x.OrderDetails).FirstOrDefaultAsync(x => x.OrderId == id);
-
-                if (order != null)
-                {
-                    DbContext.OrderDetails.RemoveRange(order.OrderDetails);
-                    await DbContext.SaveChangesAsync();
-
-                    await DeleteAsync(id);
-                    count++;
-                }
+                await DeleteAsync(id);
+                count++;
             }
 
             return count;

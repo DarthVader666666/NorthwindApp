@@ -33,6 +33,11 @@ namespace Northwind.Application.Controllers
         
         public async Task<IActionResult> Index(string? customerId, int page = 1)
         {
+            if (!User.IsInRole(UserRoles.Admin) && customerId != this.HttpContext.Session.GetString(SessionValues.CustomerId))
+            {
+                return Redirect("Identity/Account/AccessDenied");
+            }
+
             var allOrders = await _orderRepository.GetListForAsync(customerId);
             var orders = allOrders.Skip((page - 1) * pageSize).Take(pageSize);
             var orderDataModels = _mapper.Map<IEnumerable<OrderIndexDataModel>>(orders);
@@ -193,6 +198,12 @@ namespace Northwind.Application.Controllers
             }
 
             var order = await _orderRepository.GetAsync(orderId);
+
+            if (order?.CustomerId != HttpContext.Session.GetString(SessionValues.CustomerId))
+            {
+                return Redirect("Identity/Account/AccessDenied");
+            }
+
             order!.OrderDate = DateTime.UtcNow;
             await _orderRepository.UpdateAsync(order);
 
@@ -205,8 +216,15 @@ namespace Northwind.Application.Controllers
 
         public async Task<IActionResult> Cancel(int? id)
         {
-            await _orderRepository.DeleteAsync(id);
+            var order = await _orderRepository.GetAsync(id);
             var customerId = this.HttpContext.Session.GetString(SessionValues.CustomerId);
+
+            if (!User.IsInRole(UserRoles.Admin) && order?.CustomerId != customerId)
+            {
+                return Redirect("Identity/Account/AccessDenied");
+            }
+
+            await _orderRepository.DeleteAsync(id);            
 
             return RedirectToAction(nameof(Index), new { customerId = customerId });
         }

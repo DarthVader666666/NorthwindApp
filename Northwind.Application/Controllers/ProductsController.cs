@@ -31,6 +31,7 @@ namespace Northwind.Application.Controllers
 
         public async Task<IActionResult> Index(int? categoryId, int page = 1)
         {
+            categoryId = categoryId == 0 ? null : categoryId;
             var allProducts = await _productRepository.GetListForAsync(categoryId);
             var products = allProducts.Skip((page - 1) * pageSize).Take(pageSize);
             var productDataModels = _mapper.Map<IEnumerable<ProductIndexDataModel>>(products);
@@ -175,7 +176,7 @@ namespace Northwind.Application.Controllers
         {
             await _productRepository.DeleteSeveralAsync(ids);
 
-            return RedirectToAction(nameof(Index), new { categoryId = 0 });
+            return RedirectToAction(nameof(Index));
         }
 
         private async Task<bool> ProductExists(int id)
