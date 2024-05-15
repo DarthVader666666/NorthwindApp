@@ -72,7 +72,8 @@ namespace Northwind.Application.Controllers
             if (orderId > 0)
             {
                 ViewBag.PreviousPage = Url.ActionLink("Details", "Orders", new { id = orderId });
-                ViewBag.Id = orderId;
+                ViewBag.OrderId = orderId;
+                ViewBag.Confirmed = !orderDetails.IsNullOrEmpty() && (await _orderRepository.GetAsync(orderId))?.OrderDate != null;
 
                 if (!orderDetailDataModels.IsNullOrEmpty())
                 {
@@ -122,6 +123,8 @@ namespace Northwind.Application.Controllers
                 }
 
                 ViewBag.ProductName = product.ProductName;
+                ViewBag.CategoryId = product.CategoryId;
+
                 var orderDetailCreateModel = new OrderDetailCreateModel { ProductId = productId, UnitPrice = product.UnitPrice };
 
                 return View(orderDetailCreateModel);

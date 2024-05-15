@@ -54,21 +54,22 @@
 
     string GetLink(object id)
     {
-        if (User.IsInRole(UserRoles.Admin))
-        {
-            return Url.ActionLink("Details", ControllerName, new { id = id }) ?? "/Home/Index";
-        }
-        else
+        var defaultRoute = "/Home/Index";
+
+        if (User.IsInRole(UserRoles.Customer) && !User.IsInRole(UserRoles.Admin))
         {
             if (ControllerName == "Orders")
             {
-                return Url.ActionLink("Index", "OrderDetails", new { orderId = id }) ?? "/Home/Index";
+                return Url.ActionLink("Index", "OrderDetails", new { orderId = id }) ?? defaultRoute;
             }
-            else
+
+            if (ControllerName == "Products")
             {
-                return Url.ActionLink("Details", ControllerName, new { id = id }) ?? "/Home/Index";
+                return Url.ActionLink("Create", "OrderDetails", new { productId = id }) ?? defaultRoute;
             }
         }
+
+        return Url.ActionLink("Details", ControllerName, new { id = id }) ?? defaultRoute;
     }
 
     bool IsDetail => ControllerName!.Contains("Detail");

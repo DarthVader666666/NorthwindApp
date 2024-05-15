@@ -12,8 +12,6 @@ namespace Northwind.Application.Models.Order
 
         public DateTime? OrderDate { get; set; }
 
-        public DateTime? ShippedDate { get; set; }
-
         public string? OrderStatus { get; set; }
 
         public decimal? TotalCost { get; set; }

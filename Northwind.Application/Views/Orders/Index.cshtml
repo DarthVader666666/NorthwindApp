@@ -5,7 +5,7 @@
     ViewData["PreviousPage"] = ViewBag.PreviousPage;
     ViewData["ControllerName"] = "Orders";
     ViewData["ActionName"] = "Delete";
-    ViewData["Id"] = ViewBag.Id;
+    ViewData["CustomerId"] = ViewBag.CustomerId;
 }
 
 <h1>@(ViewBag.CompanyName != "" ? $"\"{ViewBag.CompanyName}\"" : string.Empty) Order List</h1>
@@ -41,9 +41,11 @@
 {
     @await Html.PartialAsync("_TableFormPartial", Model.Orders, ViewData)
 
-    if (ViewData["Id"] != null)
+    if (ViewData["CustomerId"] != null && User.IsInRole(UserRoles.Admin))
     {
-        <button class="btn btn-primary fw-bold" onclick="location.href = 'Customers/Details/@(ViewData["Id"])'">To Customer</button>
+        <button class="btn btn-primary fw-bold" onclick="location.href = '@Url.ActionLink("Details", "Customers", new { id = ViewData["CustomerId"] })'">
+            To Customer
+        </button>
     }
     
     <page-link page-model="Model.PageViewModel" page-action="Index" class="float-end"></page-link>

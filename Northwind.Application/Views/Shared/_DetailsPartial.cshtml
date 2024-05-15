@@ -67,7 +67,7 @@
                 }
                 else
                 {
-                    @if (id != null && id.Name == type!.Name + "Id")
+                    if (id != null && id.Name == type!.Name + "Id")
                     {
                         <a href=@Url.ActionLink("Details", type.Name[^1] == 'y' ? type.Name[..^1] + "ies" : type.Name + "s", new { id = id.GetValue(value) }) class="fw-bold">
                             @GetNames(type, value)
@@ -75,7 +75,7 @@
                     }
                     else
                     {
-                        @if (value is DateTime)
+                        if (value is DateTime)
                         {
                             @(((DateTime)value).ToShortDateString())
                         }
@@ -83,7 +83,7 @@
                         {
                             @if (value is decimal)
                             {
-                                @(((decimal)value).ToString("f2"))
+                                @(((decimal)value).ToString("f2") + (item.Name.Contains("Price") || item.Name.Contains("Cost") ? ", $" : ""))
                             }
                             else
                             {

@@ -75,7 +75,7 @@ namespace Northwind.Bll.Interfaces
             throw new NotImplementedException();
         }
 
-        public virtual Task<IEnumerable<TEntity?>> GetListForAsync(string fkId)
+        public virtual Task<IEnumerable<TEntity?>> GetListForAsync(string? fkId)
         {
             throw new NotImplementedException();
         }

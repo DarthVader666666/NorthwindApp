@@ -1,9 +1,9 @@
-﻿@functions {
+﻿@using Northwind.Application.Constants
+@functions {
     string? ControllerName => ViewData["ControllerName"] == null ? this.Context.Request.Path.ToString().TrimStart('/') : ViewData["ControllerName"]!.ToString();
-    string Disabled => User.IsInRole("admin") ? "" : "disabled";
     object? Id => ViewData["id"];
 
-    string? CreateLink =>
+    string? Link =>
         ControllerName switch
         {
             "Products" => Url.ActionLink("Create", ControllerName, new { categoryId = Id }),
@@ -12,10 +12,13 @@
         };
 }
 
-<button class="btn btn-primary fw-bold" onclick="location.href = '@CreateLink'" @Disabled>
-    Create
-</button>
+@if (User.IsInRole(UserRoles.Admin))
+{
+   <button class="btn btn-primary fw-bold" onclick="location.href = '@Link'" id="createButton">
+        Create
+    </button>
+}
 
-<button form="form" class="btn btn-danger float-end fw-bold" type="submit" id="deleteButton" hidden>
+<button form="form" class="btn btn-danger fw-bold" type="submit" id="deleteButton" hidden>
     Delete
 </button>
