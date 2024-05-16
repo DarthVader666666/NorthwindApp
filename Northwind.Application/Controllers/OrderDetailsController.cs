@@ -151,8 +151,7 @@ namespace Northwind.Application.Controllers
 
                 if (orderId == null)
                 {
-                    this.HttpContext.Session.SetString(SessionValues.OrderStatus, SessionValues.Failed);
-                    return NotFound("No created orders were found");
+                    return View("../ExceptionView", "No created orders were found");
                 }
 
                 orderDetailCreateModel.OrderId = orderId;
