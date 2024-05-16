@@ -246,7 +246,10 @@ namespace Northwind.Application.Controllers
                 return Redirect("Identity/Account/AccessDenied");
             }
 
-            await _orderRepository.DeleteAsync(id);            
+            await _orderRepository.DeleteAsync(id);
+
+            this.HttpContext.Session.Remove(SessionValues.OrderId);
+            this.HttpContext.Session.Remove(SessionValues.OrderStatus);
 
             return RedirectToAction(nameof(Index), new { customerId = customerId });
         }
