@@ -33,7 +33,7 @@ namespace Northwind.Application.Controllers
         
         public async Task<IActionResult> Index(string? customerId, int page = 1)
         {
-            if (!User.IsInRole(UserRoles.Admin) && customerId != this.HttpContext.Session.GetString(SessionValues.CustomerId))
+            if (!User.IsInRole(UserRoles.Admin) && (customerId == null || customerId != this.HttpContext.Session.GetString(SessionValues.CustomerId)))
             {
                 return Redirect("Identity/Account/AccessDenied");
             }

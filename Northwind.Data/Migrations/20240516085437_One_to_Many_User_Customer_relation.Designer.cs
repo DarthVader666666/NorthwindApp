@@ -12,8 +12,8 @@ using Northwind.Data;
 namespace Northwind.Data.Migrations
 {
     [DbContext(typeof(NorthwindDbContext))]
-    [Migration("20240511095325_One_to_One_User_Customer_Relation")]
-    partial class One_to_One_User_Customer_Relation
+    [Migration("20240516085437_One_to_Many_User_Customer_relation")]
+    partial class One_to_Many_User_Customer_relation
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
