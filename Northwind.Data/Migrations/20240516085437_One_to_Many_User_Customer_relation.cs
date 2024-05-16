@@ -5,7 +5,7 @@
 namespace Northwind.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class One_to_One_User_Customer_Relation : Migration
+    public partial class One_to_Many_User_Customer_relation : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
