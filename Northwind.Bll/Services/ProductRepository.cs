@@ -13,7 +13,7 @@ namespace Northwind.Bll.Services
 
         public override async Task<Product?> GetAsync(object? id)
         {
-            return await DbContext.Products.Include(x => x.Category).Include(x => x.Supplier).FirstOrDefaultAsync(x => x.ProductId == (int?)id);
+            return await DbContext.Products.AsNoTracking().Include(x => x.Category).Include(x => x.Supplier).FirstOrDefaultAsync(x => x.ProductId == (int?)id);
         }
 
         public override Task<IEnumerable<Product?>> GetListForAsync(int? categoryId)

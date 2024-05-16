@@ -40,7 +40,7 @@ namespace Northwind.Bll.Interfaces
 
             foreach (var id in ids!)
             {
-                var item = await DeleteAsync(id);
+                await DeleteAsync(id);
                 count++;
             }
 
@@ -53,7 +53,7 @@ namespace Northwind.Bll.Interfaces
 
             foreach (var id in ids!)
             {
-                var item = await DeleteAsync(id);
+                await DeleteAsync(id);
                 count++;
             }
 
@@ -70,12 +70,12 @@ namespace Northwind.Bll.Interfaces
             return Task.Run(() => DbContext.Set<TEntity?>().AsEnumerable());
         }
 
-        public virtual Task<IEnumerable<TEntity?>> GetListForAsync(int? fkId)
+        public virtual Task<IEnumerable<TEntity?>> GetListForAsync(int? foreignKey)
         {
             throw new NotImplementedException();
         }
 
-        public virtual Task<IEnumerable<TEntity?>> GetListForAsync(string? fkId)
+        public virtual Task<IEnumerable<TEntity?>> GetListForAsync(string? foreignKey)
         {
             throw new NotImplementedException();
         }

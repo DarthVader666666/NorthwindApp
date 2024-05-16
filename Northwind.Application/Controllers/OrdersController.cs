@@ -19,15 +19,17 @@ namespace Northwind.Application.Controllers
         private readonly IMapper _mapper;
         private readonly IRepository<Order> _orderRepository;
         private readonly IRepository<Customer> _customerRepository;
+        private readonly IRepository<Product> _productRepository;
         private readonly ISelectListFiller _selectListFiller;
         private const int pageSize = 10;
 
-        public OrdersController(IRepository<Order> orderRepository, IRepository<Customer> customerRepository, ISelectListFiller selectListFiller, 
-            IMapper mapper)
+        public OrdersController(IRepository<Order> orderRepository, IRepository<Customer> customerRepository, IRepository<Product> productRepository,
+            ISelectListFiller selectListFiller, IMapper mapper)
         {
             _mapper = mapper;
             _orderRepository = orderRepository;
             _customerRepository = customerRepository;
+            _productRepository = productRepository;
             _selectListFiller = selectListFiller;
         }
         
@@ -194,7 +196,7 @@ namespace Northwind.Application.Controllers
         {
             if (orderId == null && !await OrderExists(orderId))
             { 
-                return View("Error");
+                return NotFound($"Order {orderId} not found");
             }
 
             var order = await _orderRepository.GetAsync(orderId);
@@ -202,6 +204,26 @@ namespace Northwind.Application.Controllers
             if (order?.CustomerId != HttpContext.Session.GetString(SessionValues.CustomerId))
             {
                 return Redirect("Identity/Account/AccessDenied");
+            }
+
+            var orderDetails = order!.OrderDetails;
+
+            foreach (var orderDetail in orderDetails)
+            {
+                var product = await _productRepository.GetAsync(orderDetail.ProductId);
+
+                if(product != null && product.UnitsInStock != null)
+                {
+                    product.UnitsInStock = (short?)(product.UnitsInStock - orderDetail.Quantity);
+                    product.UnitsOnOrder = (short?)(product.UnitsOnOrder ?? 0 + orderDetail.Quantity);
+
+                    if (product.UnitsInStock < 0)
+                    {
+                        return View("../ExceptionView", "Units in stock has negative value");
+                    }
+
+                    await _productRepository.UpdateAsync(product);
+                }
             }
 
             order!.OrderDate = DateTime.UtcNow;

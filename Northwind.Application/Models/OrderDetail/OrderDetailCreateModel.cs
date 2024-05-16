@@ -15,5 +15,7 @@ namespace Northwind.Application.Models.OrderDetail
         public short Quantity { get; set; }
 
         public short Discount { get; set; }
+
+        public short? UnitsInStock { get; set; }
     }
 }

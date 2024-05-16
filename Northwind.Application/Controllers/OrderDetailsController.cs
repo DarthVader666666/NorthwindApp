@@ -103,7 +103,12 @@ namespace Northwind.Application.Controllers
                 ViewBag.ProductName = product.ProductName;
                 ViewBag.CategoryId = product.CategoryId;
 
-                var orderDetailCreateModel = new OrderDetailCreateModel { ProductId = productId, UnitPrice = product.UnitPrice };
+                var orderDetailCreateModel = new OrderDetailCreateModel 
+                { 
+                    ProductId = productId, 
+                    UnitPrice = product.UnitPrice, 
+                    UnitsInStock = product.UnitsInStock 
+                };
 
                 return View(orderDetailCreateModel);
             }
