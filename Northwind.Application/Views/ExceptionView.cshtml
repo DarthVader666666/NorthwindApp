@@ -1,0 +1,7 @@
+﻿@model string
+@{
+    var errorMessage = Model as string ?? "Error accured";
+}
+<p1>
+    <strong style="color:red">@errorMessage</strong>
+</p1>

@@ -11,8 +11,8 @@
         Task<TEntity?> DeleteAsync(object? id);
         Task<int> DeleteSeveralAsync(int[] ids);
         Task<int> DeleteSeveralAsync(string[] ids);
-        Task<IEnumerable<TEntity?>> GetListForAsync(int? fkId);
-        Task<IEnumerable<TEntity?>> GetListForAsync(string fkId);
+        Task<IEnumerable<TEntity?>> GetListForAsync(int? foreignKey);
+        Task<IEnumerable<TEntity?>> GetListForAsync(string? foreignKey);
         Task<bool> ExistsAsync(TEntity item);
     }
 }

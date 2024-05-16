@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Components
+@using Northwind.Application.Constants
 @model Northwind.Application.Models.OrderDetail.OrderDetailCreateModel
 @{
     ViewData["ControllerName"] = "OrderDetails";
@@ -18,23 +19,36 @@
         <input name="OrderId" value="@Model.OrderId" hidden />
         <input name="ProductId" value="@Model.ProductId" hidden />
         <input name="UnitPrice" id="unitPrice" value="@Model.UnitPrice" hidden />
+        @if (!User.IsInRole(UserRoles.Admin))
+        {
+            <input id="discount" type="number" name="Discount" value="@Model.Discount" hidden />
+        }
 
         <div>
             <label class="fw-bold">Unit Price: </label>
-            <label>@(((decimal)(Model.UnitPrice ?? 0m)).ToString("f2")) $</label>
+            <span class="fw-normal">@(((decimal)(Model.UnitPrice ?? 0m)).ToString("f2")) $</span>
         </div>
 
-        <label class="fw-bold">Discount, %</label>
-        <input id="discount" onchange="onDiscountChange(value)" type="number" name="Discount" value="@Model.Discount" class="form-control" disabled/>
-
-        <label class="fw-bold">Quantity</label>
-
         <div>
+            <label class="fw-bold">Discount: </label>
+            @if (User.IsInRole(UserRoles.Admin))
+            {
+                <input id="discount" onchange="onDiscountChange(value)" type="number" name="Discount" value="@Model.Discount" class="form-control" />
+            }
+            else
+            {
+                <span>@(Model.Discount) %</span>
+            }
+        </div>
+
+        <span id="overloadQuantityError" style="color:transparent">Not enough units in stock</span>
+        <div>
+            <label class="fw-bold">Quantity</label>
             <button id="minus" onclick="onMinusClick()" type="button" class="btn btn-default btn-number" disabled="disabled" data-type="minus" data-field="Quantity">
                 <span class="glyphicon glyphicon-minus"></span>
             </button>
 
-            <input id="quantity" name="Quantity" value="@Model.Quantity" class="quantity-border"/>
+            <input id="quantity" name="Quantity" value="@Model.Quantity" onchange="onQuantityChange(value)" class="quantity-border"/>
 
             <button id="plus" onclick="onPlusClick()" type="button" class="btn btn-default btn-number" data-type="plus" data-field="Quantity">
                 <span class="glyphicon glyphicon-plus"></span>
@@ -43,13 +57,13 @@
         
         <div class="pt-3">
             <label class="fw-bold">Total Cost: </label>
-            <label id="totalCostLabel"></label>
-            <span> $</span>
+            <span id="totalCostLabel" class="fw-normal"></span>
+            <label class="fw-normal"> $</label>
         </div>
     </form>
 
     <div class="pt-3">
-        <button type="submit" form="form" class="btn btn-primary fw-bold">Save</button>
+        <button id="saveButton" type="submit" form="form" class="btn btn-primary fw-bold">Save</button>
         <button class="btn btn-primary fw-bold float-end" onclick="location.href='@Url.ActionLink("Index", "Products", new { categoryId = categoryId })'">
             Back
         </button>
@@ -62,24 +76,25 @@
     const discount = document.getElementById('discount');
     const minus = document.getElementById('minus');
     const totalCostLabel = document.getElementById('totalCostLabel');
+    const overloadQuantityError = document.getElementById('overloadQuantityError');
+    const saveButton = document.getElementById('saveButton');
+    const unitsInStock = @Model.UnitsInStock;
 
     function onMinusClick() {
         if (Number(quantity.value) === 0) { 
             minus.disabled = true;
             return;
         }
-
         quantity.value = Number(quantity.value) - 1;
-        totalCostLabel.textContent = calculateCost(discount.value);
+        onQuantityChange(quantity.value)
     }
 
     function onPlusClick() {
         if (Number(quantity.value) === 0) {
             minus.disabled = false;
         }
-
         quantity.value = Number(quantity.value) + 1;
-        totalCostLabel.textContent = calculateCost(discount.value);
+        onQuantityChange(quantity.value)
     }
 
     function onDiscountChange(value) {
@@ -87,13 +102,28 @@
             discount.value = 0;
             value = 0;
         }
-
         totalCostLabel.textContent = calculateCost(value);
     }
 
     function calculateCost(discountValue) {
         const cost = parseFloat(unitPrice.value) * parseFloat(quantity.value);
         return cost - (cost / 100) * parseFloat(discountValue)
+    }
+
+    function onQuantityChange(value) {
+        if (Number(value) > unitsInStock) {
+            overloadQuantityError.style.color = 'red';
+            saveButton.disabled = true;
+            minus.disabled = false;
+            plus.disabled = true;
+        }
+        else {
+            overloadQuantityError.style.color = 'transparent';
+            saveButton.disabled = false;
+            plus.disabled = false;
+        }
+
+        totalCostLabel.textContent = calculateCost(discount.value);
     }
 </script>
 

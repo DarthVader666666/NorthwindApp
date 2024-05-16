@@ -138,7 +138,7 @@ namespace NorthwindApp.ConfigureServices
                         .ForMember(dest => dest.TotalPrice, opts => opts.MapFrom(src => src.Quantity * src.UnitPrice - (src.Quantity * src.UnitPrice) * (decimal)src.Discount));
 
                     autoMapperConfig.CreateMap<OrderDetailCreateModel, OrderDetail>()
-                    .ForMember(dest => dest.Discount, opts => opts.MapFrom(src => Math.Round((float)src.Discount / 100, 2)));
+                        .ForMember(dest => dest.Discount, opts => opts.MapFrom(src => Math.Round((float)src.Discount / 100, 2)));
                 });
 
                 return config.CreateMapper();
