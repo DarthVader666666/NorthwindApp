@@ -48,7 +48,7 @@
                 <span class="glyphicon glyphicon-minus"></span>
             </button>
 
-            <input id="quantity" name="Quantity" value="@Model.Quantity" onchange="onQuantityChange(value)" class="quantity-border"/>
+            <input id="quantity" name="Quantity" value="@Model.Quantity" onchange="onQuantityChange(value)" class="quantity-border" style="max-width:170px;"/>
 
             <button id="plus" onclick="onPlusClick()" type="button" class="btn btn-default btn-number" data-type="plus" data-field="Quantity">
                 <span class="glyphicon glyphicon-plus"></span>
@@ -71,7 +71,7 @@
 </div>
 
 <script>
-    const unitPrice = document.getElementById('unitPrice');
+    const unitPrice = parseFloat('@Model.UnitPrice.ToString()?.Replace(',','.')');
     const quantity = document.getElementById('quantity');
     const discount = document.getElementById('discount');
     const minus = document.getElementById('minus');
@@ -106,7 +106,7 @@
     }
 
     function calculateCost(discountValue) {
-        const cost = parseFloat(unitPrice.value) * parseFloat(quantity.value);
+        const cost = parseFloat(unitPrice) * parseFloat(quantity.value);
         return cost - (cost / 100) * parseFloat(discountValue)
     }
 
