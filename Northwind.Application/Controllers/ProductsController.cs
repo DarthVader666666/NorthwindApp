@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Northwind.Application.Enums;
+using Northwind.Application.Extensions;
 using Northwind.Application.Models.PageModels;
 using Northwind.Application.Models.Product;
 using Northwind.Application.Services;
@@ -13,6 +15,9 @@ namespace Northwind.Application.Controllers
 {
     public class ProductsController : Controller
     {
+        private static SortBy? Sort;
+        private static bool Desc = false;
+
         private const int pageSize = 7;
 
         private readonly IMapper _mapper;
@@ -29,15 +34,31 @@ namespace Northwind.Application.Controllers
             _selectListFiller = selectListFiller;
         }
 
-        public async Task<IActionResult> Index(int? categoryId, int page = 1)
+        public async Task<IActionResult> Index(int? categoryId, int page = 1, string? sortBy = null)
         {
             categoryId = categoryId == 0 ? null : categoryId;
-            var allProducts = await _productRepository.GetListForAsync(categoryId);
-            var products = allProducts.Skip((page - 1) * pageSize).Take(pageSize);
+
+            var products = await _productRepository.GetListForAsync(categoryId);
             var productDataModels = _mapper.Map<IEnumerable<ProductIndexDataModel>>(products);
 
-            var pageModel = new ProductPageModel(allProducts.Count(), page, pageSize, categoryId);
+            if (sortBy != null)
+            {
+                SortBy? sort = Enum.TryParse(sortBy, out SortBy sortByValue) ? sortByValue : null;
+
+                Desc = Sort == sort ? !Desc : Desc;
+                Sort = sort;
+            }
+
+            if (Sort != null)
+            {
+                productDataModels = productDataModels.SortSequence(Sort, Desc);
+            }
+
+            productDataModels = productDataModels.Skip((page - 1) * pageSize).Take(pageSize);            
+
+            var pageModel = new ProductPageModel(products.Count(), page, pageSize, categoryId);
             var productIndexModel = new ProductIndexModel(productDataModels, pageModel);
+
             _selectListFiller.FillSelectLists(productIndexModel, categoryId: categoryId);
 
             if (categoryId > 0)
@@ -45,7 +66,7 @@ namespace Northwind.Application.Controllers
                 ViewBag.PreviousPage = Url.ActionLink("Details", "Categories", new { id = categoryId });
             }
 
-            ViewBag.Id = categoryId;
+            ViewBag.CategoryId = categoryId;
             var category = await _categoryRepository.GetAsync(categoryId);
             ViewBag.CategoryName = category != null ? category.CategoryName : "";
 
