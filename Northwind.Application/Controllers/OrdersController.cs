@@ -21,12 +21,13 @@ namespace Northwind.Application.Controllers
         private static SortBy? Sort;
         private static bool Desc = false;
 
+        private const int pageSize = 10;
+
         private readonly IMapper _mapper;
         private readonly IRepository<Order> _orderRepository;
         private readonly IRepository<Customer> _customerRepository;
         private readonly IRepository<Product> _productRepository;
         private readonly ISelectListFiller _selectListFiller;
-        private const int pageSize = 10;
 
         public OrdersController(IRepository<Order> orderRepository, IRepository<Customer> customerRepository, IRepository<Product> productRepository,
             ISelectListFiller selectListFiller, IMapper mapper)
@@ -58,7 +59,7 @@ namespace Northwind.Application.Controllers
 
             if (Sort != null)
             {
-                orderDataModels = orderDataModels.OrderSequence(Sort, Desc);
+                orderDataModels = orderDataModels.SortSequence(Sort, Desc);
             }
             
             orderDataModels = orderDataModels.Skip((page - 1) * pageSize).Take(pageSize);

@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Northwind.Application.Enums;
+using Northwind.Application.Extensions;
 using Northwind.Application.Models.Customer;
 using Northwind.Application.Models.PageModels;
 using Northwind.Bll.Interfaces;
@@ -11,9 +13,13 @@ namespace Northwind.Application.Controllers
 {
     public class CustomersController : Controller
     {
+        private static SortBy? Sort;
+        private static bool Desc = false;
+
+        private const int pageSize = 7;
+
         private readonly IRepository<Customer> _customerRepository;
         private readonly IMapper _mapper;
-        private const int pageSize = 6;
 
         public CustomersController(IRepository<Customer> customerRepository, IMapper mapper)
         {
@@ -21,13 +27,27 @@ namespace Northwind.Application.Controllers
             _mapper = mapper;
         }
 
-        public async Task<IActionResult> Index(int page = 1)
+        public async Task<IActionResult> Index(int page = 1, string? sortBy = null)
         {
-            var allCustomers = await _customerRepository.GetListAsync();
-            var customers = allCustomers.Skip((page - 1) * pageSize).Take(pageSize);
+            var customers = await _customerRepository.GetListAsync();
             var customerDataModels = _mapper.Map<IEnumerable<CustomerIndexDataModel>>(customers);
 
-            var pageModel = new PageModelBase(allCustomers.Count(), page, pageSize);
+            if (sortBy != null)
+            {
+                SortBy? sort = Enum.TryParse(sortBy, out SortBy sortByValue) ? sortByValue : null;
+
+                Desc = Sort == sort ? !Desc : Desc;
+                Sort = sort;
+            }
+
+            if (Sort != null)
+            {
+                customerDataModels = customerDataModels.SortSequence(Sort, Desc);
+            }
+
+            customerDataModels = customerDataModels.Skip((page - 1) * pageSize).Take(pageSize);
+
+            var pageModel = new PageModelBase(customers.Count(), page, pageSize);
             var productIndexModel = new CustomerIndexModel(customerDataModels, pageModel);
 
             return View(productIndexModel);

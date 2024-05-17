@@ -28,7 +28,7 @@ namespace Northwind.Bll.Services
                 .FirstOrDefaultAsync(x => x.OrderId == ids.orderId && x.ProductId == ids.productId);
         }
 
-        public override async Task<IEnumerable<OrderDetail?>?> GetListForAsync(string? primaryKeys)
+        public override async Task<IEnumerable<OrderDetail?>> GetListForAsync(string? primaryKeys)
         {
             var couple = primaryKeys.IsNullOrEmpty() ? new string[]{ "0", "0" } : primaryKeys!.Split(' ');
             (int orderId, int productId) ids = (int.Parse(couple[0]), int.Parse(couple[1]));
@@ -42,7 +42,7 @@ namespace Northwind.Bll.Services
 
             if (!orderDetails.IsNullOrEmpty())
             {
-                foreach (var item in orderDetails.Select(x => x!.Order))
+                foreach (var item in orderDetails.Select(x => x!.Order).ToList())
                 {
                     if (item != null)
                     { 

@@ -5,7 +5,8 @@
     ViewData["PreviousPage"] = ViewBag.PreviousPage;
     ViewData["ControllerName"] = "Products";
     ViewData["ActionName"] = "Delete";
-    ViewData["Id"] = ViewBag.Id;
+    ViewData["CategoryId"] = ViewBag.CategoryId;
+    ViewData["ForeignKey"] = ViewBag.CategoryId;
 }
 
 <h1>@(ViewBag.CategoryName != "" ? $"\"{ViewBag.CategoryName}\"" : string.Empty) Product List</h1>

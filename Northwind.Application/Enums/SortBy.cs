@@ -4,6 +4,13 @@
     {
         OrderStatus,
         OrderDate,
-        TotalCost
+        TotalCost,
+        ProductName,
+        UnitsInStock,
+        UnitPrice,
+        QuantityPerUnit,
+        CompanyName,
+        ContactName,
+        Country
     }
 }
