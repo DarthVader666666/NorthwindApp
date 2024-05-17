@@ -6,6 +6,7 @@
     ViewData["ControllerName"] = "Orders";
     ViewData["ActionName"] = "Delete";
     ViewData["CustomerId"] = ViewBag.CustomerId;
+    ViewData["ForeignKey"] = ViewBag.CustomerId;
 }
 
 <h1>@(ViewBag.CompanyName != "" ? $"\"{ViewBag.CompanyName}\"" : string.Empty) Order List</h1>
@@ -61,7 +62,7 @@ else
 
 <script>
     function onCustomerSelectListChange(value) {
-        console.log(value)
-        window.location.href = `Orders?customerId=${value}`;
+        const url = `/Orders?customerId=${value}`;
+        window.location.href = window.location.origin.concat(url);
     }
 </script>

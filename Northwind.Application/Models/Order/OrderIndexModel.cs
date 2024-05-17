@@ -8,7 +8,7 @@ namespace Northwind.Application.Models.Order
     {
         public IEnumerable<OrderIndexDataModel> Orders { get; }
         public PageModelBase PageViewModel { get; }
-        public SelectList CustomerList { get; set;  }
+        public SelectList? CustomerList { get; set;  }
 
         public OrderIndexModel(IEnumerable<OrderIndexDataModel> orders, PageModelBase viewModel)
         {

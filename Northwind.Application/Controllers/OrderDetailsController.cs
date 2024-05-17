@@ -72,7 +72,7 @@ namespace Northwind.Application.Controllers
         {
             if (ids == null)
             {
-                return NotFound();
+                return View("../ExceptionView", "Order Details not Found");
             }
 
             var orderDetail = await _orderDetailRepository.GetAsync(ids);
@@ -97,7 +97,7 @@ namespace Northwind.Application.Controllers
 
                 if (product == null) 
                 {
-                    return NotFound("Product not found");
+                    return View("../ExceptionView", "Product not found");
                 }
 
                 ViewBag.ProductName = product.ProductName;

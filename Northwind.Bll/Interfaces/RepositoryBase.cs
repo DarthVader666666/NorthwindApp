@@ -70,16 +70,6 @@ namespace Northwind.Bll.Interfaces
             return Task.Run(() => DbContext.Set<TEntity?>().AsEnumerable());
         }
 
-        public virtual Task<IEnumerable<TEntity?>> GetListForAsync(int? foreignKey)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual Task<IEnumerable<TEntity?>> GetListForAsync(string? foreignKey)
-        {
-            throw new NotImplementedException();
-        }
-
         public virtual Task<IEnumerable<TEntity?>> GetRangeAsync(int[] ids)
         {
             return Task.Run(() =>
@@ -128,6 +118,16 @@ namespace Northwind.Bll.Interfaces
         protected async Task<TEntity?> SaveAsync(TEntity? item)
         {
             return await DbContext.SaveChangesAsync() > 0 ? item : null; 
+        }
+
+        public virtual Task<IEnumerable<TEntity?>> GetListForAsync(int? foreignKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual Task<IEnumerable<TEntity?>> GetListForAsync(string? foreignKey)
+        {
+            throw new NotImplementedException();
         }
     }
 }
