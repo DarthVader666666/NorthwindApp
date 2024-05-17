@@ -15,23 +15,29 @@ namespace Northwind.Bll.Services
             _customerRepository = customerRepository;
         }
 
-        public override async Task<OrderDetail?> GetAsync(object id)
+        public override async Task<OrderDetail?> GetAsync(object? id)
         {
+            if (id == null)
+            {
+                return null;
+            }
+
             var ids = ((int orderId, int productId))id;
 
-            return await DbContext.OrderDetails.AsNoTracking().Include(x => x.Product).FirstOrDefaultAsync(x => x.OrderId == ids.orderId && x.ProductId == ids.productId);
+            return await DbContext.OrderDetails.AsNoTracking().Include(x => x.Product)
+                .FirstOrDefaultAsync(x => x.OrderId == ids.orderId && x.ProductId == ids.productId);
         }
 
-        public override async Task<IEnumerable<OrderDetail?>> GetListForAsync(string? primaryKeys)
+        public override async Task<IEnumerable<OrderDetail?>?> GetListForAsync(string? primaryKeys)
         {
             var couple = primaryKeys.IsNullOrEmpty() ? new string[]{ "0", "0" } : primaryKeys!.Split(' ');
             (int orderId, int productId) ids = (int.Parse(couple[0]), int.Parse(couple[1]));
 
-            List<OrderDetail> orderDetails = ids switch
+            var orderDetails = ids switch
             {
-                (> 0, 0) => DbContext.OrderDetails.Include(x => x.Product).Include(x => x.Order).Where(x => x.OrderId == ids.orderId).ToList(),
-                (0, > 0) => DbContext.OrderDetails.Include(x => x.Product).Include(x => x.Order).Where(x => x.ProductId == ids.productId).ToList(),
-                _ => new List<OrderDetail>()
+                (> 0, 0) => DbContext.OrderDetails.Include(x => x.Product).Include(x => x.Order).Where(x => x.OrderId == ids.orderId),
+                (0, > 0) => DbContext.OrderDetails.Include(x => x.Product).Include(x => x.Order).Where(x => x.ProductId == ids.productId),
+                _ => null
             };
 
             if (!orderDetails.IsNullOrEmpty())
@@ -45,7 +51,7 @@ namespace Northwind.Bll.Services
                 }
             }
 
-            return orderDetails;
+            return orderDetails?.AsEnumerable();
         }
 
         public override async Task<int> DeleteSeveralAsync(string[] ids)

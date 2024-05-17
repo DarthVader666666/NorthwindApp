@@ -10,12 +10,17 @@ using Microsoft.AspNetCore.Authorization;
 using Northwind.Application.Models.PageModels;
 using Northwind.Application.Services;
 using Northwind.Application.Constants;
+using Northwind.Application.Extensions;
+using Northwind.Application.Enums;
 
 namespace Northwind.Application.Controllers
 {
     [Authorize(Roles ="admin,customer")]
     public class OrdersController : Controller
     {
+        private static SortBy? Sort;
+        private static bool Desc = false;
+
         private readonly IMapper _mapper;
         private readonly IRepository<Order> _orderRepository;
         private readonly IRepository<Customer> _customerRepository;
@@ -33,18 +38,32 @@ namespace Northwind.Application.Controllers
             _selectListFiller = selectListFiller;
         }
         
-        public async Task<IActionResult> Index(string? customerId, int page = 1)
+        public async Task<IActionResult> Index(string? customerId, int page = 1, string? sortBy = null)
         {
             if (!User.IsInRole(UserRoles.Admin) && (customerId == null || customerId != this.HttpContext.Session.GetString(SessionValues.CustomerId)))
             {
                 return Redirect("Identity/Account/AccessDenied");
             }
 
-            var allOrders = await _orderRepository.GetListForAsync(customerId);
-            var orders = allOrders.Skip((page - 1) * pageSize).Take(pageSize);
+            var orders = await _orderRepository.GetListForAsync(customerId);
             var orderDataModels = _mapper.Map<IEnumerable<OrderIndexDataModel>>(orders);
 
-            var pageModel = new OrderPageModel(allOrders.Count(), page, pageSize, customerId);
+            if (sortBy != null)
+            {
+                SortBy? sort = Enum.TryParse(sortBy, out SortBy sortByValue) ? sortByValue : null;
+
+                Desc = Sort == sort ? !Desc : Desc;
+                Sort = sort;
+            }
+
+            if (Sort != null)
+            {
+                orderDataModels = orderDataModels.OrderSequence(Sort, Desc);
+            }
+            
+            orderDataModels = orderDataModels.Skip((page - 1) * pageSize).Take(pageSize);
+
+            var pageModel = new OrderPageModel(orders.Count(), page, pageSize, customerId);
             var orderIndexModel = new OrderIndexModel(orderDataModels, pageModel);
 
             if (User.IsInRole(UserRoles.Admin))

@@ -24,7 +24,8 @@ namespace Northwind.Bll.Services
 
         public override Task<IEnumerable<Order?>> GetListForAsync(string? customerId)
         {
-            return Task.Run(() => DbContext.Orders.Include(x => x.OrderDetails).Where(x => customerId == null || x.CustomerId == customerId).AsEnumerable<Order?>());
+            var query = DbContext.Orders.AsNoTracking().Include(x => x.OrderDetails).Where<Order?>(x => customerId == null || x.CustomerId == customerId);
+            return Task.Run(() => query.AsEnumerable());
         }
 
         public override async Task<Order?> DeleteAsync(object? id)

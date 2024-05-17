@@ -1,4 +1,5 @@
-﻿using Northwind.Data.Entities;
+﻿using Northwind.Application.Enums;
+using Northwind.Data.Entities;
 
 namespace Northwind.Application.Models.Order
 {
