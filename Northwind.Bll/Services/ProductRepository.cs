@@ -16,9 +16,9 @@ namespace Northwind.Bll.Services
             return await DbContext.Products.AsNoTracking().Include(x => x.Category).Include(x => x.Supplier).FirstOrDefaultAsync(x => x.ProductId == (int?)id);
         }
 
-        public override Task<IEnumerable<Product?>> GetListForAsync(int? categoryId)
+        public override Task<IEnumerable<Product?>> GetListForAsync(object? categoryId)
         {
-            return Task.Run(() => DbContext.Products.Where(x => categoryId == null || x.CategoryId == categoryId).AsEnumerable<Product?>());
+            return Task.Run(() => DbContext.Products.Where(x => categoryId == null || x.CategoryId == (int?)categoryId).AsEnumerable<Product?>());
         }
 
         public override Task<IEnumerable<Product?>> GetRangeAsync(int[] ids)

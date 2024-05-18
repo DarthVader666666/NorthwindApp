@@ -6,7 +6,8 @@
     ViewData["ControllerName"] = "Products";
     ViewData["ActionName"] = "Delete";
     ViewData["CategoryId"] = ViewBag.CategoryId;
-    ViewData["ForeignKey"] = ViewBag.CategoryId;
+    ViewData["ForeignKeyValue"] = ViewBag.CategoryId;
+    ViewData["ForeignKeyName"] = "categoryId";
 }
 
 <h1>@(ViewBag.CategoryName != "" ? $"\"{ViewBag.CategoryName}\"" : string.Empty) Product List</h1>
@@ -18,19 +19,22 @@
             <h5 class="float-end">Category:</h5>
         </div>
         <div class="col-6">
-            <select onchange="onCategorySelectListChange(value)" class="form-select">
-                @foreach (var option in Model.CategoryList!)
-                {
-                    if (option.Selected)
+            @if (Model.CategoryList != null)
+            {
+                <select onchange="onCategorySelectListChange(value)" class="form-select">
+                    @foreach (var option in Model.CategoryList ?? throw new ArgumentNullException("Category List is null"))
                     {
-                        <option value="@option.Value" selected>@option.Text</option>
+                        if (option.Selected)
+                        {
+                            <option value="@option.Value" selected>@option.Text</option>
+                        }
+                        else
+                        {
+                            <option value="@option.Value">@option.Text</option>
+                        }
                     }
-                    else
-                    {
-                        <option value="@option.Value">@option.Text</option>
-                    }
-                }
-            </select>
+                </select>
+            }
         </div>
         <div class="col-2">
             @await Html.PartialAsync("_IndexButtonsPartial")
@@ -54,7 +58,7 @@ else
 
 <script>
     function onCategorySelectListChange(value) {
-        console.log(value)
-        window.location.href = `Products?categoryId=${value}`;
+        const url = `/Products?categoryId=${value}`;
+        window.location.href = window.location.origin.concat(url);
     }
 </script>

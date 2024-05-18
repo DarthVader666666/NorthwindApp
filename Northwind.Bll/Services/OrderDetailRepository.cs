@@ -28,15 +28,14 @@ namespace Northwind.Bll.Services
                 .FirstOrDefaultAsync(x => x.OrderId == ids.orderId && x.ProductId == ids.productId);
         }
 
-        public override async Task<IEnumerable<OrderDetail?>> GetListForAsync(string? primaryKeys)
+        public override async Task<IEnumerable<OrderDetail?>> GetListForAsync(object? primaryKeys)
         {
-            var couple = primaryKeys.IsNullOrEmpty() ? new string[]{ "0", "0" } : primaryKeys!.Split(' ');
-            (int orderId, int productId) ids = (int.Parse(couple[0]), int.Parse(couple[1]));
+            var ids = (Tuple<int?, int?>)(primaryKeys ?? (0, 0));
 
             var orderDetails = ids switch
             {
-                (> 0, 0) => DbContext.OrderDetails.Include(x => x.Product).Include(x => x.Order).Where(x => x.OrderId == ids.orderId),
-                (0, > 0) => DbContext.OrderDetails.Include(x => x.Product).Include(x => x.Order).Where(x => x.ProductId == ids.productId),
+                (> 0, null) => DbContext.OrderDetails.Include(x => x.Product).Include(x => x.Order).Where(x => x.OrderId == ids.Item1),
+                (null, > 0) => DbContext.OrderDetails.Include(x => x.Product).Include(x => x.Order).Where(x => x.ProductId == ids.Item2),
                 _ => null
             };
 

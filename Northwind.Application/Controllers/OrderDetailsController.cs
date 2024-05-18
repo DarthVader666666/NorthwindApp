@@ -4,25 +4,29 @@ using Northwind.Bll.Interfaces;
 using Northwind.Data.Entities;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Northwind.Application.Models.OrderDetail;
-using Northwind.Application.Models;
 using Microsoft.IdentityModel.Tokens;
 using Northwind.Application.Constants;
 using Microsoft.CodeAnalysis;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Data.SqlClient;
 using Northwind.Application.Models.PageModels;
+using Northwind.Application.Enums;
+using Northwind.Application.Extensions;
 
 namespace Northwind.Application.Controllers
 {
     [Authorize(Roles ="admin, customer")]
     public class OrderDetailsController : Controller
     {
+        private static SortBy? Sort;
+        private static bool Desc = false;
+
+        private const int pageSize = 7;
+
         private readonly IMapper _mapper;
         private readonly IRepository<OrderDetail> _orderDetailRepository;
         private readonly IRepository<Product> _productRepository;
         private readonly IRepository<Order> _orderRepository;
         private readonly IRepository<Customer> _customerRepository;
-        private const int pageSize = 7;
 
         public OrderDetailsController(IRepository<OrderDetail> orderDetailRepository, IRepository<Product> productRepository, 
             IRepository<Order> orderRepository, IRepository<Customer> customerRepository, IMapper mapper)
@@ -34,14 +38,29 @@ namespace Northwind.Application.Controllers
             _customerRepository = customerRepository;
         }
 
-        public async Task<IActionResult> Index(int orderId = 0, int productId = 0, int page = 1)
+        public async Task<IActionResult> Index(int? orderId, int? productId, int page = 1, string? sortBy = null)
         {
-            var primaryKeys = $"{orderId} {productId}";
-            var allOrderDetails = await _orderDetailRepository.GetListForAsync(primaryKeys);
-            var orderDetails = allOrderDetails.Skip((page - 1) * pageSize).Take(pageSize);
+            var primaryKeys = Tuple.Create(orderId, productId);
+
+            var orderDetails = await _orderDetailRepository.GetListForAsync(primaryKeys);
             var orderDetailDataModels = _mapper.Map<IEnumerable<OrderDetailIndexDataModel>>(orderDetails);
 
-            var pageModel = new OrderDetailsPageModel(allOrderDetails.Count(), page, pageSize, orderId, productId);
+            if (sortBy != null)
+            {
+                SortBy? sort = Enum.TryParse(sortBy, out SortBy sortByValue) ? sortByValue : null;
+
+                Desc = Sort == sort ? !Desc : Desc;
+                Sort = sort;
+            }
+
+            if (Sort != null)
+            {
+                orderDetailDataModels = orderDetailDataModels.SortSequence(Sort, Desc);
+            }
+
+            orderDetailDataModels = orderDetailDataModels.Skip((page - 1) * pageSize).Take(pageSize);
+
+            var pageModel = new OrderDetailsPageModel(orderDetails.Count(), page, pageSize, orderId, productId);
             var orderDetailIndexModel = new OrderDetailIndexModel(orderDetailDataModels, pageModel);
 
             if (orderId > 0)
@@ -61,6 +80,7 @@ namespace Northwind.Application.Controllers
 
             if (productId > 0)
             {
+                ViewBag.ProductId = productId;
                 ViewBag.PreviousPage = Url.ActionLink("Details", "Products", new { id = productId });
                 ViewBag.ProductOrCompanyName = orderDetails.FirstOrDefault()?.Product?.ProductName ?? "";
             }

@@ -22,9 +22,9 @@ namespace Northwind.Bll.Services
             return await DbContext.Orders.AsNoTracking().Include(x => x.OrderDetails).Include(x => x.Customer).FirstOrDefaultAsync(x => x.OrderId == (int)id);
         }
 
-        public override Task<IEnumerable<Order?>> GetListForAsync(string? customerId)
+        public override Task<IEnumerable<Order?>> GetListForAsync(object? customerId)
         {
-            var query = DbContext.Orders.AsNoTracking().Include(x => x.OrderDetails).Where<Order?>(x => customerId == null || x.CustomerId == customerId);
+            var query = DbContext.Orders.AsNoTracking().Include(x => x.OrderDetails).Where<Order?>(x => customerId == null || x.CustomerId == customerId as string);
             return Task.Run(() => query.AsEnumerable());
         }
 

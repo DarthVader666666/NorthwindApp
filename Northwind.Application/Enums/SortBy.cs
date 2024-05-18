@@ -11,6 +11,9 @@
         QuantityPerUnit,
         CompanyName,
         ContactName,
-        Country
+        Country,
+        TotalPrice,
+        Quantity,
+        Discount
     }
 }
