@@ -2,10 +2,10 @@
 {
     public class OrderDetailsPageModel : PageModelBase
     {
-        public int OrderId { get; }
-        public int ProductId { get; }
+        public int? OrderId { get; }
+        public int? ProductId { get; }
 
-        public OrderDetailsPageModel(int count, int pageNumber, int pageSize, int orderId, int productId) : base(count, pageNumber, pageSize)
+        public OrderDetailsPageModel(int count, int pageNumber, int pageSize, int? orderId, int? productId) : base(count, pageNumber, pageSize)
         {
             OrderId = orderId;
             ProductId = productId;

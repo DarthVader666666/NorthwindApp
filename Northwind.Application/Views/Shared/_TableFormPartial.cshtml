@@ -9,7 +9,8 @@
     string Disabled => User.IsInRole("admin") ? "" : "disabled";
     string? Hidden => ViewData["Hidden"] == null ? "" : ViewData["Hidden"]!.ToString();
     string ActionName => ViewData["ActionName"] as string ?? "";
-    string ForeignKeyValue => ViewData["ForeignKey"] as string ?? "";
+    string ForeignKeyName => ViewData["ForeignKeyName"] as string ?? "";
+    string ForeignKeyValue => ViewData["ForeignKeyValue"]?.ToString() ?? "";
 
     PropertyInfo[] Properties => Model.Any() ? Model.First().GetType().GetProperties() : new PropertyInfo[0];
     IEnumerable<string> PropertyNames => Properties.Select(x => x.Name).Where(x => !x.Contains("Id"));
@@ -98,7 +99,7 @@
             <tr>
                 @foreach (var name in PropertyNames)
                 {
-                    <th class="align-content-center" onclick="orderColumn('@name')" style="cursor:pointer">
+                    <th class="align-content-center" onclick="sortColumn('@name')" style="cursor:pointer">
                         @{
                             var ending = "";
 
@@ -188,8 +189,8 @@
 } *@
 
 <script>
-    function orderColumn(name) {
-        const url = `/${'@ControllerName'}/Index?customerId=${'@ForeignKeyValue'}&sortBy=${name}`;
+    function sortColumn(name) {
+        const url = `/${'@ControllerName'}/Index?${'@ForeignKeyName'}=${'@ForeignKeyValue'}&sortBy=${name}`;
         window.location.href = window.location.origin.concat(url);
     }
 </script>

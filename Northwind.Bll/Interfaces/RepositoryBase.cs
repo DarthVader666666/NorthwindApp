@@ -120,12 +120,7 @@ namespace Northwind.Bll.Interfaces
             return await DbContext.SaveChangesAsync() > 0 ? item : null; 
         }
 
-        public virtual Task<IEnumerable<TEntity?>> GetListForAsync(int? foreignKey)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual Task<IEnumerable<TEntity?>> GetListForAsync(string? foreignKey)
+        public virtual Task<IEnumerable<TEntity?>> GetListForAsync(object? foreignKey)
         {
             throw new NotImplementedException();
         }

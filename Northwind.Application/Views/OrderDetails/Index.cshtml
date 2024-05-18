@@ -5,6 +5,8 @@
     ViewData["PreviousPage"] = ViewBag.PreviousPage;
     ViewData["ControllerName"] = "OrderDetails";
     ViewData["ActionName"] = "Delete";
+    ViewData["ForeignKeyValue"] = ViewBag.OrderId ?? ViewBag.ProductId;
+    ViewData["ForeignKeyName"] = ViewBag.OrderId != null ? "orderId" : "productId";
 }
 
 @functions {

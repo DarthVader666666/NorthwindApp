@@ -6,7 +6,8 @@
     ViewData["ControllerName"] = "Orders";
     ViewData["ActionName"] = "Delete";
     ViewData["CustomerId"] = ViewBag.CustomerId;
-    ViewData["ForeignKey"] = ViewBag.CustomerId;
+    ViewData["ForeignKeyValue"] = ViewBag.CustomerId;
+    ViewData["ForeignKeyName"] = "customerId";
 }
 
 <h1>@(ViewBag.CompanyName != "" ? $"\"{ViewBag.CompanyName}\"" : string.Empty) Order List</h1>
@@ -18,19 +19,22 @@
             <h5 class="float-end">Customer:</h5>
         </div>
         <div class="col-6">
-            <select onchange="onCustomerSelectListChange(value)" class="form-select">
-                @foreach (var option in Model.CustomerList)
-                {
-                    if (option.Selected)
+            @if (Model.CustomerList != null)
+            {
+                <select onchange="onCustomerSelectListChange(value)" class="form-select">
+                    @foreach (var option in Model.CustomerList ?? throw new ArgumentNullException("Customer List is null"))
                     {
-                        <option value="@option.Value" selected>@option.Text</option>
+                        if (option.Selected)
+                        {
+                            <option value="@option.Value" selected>@option.Text</option>
+                        }
+                        else
+                        {
+                            <option value="@option.Value">@option.Text</option>
+                        }
                     }
-                    else
-                    {
-                        <option value="@option.Value">@option.Text</option>
-                    }
-                }
-            </select>
+                </select>
+            }            
         </div>
         <div class="col-2">
             @await Html.PartialAsync("_IndexButtonsPartial")
