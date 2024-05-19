@@ -15,7 +15,7 @@ using Northwind.Application.Enums;
 
 namespace Northwind.Application.Controllers
 {
-    [Authorize(Roles ="admin,customer")]
+    [Authorize(Roles = $"{UserRoles.Owner},{UserRoles.Admin},{UserRoles.Customer}")]
     public class OrdersController : Controller
     {
         private static SortBy? Sort;
@@ -41,7 +41,7 @@ namespace Northwind.Application.Controllers
         
         public async Task<IActionResult> Index(string? customerId, int page = 1, string? sortBy = null)
         {
-            if (!User.IsInRole(UserRoles.Admin) && (customerId == null || customerId != this.HttpContext.Session.GetString(SessionValues.CustomerId)))
+            if (!(User.IsInRole(UserRoles.Owner) || User.IsInRole(UserRoles.Admin)) && (customerId == null || customerId != this.HttpContext.Session.GetString(SessionValues.CustomerId)))
             {
                 return Redirect("Identity/Account/AccessDenied");
             }

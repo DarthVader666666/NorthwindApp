@@ -2,17 +2,14 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
+using Northwind.Application.Constants;
 using Northwind.Application.Models.Roles;
 using Northwind.Bll.Interfaces;
-using Northwind.Bll.Services;
-using Northwind.Data;
 using Northwind.Data.Entities;
-using System.Linq;
 
 namespace Northwind.Application.Controllers
 {
-    [Authorize(Roles = "owner")]
+    [Authorize(Roles = UserRoles.Owner)]
     public class RolesController : Controller
     {
         private readonly RoleManager<IdentityRole> _roleManager;
