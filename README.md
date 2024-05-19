@@ -2,5 +2,5 @@
 ## ASP.NET Core MVC, Razor pages, ASP.NET Core Identity Cookie based Authorization/Authentication system
 ## MS SQL Database, docker-compose, CI/CD workflows, Azure deployed
 **Check it at the link:** https://northwind-app.azurewebsites.net/
-user: admin@admin.com
-password: Admin_1
+**user: admin@admin.com
+**password: Admin_1
