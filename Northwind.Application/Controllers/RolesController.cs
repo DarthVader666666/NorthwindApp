@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace Northwind.Application.Controllers
 {
-    [Authorize(Roles = "admin")]
+    [Authorize(Roles = "owner")]
     public class RolesController : Controller
     {
         private readonly RoleManager<IdentityRole> _roleManager;

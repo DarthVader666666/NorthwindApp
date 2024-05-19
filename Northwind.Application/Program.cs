@@ -51,16 +51,16 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var seedScriptPath = config["SeedScriptPath"];
-    var adminScriptPath = config["AdminScriptPath"];
+    var ownerScriptPath = config["OwnerScriptPath"];
     var url = config["ScriptUrl"];
 
-    var adminEmail = config["AdminEmail"];
-    var adminPasswordHash = config["AdminPasswordHash"];
-    var adminSecurityStamp = config["AdminSecurityStamp"];
-    var adminConcurrencyStamp = config["AdminConcurrencyStamp"];
+    var ownerEmail = config["OwnerEmail"];
+    var ownerPasswordHash = config["OwnerPasswordHash"];
+    var ownerSecurityStamp = config["OwnerSecurityStamp"];
+    var ownerConcurrencyStamp = config["OwnerConcurrencyStamp"];
 
     await FileDownloader.DownloadScriptFileAsync(url, seedScriptPath);
-    SqlScriptGenerator.GenerateAdminScript(adminScriptPath!, adminEmail!, adminPasswordHash!, adminSecurityStamp!, adminConcurrencyStamp!);
+    SqlScriptGenerator.GenerateOwnerScript(ownerScriptPath!, ownerEmail!, ownerPasswordHash!, ownerSecurityStamp!, ownerConcurrencyStamp!);
 
     var dbContext = services.GetRequiredService<NorthwindDbContext>();
 
@@ -92,9 +92,9 @@ using (var scope = app.Services.CreateScope())
         File.Delete(seedScriptPath);
     }
 
-    if (File.Exists(adminScriptPath))
+    if (File.Exists(ownerScriptPath))
     {
-        File.Delete(adminScriptPath);
+        File.Delete(ownerScriptPath);
     }
 }
 

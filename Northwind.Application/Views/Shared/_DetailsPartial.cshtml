@@ -102,9 +102,9 @@
     <button class="btn btn-primary fw-bold" @(IsAdmin ? "" : "disabled") onclick="location.href = '@Url.ActionLink("Edit", ControllerName, new { id = IdValue })'">Edit</button>
 }
 
-@if (ControllerName == "Products")
+@if (ControllerName == "Products" && IsCustomer)
 {
-    <button class="btn btn-primary fw-bold" @(IsCustomer || IsAdmin ? "" : "disabled") 
+    <button class="btn btn-primary fw-bold" @(IsCustomer ? "" : "disabled") 
         onclick="location.href = '@Url.ActionLink("Create", "OrderDetails", new { productId = IdValue })'" style="margin-left:10px;">
             Order
     </button>
