@@ -58,7 +58,7 @@
     {
         var defaultRoute = "/Home/Index";
 
-        if (User.IsInRole(UserRoles.Customer) && !User.IsInRole(UserRoles.Admin))
+        if (User.IsInRole(UserRoles.Customer) && !(User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner)))
         {
             if (ControllerName == "Orders")
             {

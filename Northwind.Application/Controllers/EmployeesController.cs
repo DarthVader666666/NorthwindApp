@@ -6,9 +6,11 @@ using Northwind.Bll.Interfaces;
 using Northwind.Data.Entities;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authorization;
+using Northwind.Application.Constants;
 
 namespace Northwind.Application.Controllers
-{    
+{
+    [Authorize(Roles = $"{UserRoles.Owner},{UserRoles.Admin}")]
     public class EmployeesController : Controller
     {
         private readonly IMapper _mapper;

@@ -27,7 +27,7 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        @if (User.IsInRole(UserRoles.Admin))
+                        @if (User.IsInRole(UserRoles.Owner) || User.IsInRole(UserRoles.Admin))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Employees" asp-action="Index">Employees</a>
@@ -45,7 +45,7 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Categories" asp-action="Index">Catalogue</a>
                         </li>
-                        @if (User.IsInRole(UserRoles.Customer) && !User.IsInRole(UserRoles.Admin))
+                        @if (User.IsInRole(UserRoles.Customer))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Orders" asp-route-customerId="@Context.Session.GetString(SessionValues.CustomerId)" asp-action="Index">Your Orders</a>

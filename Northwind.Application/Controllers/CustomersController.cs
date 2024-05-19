@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Northwind.Application.Constants;
 using Northwind.Application.Enums;
 using Northwind.Application.Extensions;
 using Northwind.Application.Models.Customer;
@@ -11,6 +12,7 @@ using Northwind.Data.Entities;
 
 namespace Northwind.Application.Controllers
 {
+    [Authorize(Roles = $"{UserRoles.Owner},{UserRoles.Admin},{UserRoles.Customer}")]
     public class CustomersController : Controller
     {
         private static SortBy? Sort;

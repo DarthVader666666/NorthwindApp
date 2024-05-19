@@ -14,7 +14,7 @@ using Northwind.Application.Extensions;
 
 namespace Northwind.Application.Controllers
 {
-    [Authorize(Roles ="admin, customer")]
+    [Authorize(Roles = $"{UserRoles.Owner},{UserRoles.Admin},{UserRoles.Customer}")]
     public class OrderDetailsController : Controller
     {
         private static SortBy? Sort;
