@@ -28,6 +28,6 @@ namespace Northwind.Application.Models.Product
 
         public ICollection<Northwind.Data.Entities.OrderDetail> OrderDetails { get; set; } = new List<Northwind.Data.Entities.OrderDetail>();
 
-        public Supplier? Supplier { get; set; }
+        public Northwind.Data.Entities.Supplier? Supplier { get; set; }
     }
 }

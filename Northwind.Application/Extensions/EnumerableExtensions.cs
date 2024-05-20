@@ -3,6 +3,7 @@ using Northwind.Application.Models.Customer;
 using Northwind.Application.Models.Order;
 using Northwind.Application.Models.OrderDetail;
 using Northwind.Application.Models.Product;
+using Northwind.Application.Models.Supplier;
 
 namespace Northwind.Application.Extensions
 {
@@ -53,6 +54,17 @@ namespace Northwind.Application.Extensions
                     SortBy.Discount => desc ? orderDetailSequence.OrderByDescending(x => x.Discount) : orderDetailSequence.OrderBy(x => x.Discount),
                     SortBy.ProductName => desc ? orderDetailSequence.OrderByDescending(x => x.ProductName) : orderDetailSequence.OrderBy(x => x.ProductName),
                     _ => orderDetailSequence,
+                });
+            }
+
+            if (sequence is IEnumerable<SupplierIndexDataModel> supplierSequence)
+            {
+                return (IEnumerable<T>)(orderBy switch
+                {
+                    SortBy.CompanyName => desc ? supplierSequence.OrderByDescending(x => x.CompanyName) : supplierSequence.OrderBy(x => x.CompanyName),
+                    SortBy.Country => desc ? supplierSequence.OrderByDescending(x => x.Country) : supplierSequence.OrderBy(x => x.Country),
+                    SortBy.City => desc ? supplierSequence.OrderByDescending(x => x.City) : supplierSequence.OrderBy(x => x.City),
+                    _ => supplierSequence,
                 });
             }
 

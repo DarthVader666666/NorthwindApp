@@ -24,9 +24,8 @@ namespace Northwind.Application.Services
             _categoryRepository = categoryRepository;
         }
 
-        public void FillSelectLists<TModel>(TModel? model, int? employeeId = null, int? shipperId = null, string? customerId = null, 
-            int? categoryId = null, int? supplierId = null)
-            where TModel : class
+        public void FillSelectLists<TModel>(TModel? model, int? employeeId = null, int? shipperId = null, string? customerId = null, int? categoryId = null, 
+            int? supplierId = null) where TModel : class
         {
             if (model == null)
             {
@@ -78,6 +77,7 @@ namespace Northwind.Application.Services
             {
                 var productIndexModel = model as ProductIndexModel;
 
+                productIndexModel!.SupplierList = GetSupplierIdSelectList(supplierId, true);
                 productIndexModel!.CategoryList = GetCategoryIdSelectList(categoryId, true);
             }
         }
@@ -98,7 +98,7 @@ namespace Northwind.Application.Services
             return GetSelectList(dictionary, customerId, all: all);
         }
 
-        private SelectList GetShipperIdSelectList(int? shipperId = 0)
+        private SelectList GetShipperIdSelectList(int? shipperId)
         {
             var shippers = _shipperRepository.GetListAsync().Result;
             var dictionary = shippers.ToDictionary(s => s?.ShipperId ?? 0, s => s?.CompanyName ?? "");
@@ -106,7 +106,7 @@ namespace Northwind.Application.Services
             return GetSelectList(dictionary, shipperId);
         }
 
-        private SelectList GetCategoryIdSelectList(int? categoryId = null, bool all = false)
+        public SelectList? GetCategoryIdSelectList(int? categoryId, bool all = false)
         {
             var categories = _categoryRepository.GetListAsync().Result;
             var dictionary = categories.ToDictionary(c => c?.CategoryId ?? 0, c => c?.CategoryName ?? "");
@@ -114,12 +114,12 @@ namespace Northwind.Application.Services
             return GetSelectList(dictionary, categoryId, all: all);
         }
 
-        private SelectList GetSupplierIdSelectList(int? supplierId = null)
+        public SelectList? GetSupplierIdSelectList(int? supplierId, bool all = false)
         {
             var suppliers = _supplierRepository.GetListAsync().Result;
             var dictionary = suppliers.ToDictionary(c => c?.SupplierId ?? 0, c => c?.CompanyName ?? "");
 
-            return GetSelectList(dictionary, supplierId);
+            return GetSelectList(dictionary, supplierId, all);
         }
 
         SelectList GetSelectList<TKey>(IDictionary<TKey, string> dictionary, object? id, bool all = false)

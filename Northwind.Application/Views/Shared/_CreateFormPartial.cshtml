@@ -1,4 +1,5 @@
 ﻿@using System.Reflection;
+@using Northwind.Application.Constants
 @using Northwind.Application.Models.Employee
 @using Northwind.Bll.Enums
 @using Northwind.Bll.Services
@@ -8,12 +9,10 @@
 @functions {
     PropertyInfo[] Properties => Model.GetType().GetProperties();
     PropertyInfo? Image => Properties.FirstOrDefault(x => IsImage(x));
-    PropertyInfo[] SelectLists => Properties.Where(x => x.PropertyType.FullName.Contains("SelectList")).ToArray();
+    PropertyInfo[] SelectLists => Properties.Where(x => x?.PropertyType?.FullName?.Contains("SelectList") ?? false).ToArray();
     PropertyInfo? FormFileProperty => Properties.FirstOrDefault(x => x.GetValue(Model) is IFormFile);
-    string Disabled => User.IsInRole("admin") ? "" : "disabled";
+    string Disabled => User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner) ? "" : "disabled";
     string? FormFile => FormFileProperty == null ? null : FormFileProperty.Name;
-
-    bool IsAdmin => User.IsInRole("admin");
 
     object SetPropertyName(string name)
     {
@@ -29,7 +28,7 @@
         }
 
         return (propertyInfo.Name.Contains("Image") || propertyInfo.Name.Contains("Picture") || propertyInfo.Name.Contains("Photo")) &&
-            propertyInfo.PropertyType.FullName.Contains("Byte");
+            (propertyInfo?.PropertyType?.FullName?.Contains("Byte") ?? false);
     }
 }
 
@@ -55,17 +54,17 @@
             @foreach (var item in Properties.Where(x => !(x.GetValue(Model) is byte[])))
             {
                 var type = item.PropertyType.FullName;
-                var hidden = type.Contains("FormFile") || type.Contains("Byte") || SelectLists.Any(x => x.Name != item.Name && x.Name.Contains(item.Name)) || (item.Name.Contains("Id") && !item.Name.Contains("List")) ? "hidden" : "";
+                var hidden = (type?.Contains("FormFile") ?? false) || (type?.Contains("Byte") ?? false) || SelectLists.Any(x => x.Name != item.Name && x.Name.Contains(item.Name)) || (item.Name.Contains("Id") && !item.Name.Contains("List")) ? "hidden" : "";
                 var value = item.GetValue(Model);
 
                 <div class="form-group">
                     <label class="control-label" @hidden>@item.Name.Replace("List", "").Replace("Id", "").SplitForUpperCase()</label>
                     @await Html.PartialAsync("_ValidationSpanPartial", Model, SetPropertyName(item.Name) as ViewDataDictionary)
 
-                    @if (type.Contains("SelectList"))
+                    @if (type?.Contains("SelectList") ?? false)
                     {
-                        <select class="form-select" name="@item.Name.Replace("List", "")" @(IsAdmin ? "" : "disabled")>
-                            @foreach (var option in item.GetValue(Model) as SelectList)
+                        <select class="form-select" name="@item.Name.Replace("List", "")" @Disabled>
+                            @foreach (var option in item?.GetValue(Model) as SelectList ?? new SelectList(Enumerable.Empty<object>()))
                             
                                 if (option.Selected)
                                 {

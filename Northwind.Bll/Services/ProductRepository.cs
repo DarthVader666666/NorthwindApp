@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Northwind.Bll.Interfaces;
 using Northwind.Data;
 using Northwind.Data.Entities;
@@ -16,9 +17,18 @@ namespace Northwind.Bll.Services
             return await DbContext.Products.AsNoTracking().Include(x => x.Category).Include(x => x.Supplier).FirstOrDefaultAsync(x => x.ProductId == (int?)id);
         }
 
-        public override Task<IEnumerable<Product?>> GetListForAsync(object? categoryId)
+        public override Task<IEnumerable<Product?>> GetListForAsync(object? foreignKeys)
         {
-            return Task.Run(() => DbContext.Products.Where(x => categoryId == null || x.CategoryId == (int?)categoryId).AsEnumerable<Product?>());
+            var ids = (Tuple<int?, int?>)(foreignKeys ?? (0, 0));
+
+            var products = ids switch
+            {
+                (> 0, null) => DbContext.Products.Where(x => ids.Item1 == null || x.CategoryId == ids.Item1),
+                (null, > 0) => DbContext.Products.Where(x => ids.Item2 == null || x.SupplierId == ids.Item2),
+                _ => DbContext.Products
+            };
+
+            return Task.FromResult(products?.AsEnumerable() ?? Enumerable.Empty<Product?>());
         }
 
         public override Task<IEnumerable<Product?>> GetRangeAsync(int[] ids)

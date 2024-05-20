@@ -2,44 +2,21 @@
 @addTagHelper *, Northwind.Application
 @model Northwind.Application.Models.Product.ProductIndexModel
 @{
+    var selectListHeader = ViewBag.CategoryName ?? ViewBag.SupplierName;
+
     ViewData["PreviousPage"] = ViewBag.PreviousPage;
     ViewData["ControllerName"] = "Products";
     ViewData["ActionName"] = "Delete";
-    ViewData["CategoryId"] = ViewBag.CategoryId;
-    ViewData["ForeignKeyValue"] = ViewBag.CategoryId;
-    ViewData["ForeignKeyName"] = "categoryId";
+    ViewData["ForeignKeyValue"] = ViewBag.CategoryId ?? ViewBag.SupplierId;
+    ViewData["ForeignKeyName"] = ViewBag.CategoryId != null ? "categoryId" : "supplierId";
+    ViewData["SelectListName"] = ViewBag.SelectListName;
 }
 
-<h1>@(ViewBag.CategoryName != "" ? $"\"{ViewBag.CategoryName}\"" : string.Empty) Product List</h1>
+<h1>@(selectListHeader != null && selectListHeader != "" ? $"\"{selectListHeader}\"" : string.Empty) Product List</h1>
 
-@if (User.IsInRole(UserRoles.Admin))
+@if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner))
 {
-    <div class="row">
-        <div class="col-3 align-content-center">
-            <h5 class="float-end">Category:</h5>
-        </div>
-        <div class="col-6">
-            @if (Model.CategoryList != null)
-            {
-                <select onchange="onCategorySelectListChange(value)" class="form-select">
-                    @foreach (var option in Model.CategoryList ?? throw new ArgumentNullException("Category List is null"))
-                    {
-                        if (option.Selected)
-                        {
-                            <option value="@option.Value" selected>@option.Text</option>
-                        }
-                        else
-                        {
-                            <option value="@option.Value">@option.Text</option>
-                        }
-                    }
-                </select>
-            }
-        </div>
-        <div class="col-2">
-            @await Html.PartialAsync("_IndexButtonsPartial")
-        </div >
-    </div>
+    @await Html.PartialAsync("_IndexButtonsPartial", Model.CategoryList ?? Model.SupplierList, ViewData)
 }
 
 @if (Model.Products.Any())
@@ -55,10 +32,3 @@ else
         <button class="btn btn-primary fw-bold" onclick="location.href = '@ViewData["PreviousPage"]'">Back</button>
     }
 }
-
-<script>
-    function onCategorySelectListChange(value) {
-        const url = `/Products?categoryId=${value}`;
-        window.location.href = window.location.origin.concat(url);
-    }
-</script>

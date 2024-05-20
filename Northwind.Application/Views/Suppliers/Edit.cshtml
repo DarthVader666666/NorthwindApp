@@ -1,0 +1,9 @@
+﻿@model Northwind.Application.Models.Supplier.SupplierEditModel
+@{
+    ViewData["ControllerName"] = "Suppliers";
+}
+
+<h1>Edit Supplier</h1>
+<hr />
+
+@await Html.PartialAsync("_EditFormPartial", Model)

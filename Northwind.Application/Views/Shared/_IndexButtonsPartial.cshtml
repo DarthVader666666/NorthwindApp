@@ -1,24 +1,64 @@
 ﻿@using Northwind.Application.Constants
+@using Northwind.Application.Enums
+@using System.Reflection
+@model SelectList?
+
 @functions {
-    string? ControllerName => ViewData["ControllerName"] == null ? this.Context.Request.Path.ToString().TrimStart('/') : ViewData["ControllerName"]!.ToString();
-    object? Id => ViewData["id"];
+    string? ControllerName => ViewData["ControllerName"]?.ToString() ?? this.Context.Request.Path.ToString().TrimStart('/');
+    object? ForeignKeyValue => ViewData["ForeignKeyValue"];
 
     string? Link =>
         ControllerName switch
         {
-            "Products" => Url.ActionLink("Create", ControllerName, new { categoryId = Id }),
-            "Orders" => Url.ActionLink("Create", ControllerName, new { customerId = Id }),
+            "Products" => 
+                SelectListName == Northwind.Application.Enums.SelectListName.CategoryList.ToString() ? 
+                    Url.ActionLink("Create", ControllerName, new { categoryId = ForeignKeyValue }) :
+                    Url.ActionLink("Create", ControllerName, new { supplierId = ForeignKeyValue }),
+
+            "Orders" => Url.ActionLink("Create", ControllerName, new { customerId = ForeignKeyValue }),
             _ => Url.ActionLink("Create", ControllerName)
         };
+
+    string? SelectListName => ViewData["SelectListName"]?.ToString();
+
+    string? UrlForSelectedItem => $"/{ControllerName}?{SelectListName?.Replace("List", "")?.ToLower()}Id=";
 }
 
-@if (User.IsInRole(UserRoles.Admin))
-{
-   <button class="btn btn-primary fw-bold" onclick="location.href = '@Link'" id="createButton">
-        Create
-    </button>
-}
+<div class="row">
+    @if (Model != null)
+    {
+        <div class="col-3 align-content-center">
+            <h5 class="float-end">@(SelectListName?.Replace("List", "")):</h5>
+        </div>
+        <div class="col-6">
+            <select onchange="onCategorySelectListChange(value)" class="form-select">
+                @foreach (var option in Model ?? new SelectList(Enumerable.Empty<object>()))
+                {
+                    if (option.Selected)
+                    {
+                        <option value="@option.Value" selected>@option.Text</option>
+                    }
+                    else
+                    {
+                        <option value="@option.Value">@option.Text</option>
+                    }
+                }
+            </select>
+        </div>
+    }
+    <div class="col-2">
+        <button class="btn btn-primary fw-bold" onclick="location.href = '@Link'" id="createButton">
+            Create
+        </button>
+        <button form="form" class="btn btn-danger fw-bold" type="submit" id="deleteButton" hidden>
+            Delete
+        </button>
+    </div>
+</div>
 
-<button form="form" class="btn btn-danger fw-bold" type="submit" id="deleteButton" hidden>
-    Delete
-</button>
+<script>
+    function onCategorySelectListChange(value) {
+        const url = `@UrlForSelectedItem${value}`;
+        window.location.href = window.location.origin.concat(url);
+    }
+</script>

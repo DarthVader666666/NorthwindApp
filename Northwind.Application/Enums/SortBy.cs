@@ -12,6 +12,7 @@
         CompanyName,
         ContactName,
         Country,
+        City,
         TotalPrice,
         Quantity,
         Discount

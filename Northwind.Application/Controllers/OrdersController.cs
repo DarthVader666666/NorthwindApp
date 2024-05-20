@@ -67,7 +67,7 @@ namespace Northwind.Application.Controllers
             var pageModel = new OrderPageModel(orders.Count(), page, pageSize, customerId);
             var orderIndexModel = new OrderIndexModel(orderDataModels, pageModel);
 
-            if (User.IsInRole(UserRoles.Admin))
+            if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner))
             {
                 _selectListFiller.FillSelectLists(orderIndexModel, customerId: customerId);
             }

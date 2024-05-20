@@ -8,8 +8,9 @@
 
 <h1>Employees</h1>
 
-@if (User.IsInRole(UserRoles.Admin))
+@if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner))
 {
-    @await Html.PartialAsync("_IndexButtonsPartial")
+    @await Html.PartialAsync("_IndexButtonsPartial", null as SelectList)
 }
+
 @await Html.PartialAsync("_TableFormPartial", Model, ViewData)
