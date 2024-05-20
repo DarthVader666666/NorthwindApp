@@ -11,7 +11,7 @@
         ControllerName switch
         {
             "Products" => 
-                SelectListName == Northwind.Application.Enums.SelectListName.CategoryList.ToString() ? 
+                SelectListHeader == SelectListName.CategoryList.ToString() ? 
                     Url.ActionLink("Create", ControllerName, new { categoryId = ForeignKeyValue }) :
                     Url.ActionLink("Create", ControllerName, new { supplierId = ForeignKeyValue }),
 
@@ -19,16 +19,29 @@
             _ => Url.ActionLink("Create", ControllerName)
         };
 
-    string? SelectListName => ViewData["SelectListName"]?.ToString();
+    string? SelectListHeader => ViewData["SelectListName"]?.ToString();
 
-    string? UrlForSelectedItem => $"/{ControllerName}?{SelectListName?.Replace("List", "")?.ToLower()}Id=";
+    string? UrlForSelectedItem => $"/{ControllerName}?{SelectListHeader?.Replace("List", "")?.ToLower()}Id=";
+
+    string? ChangeSelectList()
+    {
+        ViewData["SelectListName"] = SelectListHeader == SelectListName.CategoryList.ToString() ? SelectListName.SupplierList.ToString() : SelectListName.CategoryList.ToString();
+        return UrlForSelectedItem;
+    }
 }
 
 <div class="row">
     @if (Model != null)
     {
         <div class="col-3 align-content-center">
-            <h5 class="float-end">@(SelectListName?.Replace("List", "")):</h5>
+            @if (ControllerName == "Products")
+            {
+                <button class="float-end" onclick="onClickForProducts()">@(SelectListHeader?.Replace("List", "")):</button>
+            }
+            else
+            {
+                <h5 class="float-end">@(SelectListHeader?.Replace("List", "")):</h5>
+            }            
         </div>
         <div class="col-6">
             <select onchange="onCategorySelectListChange(value)" class="form-select">
@@ -59,6 +72,11 @@
 <script>
     function onCategorySelectListChange(value) {
         const url = `@UrlForSelectedItem${value}`;
+        window.location.href = window.location.origin.concat(url);
+    }
+
+    function onClickForProducts() {
+        const url = `@ChangeSelectList()0`;
         window.location.href = window.location.origin.concat(url);
     }
 </script>
