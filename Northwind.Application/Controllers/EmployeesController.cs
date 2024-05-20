@@ -51,7 +51,6 @@ namespace Northwind.Application.Controllers
             return View(employeeDetailsModel);
         }
 
-        [Authorize(Roles = "admin")]
         public IActionResult Create()
         {
             ViewBag.ReportsTo = GetReportsToSelectList();
@@ -63,7 +62,6 @@ namespace Northwind.Application.Controllers
             return View(employeeCreateModel);
         }
 
-        [Authorize(Roles = "admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(EmployeeCreateModel employeeCreateModel)
@@ -81,7 +79,6 @@ namespace Northwind.Application.Controllers
             return View(employeeCreateModel);
         }
 
-        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -101,7 +98,6 @@ namespace Northwind.Application.Controllers
             return View(employeeEditModel);
         }
 
-        [Authorize(Roles = "admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, EmployeeEditModel employeeEditModel)
@@ -137,7 +133,6 @@ namespace Northwind.Application.Controllers
             return View(employeeEditModel);
         }
 
-        [Authorize(Roles = "admin")]
         [HttpGet]
         public async Task<IActionResult> Delete([FromQuery] int[] ids)
         {
@@ -148,7 +143,6 @@ namespace Northwind.Application.Controllers
             return View(_mapper.Map<IEnumerable<EmployeeIndexModel>>(employees));
         }
 
-        [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<IActionResult> DeleteConfirmed([FromForm] int[] ids)
         {

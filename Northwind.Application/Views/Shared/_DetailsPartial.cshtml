@@ -19,6 +19,7 @@
         {
             ("OrderDetails", "Orders") => Url.ActionLink("Index", forController, new { orderId = IdValue }),
             ("OrderDetails", "Products") => Url.ActionLink("Index", forController, new { productId = IdValue }),
+            ("Products", "Suppliers") => Url.ActionLink("Index", forController, new { supplierId = IdValue }),
             ("Products", "Categories") => Url.ActionLink("Index", forController, new { categoryId = IdValue }),
             ("Orders", "Customers") => Url.ActionLink("Index", forController, new { customerId = IdValue }),
             _ => Url.ActionLink("Index", forController)
@@ -63,7 +64,7 @@
 
                 @if (value is IEnumerable<object>)
                 {
-                    <a href=@GetLink(item.Name) class="fw-bold">Show @item.Name.SplitForUpperCase()</a>
+                    <a href=@GetLink(forController:item.Name) class="fw-bold">Show @item.Name.SplitForUpperCase()</a>
                 }
                 else
                 {

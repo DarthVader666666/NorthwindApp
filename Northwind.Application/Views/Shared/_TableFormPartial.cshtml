@@ -6,7 +6,7 @@
 @functions {
     string? ControllerName => ViewData["ControllerName"] == null ? "" : ViewData["ControllerName"]!.ToString();
     string? Method => ViewData["FormMethod"] == null ? "get" : ViewData["FormMethod"]!.ToString();
-    string Disabled => User.IsInRole("admin") ? "" : "disabled";
+    string Disabled => User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner) ? "" : "disabled";
     string? Hidden => ViewData["Hidden"] == null ? "" : ViewData["Hidden"]!.ToString();
     string ActionName => ViewData["ActionName"] as string ?? "";
     string ForeignKeyName => ViewData["ForeignKeyName"] as string ?? "";
@@ -117,7 +117,7 @@
                     </th>
                 }
 
-                @if (User.IsInRole(UserRoles.Admin))
+                @if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner))
                 {
                     <th class="text-center align-content-center">
                         <input onchange="onChangeSelectAllHandler(this.checked)" id="selectAllCheckbox" style="margin-left:20px;" type="checkbox" @Disabled @Hidden />
@@ -170,7 +170,7 @@
                            </td>
                         }
 
-                        @if (User.IsInRole(UserRoles.Admin))
+                        @if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner))
                         {
                             <td class="text-center align-content-center">
                                 <input name="ids" type="checkbox" id="@GetId(item)" value="@GetId(item)" style="margin-left:20px;" onclick="onChangeHandler(this)" @Disabled @Hidden />
@@ -183,10 +183,10 @@
     </table>
 </div>
 
-@* @if (ViewData["PreviousPage"] != null && User.IsInRole("admin"))
+@if (ViewData["PreviousPage"] != null && (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner)))
 {
     <button class="btn btn-primary fw-bold" onclick="location.href = '@ViewData["PreviousPage"]'">Back</button>
-} *@
+}
 
 <script>
     function sortColumn(name) {

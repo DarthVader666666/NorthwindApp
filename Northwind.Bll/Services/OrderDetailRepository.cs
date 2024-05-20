@@ -50,7 +50,7 @@ namespace Northwind.Bll.Services
                 }
             }
 
-            return orderDetails?.AsEnumerable();
+            return orderDetails?.AsEnumerable() ?? Enumerable.Empty<OrderDetail?>();
         }
 
         public override async Task<int> DeleteSeveralAsync(string[] ids)

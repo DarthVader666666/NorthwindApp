@@ -1,7 +1,4 @@
-﻿using Northwind.Application.Enums;
-using Northwind.Data.Entities;
-
-namespace Northwind.Application.Models.Order
+﻿namespace Northwind.Application.Models.Order
 {
     public class OrderIndexDataModel
     {

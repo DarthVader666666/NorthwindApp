@@ -8,6 +8,7 @@ namespace Northwind.Application.Models.Product
         public IEnumerable<ProductIndexDataModel> Products { get; }
         public PageModelBase PageViewModel { get; }
         public SelectList? CategoryList { get; set; }
+        public SelectList? SupplierList { get; set; }
 
         public ProductIndexModel(IEnumerable<ProductIndexDataModel> products, PageModelBase viewModel)
         {

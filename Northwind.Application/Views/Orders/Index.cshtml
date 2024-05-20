@@ -8,45 +8,21 @@
     ViewData["CustomerId"] = ViewBag.CustomerId;
     ViewData["ForeignKeyValue"] = ViewBag.CustomerId;
     ViewData["ForeignKeyName"] = "customerId";
+    ViewData["SelectListName"] = "CustomerList";
 }
 
 <h1>@(ViewBag.CompanyName != "" ? $"\"{ViewBag.CompanyName}\"" : string.Empty) Order List</h1>
 
-@if (User.IsInRole(UserRoles.Admin))
+@if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner))
 {
-    <div class="row">
-        <div class="col-3 align-content-center">
-            <h5 class="float-end">Customer:</h5>
-        </div>
-        <div class="col-6">
-            @if (Model.CustomerList != null)
-            {
-                <select onchange="onCustomerSelectListChange(value)" class="form-select">
-                    @foreach (var option in Model.CustomerList ?? throw new ArgumentNullException("Customer List is null"))
-                    {
-                        if (option.Selected)
-                        {
-                            <option value="@option.Value" selected>@option.Text</option>
-                        }
-                        else
-                        {
-                            <option value="@option.Value">@option.Text</option>
-                        }
-                    }
-                </select>
-            }            
-        </div>
-        <div class="col-2">
-            @await Html.PartialAsync("_IndexButtonsPartial")
-        </div>
-    </div>
+    @await Html.PartialAsync("_IndexButtonsPartial", Model.CustomerList, ViewData)
 }
 
 @if (Model.Orders.Any())
 {
     @await Html.PartialAsync("_TableFormPartial", Model.Orders, ViewData)
 
-    if (ViewData["CustomerId"] != null && User.IsInRole(UserRoles.Admin))
+    if (ViewData["CustomerId"] != null && (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner)))
     {
         <button class="btn btn-primary fw-bold" onclick="location.href = '@Url.ActionLink("Details", "Customers", new { id = ViewData["CustomerId"] })'">
             To Customer
@@ -63,10 +39,3 @@ else
         <button class="btn btn-primary fw-bold" onclick="location.href = '@ViewData["PreviousPage"]'">Back</button>
     }
 }
-
-<script>
-    function onCustomerSelectListChange(value) {
-        const url = `/Orders?customerId=${value}`;
-        window.location.href = window.location.origin.concat(url);
-    }
-</script>

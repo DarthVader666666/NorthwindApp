@@ -1,0 +1,19 @@
+﻿@using Northwind.Application.Constants
+@using Northwind.Application.Models.Supplier
+@addTagHelper *, Northwind.Application
+@model SupplierIndexModel
+@{
+    ViewData["PreviousPage"] = ViewBag.PreviousPage;
+    ViewData["ControllerName"] = "Suppliers";
+    ViewData["ActionName"] = "Delete";
+}
+
+<h1>Suppliers</h1>
+
+@if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner))
+{
+    @await Html.PartialAsync("_IndexButtonsPartial", null as SelectList)
+}
+
+@await Html.PartialAsync("_TableFormPartial", Model.Suppliers, ViewData)
+<page-link page-model="Model.PageViewModel" page-action="Index" class="float-end"></page-link>

@@ -6,6 +6,7 @@ using Northwind.Application.Models.Employee;
 using Northwind.Application.Models.Order;
 using Northwind.Application.Models.OrderDetail;
 using Northwind.Application.Models.Product;
+using Northwind.Application.Models.Supplier;
 using Northwind.Bll.Services;
 using Northwind.Data.Entities;
 
@@ -139,6 +140,15 @@ namespace NorthwindApp.ConfigureServices
 
                     autoMapperConfig.CreateMap<OrderDetailCreateModel, OrderDetail>()
                         .ForMember(dest => dest.Discount, opts => opts.MapFrom(src => Math.Round((float)src.Discount / 100, 2)));
+
+
+
+                    autoMapperConfig.CreateMap<Supplier, SupplierIndexDataModel>();
+                    autoMapperConfig.CreateMap<SupplierCreateModel, Supplier>();
+                    autoMapperConfig.CreateMap<Supplier, SupplierDeleteModel>();
+                    autoMapperConfig.CreateMap<Supplier, SupplierDetailsModel>();
+                    autoMapperConfig.CreateMap<SupplierEditModel, Supplier>();
+                    autoMapperConfig.CreateMap<Supplier, SupplierEditModel>();
                 });
 
                 return config.CreateMapper();

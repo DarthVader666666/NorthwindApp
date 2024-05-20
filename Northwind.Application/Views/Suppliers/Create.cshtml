@@ -1,0 +1,10 @@
+﻿@model Northwind.Application.Models.Supplier.SupplierCreateModel
+@{
+    ViewData["ControllerName"] = "Suppliers";
+    ViewData["PreviousPage"] = ViewBag.PreviousPage;
+}
+
+<h1>Create Supplier</h4>
+<hr />
+
+@await Html.PartialAsync("_CreateFormPartial", Model)
