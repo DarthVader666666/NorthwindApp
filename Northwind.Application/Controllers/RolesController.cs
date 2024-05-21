@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Northwind.Application.Constants;
 using Northwind.Application.Models.Roles;
+using Northwind.Application.Services;
 using Northwind.Bll.Interfaces;
 using Northwind.Data.Entities;
 
@@ -14,13 +15,13 @@ namespace Northwind.Application.Controllers
     {
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<NorthwindUser> _userManager;
-        private readonly IRepository<Customer> _customerRepository;
+        private readonly ISelectListFiller _selectListFiller;
 
-        public RolesController(RoleManager<IdentityRole> roleManager, UserManager<NorthwindUser> userManager, IRepository<Customer> customerRepository)
+        public RolesController(RoleManager<IdentityRole> roleManager, UserManager<NorthwindUser> userManager, ISelectListFiller selectListFiller)
         {
             _roleManager = roleManager;
             _userManager = userManager;
-            _customerRepository = customerRepository;
+            _selectListFiller = selectListFiller;
         }
 
         public IActionResult Index() => View(_roleManager.Roles.ToList());
@@ -63,7 +64,7 @@ namespace Northwind.Application.Controllers
             return RedirectToAction("Index");
         }
 
-        public async Task<IActionResult> UserList()
+        public IActionResult UserList()
         {
             var users = _userManager.Users.ToList();
 
@@ -92,9 +93,10 @@ namespace Northwind.Application.Controllers
                     UserId = user.Id,
                     UserEmail = user.Email,
                     UserRoles = userRoles,
-                    AllRoles = allRoles,
-                    CustomerList = await GetCustomerIdSelectList(userId)
+                    AllRoles = allRoles
                 };
+
+                _selectListFiller.FillSelectLists(model, userId: userId);
 
                 return View(model);
             }
@@ -105,49 +107,25 @@ namespace Northwind.Application.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(RoleChangeModel? roleChangeModel)
         {
-            var user = await _userManager.FindByIdAsync(roleChangeModel?.UserId);
+            var user = await _userManager.FindByIdAsync(roleChangeModel?.UserId ?? "");
 
             if (user != null)
             {
                 var userRoles = await _userManager.GetRolesAsync(user);
-                var addedRoles = roleChangeModel.UserRoles.Except(userRoles);
+                var addedRoles = roleChangeModel?.UserRoles.Except(userRoles);
                 var removedRoles = userRoles.Except(roleChangeModel.UserRoles);
 
                 await _userManager.AddToRolesAsync(user, addedRoles);
                 await _userManager.RemoveFromRolesAsync(user, removedRoles);
 
                 user.CustomerId = roleChangeModel.CustomerId;
+                user.EmployeeId = roleChangeModel.EmployeeId;
                 await _userManager.UpdateAsync(user);
 
                 return RedirectToAction("UserList");
             }
 
             return NotFound();
-        }
-
-        private async Task<SelectList> GetCustomerIdSelectList(string userId)
-        {
-            var customers = _customerRepository.GetListAsync().Result;
-            var dictionary = customers.ToDictionary(c => c.CustomerId, c => c.CompanyName);
-
-            var selectList = new SelectList(dictionary, "Key", "Value", dictionary);
-
-            var user = await _userManager.FindByIdAsync(userId);
-            var customerId = user?.CustomerId;
-
-            SelectListItem? selectedItem = null;
-
-            if (customerId != null)
-            {
-                selectedItem = selectList.FirstOrDefault(x => x.Value == customerId.ToString());
-            }
-
-            if (selectedItem != null)
-            {
-                selectedItem.Selected = true;
-            }
-
-            return selectList;
         }
     }
 }

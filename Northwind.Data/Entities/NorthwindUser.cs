@@ -8,6 +8,11 @@ namespace Northwind.Data.Entities
         [ForeignKey(nameof(CustomerId))]
         public string? CustomerId { get; set; } = null;
 
-        public Customer? Customer { get; set; }
+        [ForeignKey(nameof(EmployeeId))]
+        public int? EmployeeId { get; set; } = null;
+
+        public virtual Customer? Customer { get; set; }
+
+        public virtual Employee? Employee { get; set; }
     }
 }

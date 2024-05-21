@@ -25,7 +25,10 @@
 
     string? ChangeSelectList()
     {
-        ViewData["SelectListName"] = SelectListHeader == SelectListName.CategoryList.ToString() ? SelectListName.SupplierList.ToString() : SelectListName.CategoryList.ToString();
+        ViewData["SelectListName"] = SelectListHeader == SelectListName.CategoryList.ToString() ? 
+            SelectListName.SupplierList.ToString() : 
+            SelectListName.CategoryList.ToString();
+
         return UrlForSelectedItem;
     }
 }
