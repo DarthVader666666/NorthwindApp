@@ -10,8 +10,8 @@
     PropertyInfo[] Properties => Model.GetType().GetProperties();
     string IdName => Properties.First(x => ControllerName!.Contains(x.Name[..^3]) && x.Name.Contains("Id")).Name;
     object? IdValue => Properties.First(x => ControllerName!.Contains(x.Name[..^3]) && x.Name.Contains("Id")).GetValue(Model);
-    bool IsAdmin => User.IsInRole("admin");
-    bool IsCustomer => User.IsInRole("customer");
+    bool IsAdminOrOwner => User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner);
+    bool IsCustomer => User.IsInRole(UserRoles.Customer);
 
     string? GetLink(string forController = "")
     {
@@ -98,9 +98,11 @@
     </dl>
 </div>
 
-@if(User.IsInRole(UserRoles.Admin))
+@if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner))
 {
-    <button class="btn btn-primary fw-bold" @(IsAdmin ? "" : "disabled") onclick="location.href = '@Url.ActionLink("Edit", ControllerName, new { id = IdValue })'">Edit</button>
+    <button class="btn btn-primary fw-bold" @(IsAdminOrOwner ? "" : "disabled") onclick="location.href = '@Url.ActionLink("Edit", ControllerName, new { id = IdValue })'">
+        Edit
+    </button>
 }
 
 @if (ControllerName == "Products" && IsCustomer)

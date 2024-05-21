@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Northwind.Application.Models.Roles.UserIndexModel>
 
 <h2>User List</h2>
-<table class="table table-striped" style="width:100%;max-width:600px;">
+<table class="table" style="width:100%;max-width:600px;">
     <colgroup>
         <col span="1" style="width:70%;">
         <col span="1" style="width:30%;">
@@ -52,5 +52,9 @@
         list-style: none;
         padding-left: 0px;
         margin-bottom: 0px;
+    }
+
+    tbody tr:hover{
+        background-color:lightgray;
     }
 </style>

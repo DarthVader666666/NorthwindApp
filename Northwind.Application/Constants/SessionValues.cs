@@ -5,6 +5,7 @@
         public const string Owner = "owner";
         public const string Admin = "admin";
         public const string Customer = "customer";
+        public const string Employee = "employee";
     }
 
     public static class SessionValues

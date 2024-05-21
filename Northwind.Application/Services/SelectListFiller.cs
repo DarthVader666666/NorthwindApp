@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.IdentityModel.Tokens;
 using Northwind.Application.Models.Order;
 using Northwind.Application.Models.Product;
+using Northwind.Application.Models.Roles;
 using Northwind.Bll.Interfaces;
 using Northwind.Data.Entities;
 
@@ -13,19 +16,21 @@ namespace Northwind.Application.Services
         private readonly IRepository<Shipper> _shipperRepository;
         private readonly IRepository<Supplier> _supplierRepository;
         private readonly IRepository<Category> _categoryRepository;
+        private readonly UserManager<NorthwindUser> _userManager;
 
         public SelectListFiller(IRepository<Employee> employeeRepository, IRepository<Customer> customerRepository, IRepository<Shipper> shipperRepository,
-            IRepository<Supplier> supplierRepository, IRepository<Category> categoryRepository)
+            IRepository<Supplier> supplierRepository, IRepository<Category> categoryRepository, UserManager<NorthwindUser> userManager)
         {
             _employeeRepository = employeeRepository;
             _customerRepository = customerRepository;
             _shipperRepository = shipperRepository;
             _supplierRepository = supplierRepository;
             _categoryRepository = categoryRepository;
+            _userManager = userManager;
         }
 
         public void FillSelectLists<TModel>(TModel? model, int? employeeId = null, int? shipperId = null, string? customerId = null, int? categoryId = null, 
-            int? supplierId = null) where TModel : class
+            int? supplierId = null, string? userId = null) where TModel : class
         {
             if (model == null)
             {
@@ -54,7 +59,7 @@ namespace Northwind.Application.Services
             {
                 var orderIndexModel = model as OrderIndexModel;
 
-                orderIndexModel!.CustomerList = GetCustomerIdSelectList(customerId, true);
+                orderIndexModel!.CustomerList = GetCustomerIdSelectList(customerId: customerId, userId: null, true);
             }
 
             if (model is ProductCreateModel)
@@ -80,22 +85,46 @@ namespace Northwind.Application.Services
                 productIndexModel!.SupplierList = GetSupplierIdSelectList(supplierId, true);
                 productIndexModel!.CategoryList = GetCategoryIdSelectList(categoryId, true);
             }
+
+            if (model is RoleChangeModel)
+            {
+                var roleChangeModel = model as RoleChangeModel;
+
+                roleChangeModel!.CustomerList = GetCustomerIdSelectList(userId: userId);
+                roleChangeModel!.EmployeeList = GetEmployeeIdSelectList(userId: userId);
+            }
         }
 
-        private SelectList GetEmployeeIdSelectList(int? employeeId = null)
+        private SelectList GetEmployeeIdSelectList(int? employeeId = null, string? userId = null, bool all = false)
         {
-            var employees = _employeeRepository.GetListAsync().Result;
-            var dictionary = employees.ToDictionary(e => e?.EmployeeId ?? 0, e => e?.FirstName ?? "" + " " + e?.LastName ?? "");
+            if (!userId.IsNullOrEmpty())
+            {
+                var user = _userManager.FindByIdAsync(userId!).Result;
+                employeeId = user?.EmployeeId;
+            }
 
-            return GetSelectList(dictionary, employeeId);
+            var employees = _employeeRepository.GetListAsync();
+            Task.WaitAny(employees);
+
+            var dictionary = employees.Result.ToDictionary(e => e?.EmployeeId ?? 0, e => $"{e.FirstName} {e.LastName} - {e.Title}");
+
+            return GetSelectList(dictionary, employeeId, all);
         }
 
-        private SelectList GetCustomerIdSelectList(string? customerId = null, bool all = false)
+        private SelectList GetCustomerIdSelectList(string? customerId = null, string? userId = null, bool all = false)
         {
-            var customer = _customerRepository.GetListAsync().Result;
-            var dictionary = customer.ToDictionary(c => c?.CustomerId ?? "", c => c?.CompanyName ?? "");
+            if (!userId.IsNullOrEmpty())
+            {
+                var user = _userManager.FindByIdAsync(userId!).Result;
+                customerId = user?.CustomerId;
+            }
 
-            return GetSelectList(dictionary, customerId, all: all);
+            var customers = _customerRepository.GetListAsync();
+            Task.WaitAny(customers);
+
+            var dictionary = customers.Result.ToDictionary(c => c?.CustomerId ?? "", c => c?.CompanyName ?? "");
+
+            return GetSelectList(dictionary, customerId, all);
         }
 
         private SelectList GetShipperIdSelectList(int? shipperId)
