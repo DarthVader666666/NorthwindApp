@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.IdentityModel.Tokens;
 using Northwind.Bll.Services;
 
 namespace Northwind.Application.Services
@@ -9,9 +11,9 @@ namespace Northwind.Application.Services
             int? supplierId = null, string? userId = null) where TModel : class;
 
         public SelectList? GetCategoryIdSelectList(int? categoryId, bool all = false);
-
         public SelectList? GetSupplierIdSelectList(int? supplierId, bool all = false);
-
         public SelectList? GetSelectList<TKey>(IDictionary<TKey, string> dictionary, object? id, bool all = false);
+        public SelectList? GetEmployeeIdSelectList(int? employeeId = null, string? userId = null, bool all = false);
+        public SelectList? GetCustomerIdSelectList(string? customerId = null, string? userId = null, bool all = false);
     }
 }

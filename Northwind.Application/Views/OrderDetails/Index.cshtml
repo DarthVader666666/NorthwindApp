@@ -7,6 +7,7 @@
     ViewData["ActionName"] = "Delete";
     ViewData["ForeignKeyValue"] = ViewBag.OrderId ?? ViewBag.ProductId;
     ViewData["ForeignKeyName"] = ViewBag.OrderId != null ? "orderId" : "productId";
+    ViewData["PageStartNumbering"] = ViewBag.PageStartNumbering;
 }
 
 @functions {
@@ -18,7 +19,7 @@
 
 <h1>"@(ViewBag.ProductOrCompanyName)" Order Details</h1>
 
-@if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner))
+@if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner) || User.IsInRole(UserRoles.Employee))
 {
     @await Html.PartialAsync("_IndexButtonsPartial", null as SelectList)
 }

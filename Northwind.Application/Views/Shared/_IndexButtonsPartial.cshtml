@@ -25,9 +25,19 @@
 
     string? ChangeSelectList()
     {
-        ViewData["SelectListName"] = SelectListHeader == SelectListName.CategoryList.ToString() ? 
-            SelectListName.SupplierList.ToString() : 
-            SelectListName.CategoryList.ToString();
+        if (ControllerName == "Products")
+        {
+            ViewData["SelectListName"] = SelectListHeader == SelectListName.CategoryList.ToString() ? 
+                SelectListName.SupplierList.ToString() : 
+                SelectListName.CategoryList.ToString();
+        }
+
+        if (ControllerName == "Orders")
+        {
+            ViewData["SelectListName"] = SelectListHeader == SelectListName.CustomerList.ToString() ?
+                SelectListName.EmployeeList.ToString() :
+                SelectListName.CustomerList.ToString();
+        }
 
         return UrlForSelectedItem;
     }
@@ -37,7 +47,7 @@
     @if (Model != null)
     {
         <div class="col-3 align-content-center">
-            @if (ControllerName == "Products")
+            @if (ControllerName == "Products" || ControllerName == "Orders")
             {
                 <button class="float-end" onclick="onClickForProducts()">@(SelectListHeader?.Replace("List", "")):</button>
             }
@@ -62,14 +72,17 @@
             </select>
         </div>
     }
-    <div class="col-2">
-        <button class="btn btn-primary fw-bold" onclick="location.href = '@Link'" id="createButton">
-            Create
-        </button>
-        <button form="form" class="btn btn-danger fw-bold" type="submit" id="deleteButton" hidden>
-            Delete
-        </button>
-    </div>
+    @if (!User.IsInRole(UserRoles.Employee))
+    {
+        <div class="col-2">
+            <button class="btn btn-primary fw-bold" onclick="location.href = '@Link'" id="createButton">
+                Create
+            </button>
+            <button form="form" class="btn btn-danger fw-bold" type="submit" id="deleteButton" hidden>
+                Delete
+            </button>
+        </div>
+    }
 </div>
 
 <script>

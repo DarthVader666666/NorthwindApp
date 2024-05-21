@@ -4,6 +4,7 @@
     {
         CategoryList,
         SupplierList,
-        CustomerList
+        CustomerList,
+        EmployeeList
     }
 }

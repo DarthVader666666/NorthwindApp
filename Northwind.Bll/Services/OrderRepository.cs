@@ -22,10 +22,18 @@ namespace Northwind.Bll.Services
             return await DbContext.Orders.AsNoTracking().Include(x => x.OrderDetails).Include(x => x.Customer).FirstOrDefaultAsync(x => x.OrderId == (int)id);
         }
 
-        public override Task<IEnumerable<Order?>> GetListForAsync(object? customerId)
+        public override Task<IEnumerable<Order>> GetListForAsync(object? foreignKeys)
         {
-            var query = DbContext.Orders.AsNoTracking().Include(x => x.OrderDetails).Where<Order?>(x => customerId == null || x.CustomerId == customerId as string);
-            return Task.Run(() => query.AsEnumerable());
+            var ids = (Tuple<string?, string?>)(foreignKeys ?? (null as string, null as string));
+
+            var orders = ids switch
+            {
+                (var x, var y) when !x.IsNullOrEmpty() && y == null => DbContext.Orders.AsNoTracking().Include(x => x.OrderDetails).Where(x => x.CustomerId == ids.Item1),
+                (var x, var y) when x.IsNullOrEmpty() && int.TryParse(y, out int employeeId) && employeeId > 0 => DbContext.Orders.AsNoTracking().Include(x => x.OrderDetails).Where(x => x.EmployeeId == int.Parse(ids.Item2 ?? "0")),
+                _ => DbContext.Orders.AsNoTracking().Include(x => x.OrderDetails)
+            };
+
+            return Task.FromResult(orders.AsEnumerable());
         }
 
         public override async Task<Order?> DeleteAsync(object? id)

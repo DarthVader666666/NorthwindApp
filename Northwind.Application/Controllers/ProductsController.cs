@@ -77,7 +77,8 @@ namespace Northwind.Application.Controllers
             {
                 ViewBag.PreviousPage = Url.ActionLink("Details", "Categories", new { id = categoryId });
                 productIndexModel.CategoryList = _selectListFiller.GetCategoryIdSelectList(categoryId, true);
-                ViewBag.CategoryId = categoryId;
+                ViewBag.ForeignKeyValue = categoryId;
+                ViewBag.ForeignKeyName = "categoryId";
                 ViewBag.CategoryName = (await _categoryRepository.GetAsync(categoryId))?.CategoryName ?? "";
             }
 
@@ -85,11 +86,13 @@ namespace Northwind.Application.Controllers
             {
                 ViewBag.PreviousPage = Url.ActionLink("Details", "Suppliers", new { id = supplierId });
                 productIndexModel.SupplierList = _selectListFiller.GetSupplierIdSelectList(supplierId, true);
-                ViewBag.SupplierId = supplierId;
+                ViewBag.ForeignKeyValue = supplierId;
+                ViewBag.ForeignKeyName = "supplierId";
                 ViewBag.SupplierName = (await _supplierRepository.GetAsync(supplierId))?.CompanyName ?? "";
             }
 
             ViewBag.SelectListName = selectListName.ToString();
+            ViewBag.PageStartNumbering = (page - 1) * pageSize + 1;
 
             return View(productIndexModel);
         }
