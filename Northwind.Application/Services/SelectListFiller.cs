@@ -151,7 +151,7 @@ namespace Northwind.Application.Services
             return GetSelectList(dictionary, supplierId, all);
         }
 
-        SelectList GetSelectList<TKey>(IDictionary<TKey, string> dictionary, object? id, bool all = false)
+        public SelectList? GetSelectList<TKey>(IDictionary<TKey, string> dictionary, object? id, bool all = false)
         {
             dynamic defaultKeyValue = typeof(TKey) == typeof(int) ? 0 : "";
             dictionary.Add(defaultKeyValue, all ? "All" : "");

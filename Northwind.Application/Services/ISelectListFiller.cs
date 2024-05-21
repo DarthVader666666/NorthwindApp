@@ -11,5 +11,7 @@ namespace Northwind.Application.Services
         public SelectList? GetCategoryIdSelectList(int? categoryId, bool all = false);
 
         public SelectList? GetSupplierIdSelectList(int? supplierId, bool all = false);
+
+        public SelectList? GetSelectList<TKey>(IDictionary<TKey, string> dictionary, object? id, bool all = false);
     }
 }
