@@ -98,7 +98,7 @@ namespace Northwind.Application.Controllers
                 ViewBag.ForeignKeyValue = employeeId;
                 ViewBag.ForeignKeyName = "employeeId";
                 var emloyee = await _employeeRepository.GetAsync(employeeId);
-                ViewBag.EmployeeName = $"{emloyee?.FirstName} {emloyee?.LastName}";
+                ViewBag.EmployeeName = emloyee != null ? $"{emloyee?.FirstName} {emloyee?.LastName}" : null;
             }
 
             ViewBag.PageStartNumbering = (page - 1) * pageSize + 1;
