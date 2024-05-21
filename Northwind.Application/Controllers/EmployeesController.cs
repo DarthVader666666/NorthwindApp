@@ -7,6 +7,7 @@ using Northwind.Data.Entities;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authorization;
 using Northwind.Application.Constants;
+using Northwind.Application.Services;
 
 namespace Northwind.Application.Controllers
 {
@@ -15,10 +16,12 @@ namespace Northwind.Application.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IRepository<Employee> _employeeRepository;
+        private readonly ISelectListFiller _selectListFiller;
 
-        public EmployeesController(IRepository<Employee> employeeRepository, IMapper mapper)
+        public EmployeesController(IRepository<Employee> employeeRepository, ISelectListFiller selectListFiller, IMapper mapper)
         {
             _mapper = mapper;
+            _selectListFiller = selectListFiller;
             _employeeRepository = employeeRepository;
         }
 
@@ -156,31 +159,12 @@ namespace Northwind.Application.Controllers
             return (await _employeeRepository.GetAsync(id)) != null;
         }
 
-        private SelectList GetReportsToSelectList(int? id = null, int? reportsTo = null)
+        private SelectList? GetReportsToSelectList(int? id = null, int? reportsTo = null)
         {
             var list = _employeeRepository.GetListAsync().Result;
             var dictionary = list.Except(list.Where(e => e.EmployeeId == id)).ToDictionary(e => e.EmployeeId, e => e.FirstName + " " + e.LastName);
 
-            dictionary.Add(0, "");
-            var selectList = new SelectList(dictionary, "Key", "Value");
-
-            SelectListItem selectedItem = null;
-
-            if (reportsTo != null)
-            {
-                selectedItem = selectList.FirstOrDefault(x => x.Value == reportsTo.ToString());                
-            }
-            else
-            {
-                selectedItem = selectList.FirstOrDefault(x => x.Value == 0.ToString());               
-            }
-
-            if (selectedItem != null)
-            {
-                selectedItem.Selected = true;
-            }
-
-            return selectList;
+            return _selectListFiller.GetSelectList(dictionary, reportsTo);
         }
     }
 }
