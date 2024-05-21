@@ -2,32 +2,34 @@
 @addTagHelper *, Northwind.Application
 @model Northwind.Application.Models.Order.OrderIndexModel
 @{
+    var selectListHeader = ViewBag.CompanyName ?? ViewBag.EmployeeName;
+
     ViewData["PreviousPage"] = ViewBag.PreviousPage;
     ViewData["ControllerName"] = "Orders";
     ViewData["ActionName"] = "Delete";
-    ViewData["CustomerId"] = ViewBag.CustomerId;
-    ViewData["ForeignKeyValue"] = ViewBag.CustomerId;
-    ViewData["ForeignKeyName"] = "customerId";
-    ViewData["SelectListName"] = "CustomerList";
+    ViewData["ForeignKeyValue"] = ViewBag.ForeignKeyValue;
+    ViewData["ForeignKeyName"] = ViewBag.ForeignKeyName;
+    ViewData["SelectListName"] = ViewBag.SelectListName;
+    ViewData["PageStartNumbering"] = ViewBag.PageStartNumbering;
 }
 
-<h1>@(ViewBag.CompanyName != "" ? $"\"{ViewBag.CompanyName}\"" : string.Empty) Order List</h1>
+<h1>@(selectListHeader != null && selectListHeader != "" ? $"\"{selectListHeader}\"" : string.Empty) Order List</h1>
 
-@if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner))
+@if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner) || User.IsInRole(UserRoles.Employee))
 {
-    @await Html.PartialAsync("_IndexButtonsPartial", Model.CustomerList, ViewData)
+    @await Html.PartialAsync("_IndexButtonsPartial", Model.CustomerList ?? Model.EmployeeList, ViewData)
 }
 
 @if (Model.Orders.Any())
 {
     @await Html.PartialAsync("_TableFormPartial", Model.Orders, ViewData)
 
-    if (ViewData["CustomerId"] != null && (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner)))
+@*     if (ViewData["ForeignKeyValue"] != null && (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner)))
     {
-        <button class="btn btn-primary fw-bold" onclick="location.href = '@Url.ActionLink("Details", "Customers", new { id = ViewData["CustomerId"] })'">
+        <button class="btn btn-primary fw-bold" onclick="location.href = '@Url.ActionLink("Details", "Customers", new { id = ViewData["ForeignKeyValue"] })'">
             To Customer
         </button>
-    }
+    } *@
     
     <page-link page-model="Model.PageViewModel" page-action="Index" class="float-end"></page-link>
 }

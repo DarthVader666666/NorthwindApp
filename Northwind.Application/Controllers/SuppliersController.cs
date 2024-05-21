@@ -60,6 +60,7 @@ namespace Northwind.Application.Controllers
 
             var pageModel = new SupplierPageModel(suppliers.Count(), page, pageSize);
             var supplierIndexModel = new SupplierIndexModel(supplierDataModels, pageModel);
+            ViewBag.PageStartNumbering = (page - 1) * pageSize + 1;
 
             return View(supplierIndexModel);
         }

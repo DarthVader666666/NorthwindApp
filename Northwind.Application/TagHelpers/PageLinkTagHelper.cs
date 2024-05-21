@@ -75,7 +75,8 @@ namespace Northwind.Application.TagHelpers
 
                     PageModelBase x when x is OrderPageModel => urlHelper.Action(PageAction, new 
                     { 
-                        customerId = ((OrderPageModel)PageModel).CustomerId, 
+                        customerId = ((OrderPageModel)PageModel).CustomerId,
+                        employeeId = ((OrderPageModel)PageModel).EmployeeId,
                         page = pageNumber 
                     }),
 

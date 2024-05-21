@@ -95,7 +95,7 @@ namespace Northwind.Application.Services
             }
         }
 
-        private SelectList GetEmployeeIdSelectList(int? employeeId = null, string? userId = null, bool all = false)
+        public SelectList? GetEmployeeIdSelectList(int? employeeId = null, string? userId = null, bool all = false)
         {
             if (!userId.IsNullOrEmpty())
             {
@@ -111,7 +111,7 @@ namespace Northwind.Application.Services
             return GetSelectList(dictionary, employeeId, all);
         }
 
-        private SelectList GetCustomerIdSelectList(string? customerId = null, string? userId = null, bool all = false)
+        public SelectList? GetCustomerIdSelectList(string? customerId = null, string? userId = null, bool all = false)
         {
             if (!userId.IsNullOrEmpty())
             {

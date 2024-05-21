@@ -12,7 +12,7 @@ using Northwind.Data.Entities;
 
 namespace Northwind.Application.Controllers
 {
-    [Authorize(Roles = $"{UserRoles.Owner},{UserRoles.Admin},{UserRoles.Customer}")]
+    [Authorize(Roles = $"{UserRoles.Owner},{UserRoles.Admin},{UserRoles.Customer},{UserRoles.Employee}")]
     public class CustomersController : Controller
     {
         private static SortBy? Sort;
@@ -51,6 +51,7 @@ namespace Northwind.Application.Controllers
 
             var pageModel = new PageModelBase(customers.Count(), page, pageSize);
             var productIndexModel = new CustomerIndexModel(customerDataModels, pageModel);
+            ViewBag.PageStartNumbering = (page - 1) * pageSize + 1;
 
             return View(productIndexModel);
         }
@@ -76,7 +77,7 @@ namespace Northwind.Application.Controllers
             return View(customerDetailsModel);
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = $"{UserRoles.Owner},{UserRoles.Admin}")]
         public IActionResult Create()
         {
             ViewBag.PreviousPage = Url.ActionLink("Index", "Customers");
@@ -84,7 +85,7 @@ namespace Northwind.Application.Controllers
             return View();
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = $"{UserRoles.Owner},{UserRoles.Admin}")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CustomerCreateModel customerCreateModel)
@@ -110,7 +111,7 @@ namespace Northwind.Application.Controllers
             return View(customerCreateModel);
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = $"{UserRoles.Owner},{UserRoles.Admin}")]
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
@@ -128,7 +129,7 @@ namespace Northwind.Application.Controllers
             return View(customerEditModel);
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = $"{UserRoles.Owner},{UserRoles.Admin}")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, CustomerEditModel customerEditModel)
@@ -163,7 +164,7 @@ namespace Northwind.Application.Controllers
             return View(customerEditModel);
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = $"{UserRoles.Owner},{UserRoles.Admin}")]
         [HttpGet]
         public async Task<IActionResult> Delete([FromQuery] string[] ids)
         {
@@ -186,7 +187,7 @@ namespace Northwind.Application.Controllers
             return View(_mapper.Map<IEnumerable<CustomerDeleteModel>>(customers));
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = $"{UserRoles.Owner},{UserRoles.Admin}")]
         [HttpPost]
         public async Task<IActionResult> DeleteConfirmed([FromForm] string[] ids)
         {

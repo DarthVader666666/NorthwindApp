@@ -12,13 +12,16 @@ using Northwind.Application.Services;
 using Northwind.Application.Constants;
 using Northwind.Application.Extensions;
 using Northwind.Application.Enums;
+using Northwind.Application.Models.Product;
+using Northwind.Bll.Services;
 
 namespace Northwind.Application.Controllers
 {
-    [Authorize(Roles = $"{UserRoles.Owner},{UserRoles.Admin},{UserRoles.Customer}")]
+    [Authorize(Roles = $"{UserRoles.Owner},{UserRoles.Admin},{UserRoles.Customer},{UserRoles.Employee}")]
     public class OrdersController : Controller
     {
         private static SortBy? Sort;
+        private static SelectListName? selectListName = SelectListName.CustomerList;
         private static bool Desc = false;
 
         private const int pageSize = 10;
@@ -27,26 +30,29 @@ namespace Northwind.Application.Controllers
         private readonly IRepository<Order> _orderRepository;
         private readonly IRepository<Customer> _customerRepository;
         private readonly IRepository<Product> _productRepository;
+        private readonly IRepository<Employee> _employeeRepository;
         private readonly ISelectListFiller _selectListFiller;
 
         public OrdersController(IRepository<Order> orderRepository, IRepository<Customer> customerRepository, IRepository<Product> productRepository,
-            ISelectListFiller selectListFiller, IMapper mapper)
+            IRepository<Employee> employeeRepository, ISelectListFiller selectListFiller, IMapper mapper)
         {
             _mapper = mapper;
             _orderRepository = orderRepository;
             _customerRepository = customerRepository;
             _productRepository = productRepository;
             _selectListFiller = selectListFiller;
+            _employeeRepository = employeeRepository;
         }
         
-        public async Task<IActionResult> Index(string? customerId, int page = 1, string? sortBy = null)
+        public async Task<IActionResult> Index(string? customerId, int? employeeId, int page = 1, string? sortBy = null)
         {
-            if (!(User.IsInRole(UserRoles.Owner) || User.IsInRole(UserRoles.Admin)) && (customerId == null || customerId != this.HttpContext.Session.GetString(SessionValues.CustomerId)))
+            if (!(User.IsInRole(UserRoles.Owner) || User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Employee)) && (customerId == null || customerId != this.HttpContext.Session.GetString(SessionValues.CustomerId)))
             {
                 return Redirect("Identity/Account/AccessDenied");
             }
 
-            var orders = await _orderRepository.GetListForAsync(customerId);
+            var foreignKeys = Tuple.Create(customerId == "0" ? "" : customerId, employeeId?.ToString());
+            var orders = await _orderRepository.GetListForAsync(foreignKeys);
             var orderDataModels = _mapper.Map<IEnumerable<OrderIndexDataModel>>(orders);
 
             if (sortBy != null)
@@ -64,22 +70,39 @@ namespace Northwind.Application.Controllers
             
             orderDataModels = orderDataModels.Skip((page - 1) * pageSize).Take(pageSize);
 
-            var pageModel = new OrderPageModel(orders.Count(), page, pageSize, customerId);
+            var pageModel = new OrderPageModel(orders.Count(), page, pageSize, customerId, employeeId);
             var orderIndexModel = new OrderIndexModel(orderDataModels, pageModel);
 
-            if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner))
+            selectListName = (customerId, employeeId) switch
             {
-                _selectListFiller.FillSelectLists(orderIndexModel, customerId: customerId);
-            }
+                ("0", null) => SelectListName.CustomerList,
+                (null, >= 0) => SelectListName.EmployeeList,
+                (null, null) => page > 1 ? selectListName : SelectListName.CustomerList,
+                _ => SelectListName.CustomerList
+            };
 
-            if (!customerId.IsNullOrEmpty())
-            { 
+            if (selectListName == SelectListName.CustomerList)
+            {
+                customerId = customerId == "0" ? null : customerId;
                 ViewBag.PreviousPage = Url.ActionLink("Details", "Customers", new { id = customerId });
+                orderIndexModel.CustomerList = _selectListFiller.GetCustomerIdSelectList(customerId, all: true);
+                ViewBag.ForeignKeyValue = customerId;
+                ViewBag.ForeignKeyName = "customerId";
+                ViewBag.CompanyName = (await _customerRepository.GetAsync(customerId))?.CompanyName ?? "";
             }
 
-            ViewBag.CustomerId = customerId;
-            var customer = await _customerRepository.GetAsync(customerId);
-            ViewBag.CompanyName = customer != null ? customer.CompanyName : "";
+            if (selectListName == SelectListName.EmployeeList)
+            {
+                ViewBag.PreviousPage = Url.ActionLink("Details", "Employee", new { id = employeeId });
+                orderIndexModel.EmployeeList = _selectListFiller.GetEmployeeIdSelectList(employeeId, all: true);
+                ViewBag.ForeignKeyValue = employeeId;
+                ViewBag.ForeignKeyName = "employeeId";
+                var emloyee = await _employeeRepository.GetAsync(employeeId);
+                ViewBag.EmployeeName = $"{emloyee?.FirstName} {emloyee?.LastName}";
+            }
+
+            ViewBag.PageStartNumbering = (page - 1) * pageSize + 1;
+            ViewBag.SelectListName = selectListName.ToString();
 
             return View(orderIndexModel);
         }
@@ -105,6 +128,7 @@ namespace Northwind.Application.Controllers
             return View(orderDetailsModel);
         }
 
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Owner}")]
         public IActionResult Create(string? customerId)
         {
             ViewBag.PreviousPage = Url.ActionLink("Index", "Orders", new { customerId = customerId });
@@ -117,6 +141,7 @@ namespace Northwind.Application.Controllers
             return View(orderCreateModel);
         }
 
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Owner}")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(OrderCreateModel orderCreateModel)
@@ -135,6 +160,7 @@ namespace Northwind.Application.Controllers
             return View(orderCreateModel);
         }
 
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Owner}")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -155,6 +181,7 @@ namespace Northwind.Application.Controllers
             return View(orderEditModel);
         }
 
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Owner}")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, OrderEditModel orderEditModel)
@@ -192,6 +219,7 @@ namespace Northwind.Application.Controllers
             return View(orderEditModel);
         }
 
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Owner}")]
         [HttpGet]
         public async Task<IActionResult> Delete([FromQuery] int[] ids)
         {
@@ -202,6 +230,7 @@ namespace Northwind.Application.Controllers
             return View(_mapper.Map<IEnumerable<OrderIndexDataModel>>(orders));
         }
 
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Owner}")]
         [HttpPost]
         public async Task<IActionResult> DeleteConfirmed([FromForm] int[] ids)
         {
@@ -212,6 +241,7 @@ namespace Northwind.Application.Controllers
             return RedirectToAction(nameof(Index), new { fkId = customerId });
         }
 
+        [Authorize(Roles = $"{UserRoles.Customer}")]
         public async Task<IActionResult> Confirm(int? orderId)
         {
             if (orderId == null && !await OrderExists(orderId))
@@ -256,6 +286,7 @@ namespace Northwind.Application.Controllers
             return View();
         }
 
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Owner},{UserRoles.Customer}")]
         public async Task<IActionResult> Cancel(int? id)
         {
             var order = await _orderRepository.GetAsync(id);
