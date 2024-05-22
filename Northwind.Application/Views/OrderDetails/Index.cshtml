@@ -14,6 +14,7 @@
     bool? Confirmed => ViewBag.Confirmed;
     string? CustomerId => ViewBag.CustomerId;
     int? OrderId => this.Context.Session.GetInt32(SessionValues.OrderId) ?? Model.OrderDetails.FirstOrDefault()?.OrderId;
+    int? CategoryId => ViewBag.CategoryId;
     string Hidden => User.IsInRole(UserRoles.Customer) && OrderId != null && (!Confirmed ?? false) ? "" : "hidden";
 }
 
@@ -55,6 +56,6 @@ else
 <script>
     function confirmOrder() {
         document.getElementById("orderConfirmButton").hidden = true;
-        location.href = '@Url.ActionLink("Confirm", "Orders", new { orderId = OrderId })';
+        location.href = '@Url.ActionLink("Confirm", "Orders", new { orderId = OrderId, categoryId = CategoryId })';
     }
 </script>

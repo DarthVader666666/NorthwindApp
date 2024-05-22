@@ -81,6 +81,7 @@ namespace Northwind.Application.Controllers
             if (productId > 0)
             {
                 ViewBag.ProductId = productId;
+                ViewBag.CategoryId = (await _productRepository.GetAsync(productId))?.CategoryId;
                 ViewBag.PreviousPage = Url.ActionLink("Details", "Products", new { id = productId });
                 ViewBag.ProductOrCompanyName = orderDetails.FirstOrDefault()?.Product?.ProductName ?? "";
             }

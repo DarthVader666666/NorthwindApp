@@ -238,11 +238,11 @@ namespace Northwind.Application.Controllers
 
             await _orderRepository.DeleteSeveralAsync(ids);
 
-            return RedirectToAction(nameof(Index), new { fkId = customerId });
+            return RedirectToAction(nameof(Index), new { customerId = customerId });
         }
 
         [Authorize(Roles = $"{UserRoles.Customer}")]
-        public async Task<IActionResult> Confirm(int? orderId)
+        public async Task<IActionResult> Confirm(int? orderId, int? categoryId)
         {
             if (orderId == null && !await OrderExists(orderId))
             { 
@@ -282,7 +282,7 @@ namespace Northwind.Application.Controllers
             this.HttpContext.Session.Remove(SessionValues.OrderId);
             this.HttpContext.Session.Remove(SessionValues.OrderStatus);
 
-            ViewBag.Link = Url.ActionLink("Index", "OrderDetails", new { orderId = orderId });
+            ViewBag.PreviousPage = Url.ActionLink("Index", "Products", new { categoryId = categoryId });
             return View();
         }
 
