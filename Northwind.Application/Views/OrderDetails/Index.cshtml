@@ -10,12 +10,9 @@
     ViewData["PageStartNumbering"] = ViewBag.PageStartNumbering;
 }
 
-@functions {
-    bool? Confirmed => ViewBag.Confirmed;
-    string? CustomerId => ViewBag.CustomerId;
+@functions {    
     int? OrderId => this.Context.Session.GetInt32(SessionValues.OrderId) ?? Model.OrderDetails.FirstOrDefault()?.OrderId;
     int? CategoryId => ViewBag.CategoryId;
-    string Hidden => User.IsInRole(UserRoles.Customer) && OrderId != null && (!Confirmed ?? false) ? "" : "hidden";
 }
 
 <h1>"@(ViewBag.ProductOrCompanyName)" Order Details</h1>
@@ -28,19 +25,28 @@
 @if (Model.OrderDetails.Any())
 {
     @await Html.PartialAsync("_TableFormPartial", Model.OrderDetails, ViewData)
-    var customerId = this.Context.Session.GetString(SessionValues.CustomerId);
 
-    if (User.IsInRole(UserRoles.Customer) && !User.IsInRole(UserRoles.Admin))
+    if (User.IsInRole(UserRoles.Customer))
     {
-        <button class="btn btn-primary fw-bold" onclick="@($"location.href = '{Url.ActionLink("Index", "Products", new { categoryId = CategoryId })}'")">Back To Shopping</button>
-    }
+        var customerId = this.Context.Session.GetString(SessionValues.CustomerId);
+        var hidden = OrderId != null && (!ViewBag.Confirmed ?? true) ? "" : "hidden";
+        var backLink = CategoryId != null ? Url.ActionLink("Index", "Products", new { categoryId = CategoryId }) : Url.ActionLink("Index", "Categories");
 
-    if (User.IsInRole(UserRoles.Customer) && CustomerId == customerId)
-    {
-        <button id="orderConfirmButton" class="btn btn-info pl-5" onclick="confirmOrder()" @Hidden>Confirm</button>
-    }
+        <button class="btn btn-primary fw-bold" onclick="@($"location.href = '{backLink}'")" @hidden>
+            Back To Shopping
+        </button>
 
-    <button class="btn btn-danger pl-5 float-end" onclick="@($"location.href = '{Url.ActionLink("Cancel", "Orders", new { id = OrderId })}'")" @Hidden>Cancel</button>
+        if (customerId == ViewBag.CustomerId)
+        {
+            <button id="orderConfirmButton" class="btn btn-info pl-5" onclick="confirmOrder()" @hidden>
+                Confirm
+            </button>
+        }
+
+        <button class="btn btn-danger pl-5 float-end" onclick="@($"location.href = '{Url.ActionLink("Cancel", "Orders", new { id = OrderId })}'")" @hidden>
+            Cancel
+        </button>
+    }
 
     <page-link page-model="Model.PageViewModel" page-action="Index" class="float-end"></page-link>
 }
