@@ -63,7 +63,7 @@
     </form>
 
     <div class="pt-3">
-        <button id="saveButton" type="submit" form="form" class="btn btn-primary fw-bold">Save</button>
+        <button id="saveButton" type="submit" form="form" class="btn btn-primary fw-bold" disabled>Add To Order</button>
         <button class="btn btn-primary fw-bold float-end" onclick="location.href='@Url.ActionLink("Index", "Products", new { categoryId = categoryId })'">
             Back
         </button>
@@ -111,6 +111,11 @@
     }
 
     function onQuantityChange(value) {
+        if (Number(value) === 0) {
+            saveButton.disabled = true;
+            return;
+        }
+
         if (Number(value) > unitsInStock) {
             overloadQuantityError.style.color = 'red';
             saveButton.disabled = true;

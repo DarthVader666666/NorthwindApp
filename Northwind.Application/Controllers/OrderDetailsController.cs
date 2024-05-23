@@ -40,7 +40,7 @@ namespace Northwind.Application.Controllers
 
         public async Task<IActionResult> Index(int? orderId, int? productId, int page = 1, string? sortBy = null)
         {
-            var primaryKeys = Tuple.Create(orderId, productId);
+            var primaryKeys = orderId > 0 && productId > 0 ? Tuple.Create(orderId, null as int?) : Tuple.Create(orderId, productId);
 
             var orderDetails = await _orderDetailRepository.GetListForAsync(primaryKeys);
             var orderDetailDataModels = _mapper.Map<IEnumerable<OrderDetailIndexDataModel>>(orderDetails);
@@ -79,15 +79,15 @@ namespace Northwind.Application.Controllers
                 }
             }
 
-            if (productId > 0)
+            if (productId > 0 && orderId == null)
             {
                 ViewBag.ForeignKeyValue = productId;
                 ViewBag.ForeignKeyName = "productId";
-                ViewBag.CategoryId = (await _productRepository.GetAsync(productId))?.CategoryId;
                 ViewBag.PreviousPage = Url.ActionLink("Details", "Products", new { id = productId });
                 ViewBag.ProductOrCompanyName = orderDetails.FirstOrDefault()?.Product?.ProductName ?? "";
             }
 
+            ViewBag.CategoryId = (await _productRepository.GetAsync(productId))?.CategoryId;
             ViewBag.PageStartNumbering = (page - 1) * pageSize + 1;
 
             return View(orderDetailIndexModel);
@@ -192,7 +192,7 @@ namespace Northwind.Application.Controllers
                     await _orderDetailRepository.CreateAsync(orderDetail);
                 }
 
-                return RedirectToAction("Index", "OrderDetails", new { orderId = orderDetailCreateModel.OrderId });
+                return RedirectToAction("Index", "OrderDetails", new { orderId = orderDetailCreateModel.OrderId, productId = orderDetailCreateModel.ProductId });
             }
 
             return View(orderDetailCreateModel);

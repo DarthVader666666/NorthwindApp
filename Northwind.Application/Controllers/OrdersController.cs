@@ -272,6 +272,8 @@ namespace Northwind.Application.Controllers
                         return View("../ExceptionView", "Units in stock has negative value");
                     }
 
+                    product.Category = null;
+                    product.Supplier = null;
                     await _productRepository.UpdateAsync(product);
                 }
             }
