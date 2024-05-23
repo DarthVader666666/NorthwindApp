@@ -1,6 +1,7 @@
 ﻿@using System.Reflection;
 @using Northwind.Application.Constants
 @using Northwind.Bll.Services.Extensions
+@using System.Globalization
 @model IEnumerable<object>
 
 @functions {
@@ -12,6 +13,7 @@
     string ForeignKeyName => ViewData["ForeignKeyName"] as string ?? "";
     string ForeignKeyValue => ViewData["ForeignKeyValue"]?.ToString() ?? "";
     int? PageStartNumbering => (int?)ViewData["PageStartNumbering"] ?? 1;
+    string? BackButtonName => $"To {CultureInfo.CurrentCulture.TextInfo.ToTitleCase(ForeignKeyName.Replace("Id", ""))} Details";
 
     PropertyInfo[] Properties => Model.Any() ? Model.First().GetType().GetProperties() : new PropertyInfo[0];
     IEnumerable<string> PropertyNames => Properties.Select(x => x.Name).Where(x => !x.Contains("Id"));
@@ -193,7 +195,10 @@
 
 @if (ViewData["PreviousPage"] != null && (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner)))
 {
-    <button class="btn btn-primary fw-bold" onclick="location.href = '@ViewData["PreviousPage"]'">Back</button>
+    <button class="btn btn-primary fw-bold" onclick="location.href = '@ViewData["PreviousPage"]'" 
+        @(ForeignKeyValue != "" && ForeignKeyValue != "0" ? "" : "hidden")>
+        @BackButtonName
+    </button>
 }
 
 <script>
