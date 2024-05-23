@@ -93,7 +93,7 @@ namespace Northwind.Application.Controllers
 
             if (selectListName == SelectListName.EmployeeList)
             {
-                ViewBag.PreviousPage = Url.ActionLink("Details", "Employee", new { id = employeeId });
+                ViewBag.PreviousPage = Url.ActionLink("Details", "Employees", new { id = employeeId });
                 orderIndexModel.EmployeeList = _selectListFiller.GetEmployeeIdSelectList(employeeId, all: true);
                 ViewBag.ForeignKeyValue = employeeId;
                 ViewBag.ForeignKeyName = "employeeId";

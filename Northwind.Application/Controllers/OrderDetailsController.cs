@@ -68,7 +68,8 @@ namespace Northwind.Application.Controllers
                 var order = await _orderRepository.GetAsync(orderId);
 
                 ViewBag.PreviousPage = Url.ActionLink("Details", "Orders", new { id = orderId });
-                ViewBag.OrderId = orderId;
+                ViewBag.ForeignKeyValue = orderId;
+                ViewBag.ForeignKeyName = "orderId";
                 ViewBag.Confirmed = !orderDetails.IsNullOrEmpty() && order?.OrderDate != null;
                 ViewBag.CustomerId = order?.CustomerId;
 
@@ -80,11 +81,14 @@ namespace Northwind.Application.Controllers
 
             if (productId > 0)
             {
-                ViewBag.ProductId = productId;
+                ViewBag.ForeignKeyValue = productId;
+                ViewBag.ForeignKeyName = "productId";
                 ViewBag.CategoryId = (await _productRepository.GetAsync(productId))?.CategoryId;
                 ViewBag.PreviousPage = Url.ActionLink("Details", "Products", new { id = productId });
                 ViewBag.ProductOrCompanyName = orderDetails.FirstOrDefault()?.Product?.ProductName ?? "";
             }
+
+            ViewBag.PageStartNumbering = (page - 1) * pageSize + 1;
 
             return View(orderDetailIndexModel);
         }
@@ -209,7 +213,7 @@ namespace Northwind.Application.Controllers
         {
             await _orderDetailRepository.DeleteSeveralAsync(ids);
 
-            return RedirectToAction(nameof(Index), new { fkId = ids[0].Split(' ')[0] });
+            return RedirectToAction(nameof(Index), new { orderId = ids[0].Split(' ')[0] });
         }
 
         private async Task<bool> OrderDetailExists(OrderDetail orderDetail)

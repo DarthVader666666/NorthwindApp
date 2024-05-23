@@ -32,7 +32,7 @@
 
     if (User.IsInRole(UserRoles.Customer) && !User.IsInRole(UserRoles.Admin))
     {
-        <button class="btn btn-primary fw-bold" onclick="@($"location.href = '{Url.ActionLink("Index", "Orders", new { customerId = customerId })}'")">Back To Orders</button>
+        <button class="btn btn-primary fw-bold" onclick="@($"location.href = '{Url.ActionLink("Index", "Products", new { categoryId = CategoryId })}'")">Back To Shopping</button>
     }
 
     if (User.IsInRole(UserRoles.Customer) && CustomerId == customerId)
