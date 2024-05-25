@@ -115,6 +115,7 @@ namespace Northwind.Application.Controllers
             return View(orderDetail);
         }
 
+        [Authorize(Roles = UserRoles.Customer)]
         public async Task<IActionResult> Create(int? productId = null)
         {
             ViewBag.PreviousPage = Url.ActionLink("Index", "OrderDetails");

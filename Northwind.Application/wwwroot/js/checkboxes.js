@@ -10,7 +10,9 @@ function onChangeSelectAllHandler(checked) {
             onChangeHandler(item);
         });
 
-        createButton.hidden = true;
+        if (createButton) {
+            createButton.hidden = true;
+        }
         deleteButton.hidden = false;
     }
     else {
@@ -19,20 +21,27 @@ function onChangeSelectAllHandler(checked) {
             onChangeHandler(item);
         });
 
-        createButton.hidden = false;
+        if (createButton) {
+            createButton.hidden = false;
+        }
         deleteButton.hidden = true;
     }
 }
 
 function onChangeHandler(element) {
     if (element.checked) {
-        createButton.hidden = true;
+        if (createButton) {
+            createButton.hidden = true;
+        }        
         deleteButton.hidden = false;
     }
     else {
         if (!anyCheckboxesChecked()) {
             selectAllCheckbox.checked = false;
-            createButton.hidden = false;
+
+            if (createButton) {
+                createButton.hidden = false;
+            }            
             deleteButton.hidden = true;
         }
     }
