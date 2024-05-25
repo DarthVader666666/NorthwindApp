@@ -232,6 +232,11 @@ namespace Northwind.Application.Controllers
                 return BadRequest();
             }
 
+            if (employeeId == 0)
+            {
+                employeeId = null;
+            }
+
             var order = await _orderRepository.GetAsync(orderId);
 
             if (order == null)
