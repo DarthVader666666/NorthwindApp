@@ -103,9 +103,8 @@ namespace NorthwindApp.ConfigureServices
                         .ForMember(dest => dest.OrderStatus, opts => opts.MapFrom(src => GetStatus(src)));
 
                     autoMapperConfig.CreateMap<Order, OrderWorkflowModel>()
-                        .ForMember(dest => dest.TotalCost, opts => opts.MapFrom(
-                            src => src.OrderDetails.Select(x => x.Quantity * x.UnitPrice - x.Quantity * x.UnitPrice * (decimal)x.Discount).Sum()))
-                        .ForMember(dest => dest.OrderStatus, opts => opts.MapFrom(src => GetStatus(src)));
+                        .ForMember(dest => dest.OrderStatus, opts => opts.MapFrom(src => GetStatus(src)))
+                        .ForMember(dest => dest.OrderNumber, opts => opts.MapFrom(src => src.OrderId));
 
                     autoMapperConfig.CreateMap<Order, OrderDetailsModel>()
                         .ForMember(dest => dest.ShipperId, opts => opts.MapFrom(src => src.ShipVia));

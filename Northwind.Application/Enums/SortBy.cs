@@ -4,6 +4,7 @@
     {
         OrderStatus,
         OrderDate,
+        OrderNumber,
         TotalCost,
         ProductName,
         UnitsInStock,
