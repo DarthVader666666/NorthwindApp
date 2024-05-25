@@ -16,6 +16,7 @@
                     Url.ActionLink("Create", ControllerName, new { supplierId = ForeignKeyValue }),
 
             "Orders" => Url.ActionLink("Create", ControllerName, new { customerId = ForeignKeyValue }),
+
             _ => Url.ActionLink("Create", ControllerName)
         };
 
@@ -72,12 +73,12 @@
             </select>
         </div>
     }
-    @if (!User.IsInRole(UserRoles.Employee))
+    @if (!(User.IsInRole(UserRoles.Employee) || User.IsInRole(UserRoles.Customer)))
     {
         <div class="col-2">
-            <button class="btn btn-primary fw-bold" onclick="location.href = '@Link'" id="createButton">
+            <button class="btn btn-primary fw-bold" @(ControllerName == "OrderDetails" ? "disabled" : "") onclick="location.href = '@Link'" id="createButton">
                 Create
-            </button>
+            </button>            
             <button form="form" class="btn btn-danger fw-bold" type="submit" id="deleteButton" hidden>
                 Delete
             </button>

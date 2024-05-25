@@ -78,7 +78,7 @@
                         var orderId = (int?)(Properties?.FirstOrDefault(x => x.Name == "OrderId")?.GetValue(item));
                     
                         <td class="align-content-center" style=@(style + "cursor:pointer;")
-                            onclick=@(value is SelectList ? "" : $"location.href='{Url.ActionLink("Details", "Orders", new { id = orderId })}'")>
+                            onclick=@(value is SelectList ? "" : $"location.href='{Url.ActionLink("Index", "OrderDetails", new { orderId = orderId })}'")>
                     
                         @if (value is SelectList)
                         {
