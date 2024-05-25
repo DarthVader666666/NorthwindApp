@@ -75,7 +75,7 @@
                     @foreach (var value in ViewAdditions.GetPropertyValues(item, PropertyNames))
                     {
                         var style = ViewAdditions.GetOrderStatusStyle(value);
-                        var orderId = (int?)(Properties?.FirstOrDefault(x => x.Name == "OrderId")?.GetValue(item));
+                        var orderId = (int?)(Properties?.FirstOrDefault(x => x.Name == "OrderNumber")?.GetValue(item));
                     
                         <td class="align-content-center" style=@(style + "cursor:pointer;")
                             onclick=@(value is SelectList ? "" : $"location.href='{Url.ActionLink("Index", "OrderDetails", new { orderId = orderId })}'")>

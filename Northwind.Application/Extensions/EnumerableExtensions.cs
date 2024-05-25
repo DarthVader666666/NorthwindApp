@@ -27,7 +27,7 @@ namespace Northwind.Application.Extensions
                 return (IEnumerable<T>)(orderBy switch
                 {
                     SortBy.OrderStatus => desc ? orderWorkflowSequence.OrderByDescending(x => x.OrderStatus) : orderWorkflowSequence.OrderBy(x => x.OrderStatus),
-                    SortBy.TotalCost => desc ? orderWorkflowSequence.OrderByDescending(x => x.TotalCost) : orderWorkflowSequence.OrderBy(x => x.TotalCost),
+                    SortBy.OrderNumber => desc ? orderWorkflowSequence.OrderByDescending(x => x.OrderNumber) : orderWorkflowSequence.OrderBy(x => x.OrderNumber),
                     _ => orderWorkflowSequence,
                 });
             }
