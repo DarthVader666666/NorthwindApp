@@ -1,0 +1,150 @@
+﻿@using Microsoft.EntityFrameworkCore.Metadata.Internal
+@using Northwind.Application.Constants
+@using Northwind.Application.Services
+@using Northwind.Bll.Interfaces
+@using Northwind.Bll.Services.Extensions
+@using System.Reflection
+@using Northwind.Data.Entities
+@inject IRepository<Order> orderRepository
+@model IEnumerable<Northwind.Application.Models.Order.OrderWorkflowModel>
+@functions
+{
+    PropertyInfo[] Properties => Model.Any() ? Model.First().GetType().GetProperties() : [];
+    IEnumerable<string> PropertyNames => Properties.Select(x => x.Name).Where(x => !x.Contains("Id"));
+    Dictionary<string, int>? ColumnWidths => ViewData["ColumnWidths"] as Dictionary<string, int>;
+
+    async Task<Order?> UpdateOrder(int? employeeId, int? orderId)
+    {
+        var order = await orderRepository.GetAsync(orderId);
+
+        if (order == null)
+        {
+            return null;    
+        }
+
+        order.EmployeeId = employeeId;
+
+        return await orderRepository.UpdateAsync(order);
+    }
+}
+
+<div class="pt-1">
+    <table class="table table-striped" style="width:100%">
+        <colgroup>
+            <col span="1">
+            @foreach (var name in PropertyNames)
+            {
+                <col span="1" style="@(ColumnWidths != null ? $"width:{ColumnWidths[name]}%" : "")">
+            }            
+        </colgroup>
+
+        <thead style="height:60px;">
+            <tr>
+                <th class="align-content-center">№</th>
+                @foreach (var name in PropertyNames)
+                {
+                    <th class="align-content-center" onclick="sortColumn('@name')" style="cursor:pointer">
+                        @{
+                            var ending = "";
+
+                            if (name.Contains("Price") || name.Contains("Cost"))
+                            {
+                                ending = ", $";
+                            }
+
+                            if (name.Contains("Discount"))
+                            {
+                                ending = ", %";
+                            }
+                        }
+                        @(name.Replace("List", "").SplitForUpperCase() + ending)
+                    </th>
+                }
+            </tr>
+        </thead>
+        <tbody>            
+            @{
+                var number = 1;
+
+                @foreach (var item in base.Model)
+                {
+
+                <tr class="change-background-color">
+                    <td class="align-content-center">@(number++)</td>
+                            
+                    @foreach (var value in ViewAdditions.GetPropertyValues(item, PropertyNames))
+                    {
+                        var style = ViewAdditions.GetOrderStatusStyle(value);
+                        var orderId = (int?)(Properties?.FirstOrDefault(x => x.Name == "OrderId")?.GetValue(item));
+                    
+                        <td class="align-content-center" style=@(style + "cursor:pointer;")
+                            onclick=@(value is SelectList ? "" : $"location.href='{Url.ActionLink("Details", "Orders", new { id = orderId })}'")>
+                    
+                        @if (value is SelectList)
+                        {
+                            <span class="align-content-center" id="@orderId" style="color:transparent">pending</span>
+                    
+                            <select class="form-select" onchange="onSelectListChange(value, @orderId)">
+                                @foreach (var option in value as SelectList ?? new SelectList(Enumerable.Empty<object>()))
+                                {
+                                    if (option.Selected)
+                                    {
+                                        <option value="@option.Value" selected>@option.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@option.Value">@option.Text</option>
+                                    }
+                                }
+                            </select>
+                        }
+                        else
+                        {
+                            @if (value is decimal)
+                            {
+                                @(((decimal)value).ToString("f2"))
+                            }
+                            else
+                            {
+                                @if (value is float)
+                                {
+                                    @(((float)value).ToString("f2"))
+                                }
+                                else
+                                {
+                                    @value
+                                }
+                            }
+                        }                    
+                    </td>
+                    }
+                </tr>
+                }
+             }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function onSelectListChange(value, orderId) {
+        const url = window.location.origin.concat(`/Orders/Update?orderId=${orderId}&employeeId=${value}`);
+        fetch(url).then(response => 
+        {
+            const modifiedSpan = document.getElementById(orderId);
+
+            if (response.ok) {
+                modifiedSpan.textContent = 'modified'
+                modifiedSpan.style.color = 'green';
+            }
+            else {
+                modifiedSpan.textContent = 'failed'
+                modifiedSpan.style.color = 'red';
+            }
+        });
+    }
+
+    function sortColumn(name) {
+        const url = `/Orders/Workflow?sortBy=${name}`;
+        window.location.href = window.location.origin.concat(url);
+    }
+</script>

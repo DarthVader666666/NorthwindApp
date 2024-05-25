@@ -8,6 +8,7 @@ using Northwind.Application.Extensions;
 using Northwind.Application.Models.Customer;
 using Northwind.Application.Models.PageModels;
 using Northwind.Bll.Interfaces;
+using Northwind.Bll.Services.Extensions;
 using Northwind.Data.Entities;
 
 namespace Northwind.Application.Controllers
@@ -33,6 +34,7 @@ namespace Northwind.Application.Controllers
         {
             var customers = await _customerRepository.GetListAsync();
             var customerDataModels = _mapper.Map<IEnumerable<CustomerIndexDataModel>>(customers);
+            var columnWidths = customerDataModels.GetColumnWidths();
 
             if (sortBy != null)
             {
@@ -52,6 +54,7 @@ namespace Northwind.Application.Controllers
             var pageModel = new PageModelBase(customers.Count(), page, pageSize);
             var productIndexModel = new CustomerIndexModel(customerDataModels, pageModel);
             ViewBag.PageStartNumbering = (page - 1) * pageSize + 1;
+            ViewBag.ColumnWidths = columnWidths;
 
             return View(productIndexModel);
         }

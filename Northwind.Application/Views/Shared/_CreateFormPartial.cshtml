@@ -65,7 +65,7 @@
                     {
                         <select class="form-select" name="@item.Name.Replace("List", "")" @Disabled>
                             @foreach (var option in item?.GetValue(Model) as SelectList ?? new SelectList(Enumerable.Empty<object>()))
-                            
+                            {
                                 if (option.Selected)
                                 {
                                     <option value="@option.Value" selected>@option.Text</option>

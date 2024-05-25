@@ -11,6 +11,7 @@ using Northwind.Application.Models.PageModels;
 using Northwind.Application.Models.Supplier;
 using Northwind.Application.Services;
 using Northwind.Bll.Interfaces;
+using Northwind.Bll.Services.Extensions;
 using Northwind.Data.Entities;
 
 namespace Northwind.Application.Controllers
@@ -43,6 +44,7 @@ namespace Northwind.Application.Controllers
 
             var suppliers = await _supplierRepository.GetListAsync();
             var supplierDataModels = _mapper.Map<IEnumerable<SupplierIndexDataModel>>(suppliers);
+            var columnWidths = supplierDataModels.GetColumnWidths();
 
             if (sortBy != null)
             {
@@ -61,6 +63,7 @@ namespace Northwind.Application.Controllers
             var pageModel = new SupplierPageModel(suppliers.Count(), page, pageSize);
             var supplierIndexModel = new SupplierIndexModel(supplierDataModels, pageModel);
             ViewBag.PageStartNumbering = (page - 1) * pageSize + 1;
+            ViewBag.ColumnWidths = columnWidths;
 
             return View(supplierIndexModel);
         }

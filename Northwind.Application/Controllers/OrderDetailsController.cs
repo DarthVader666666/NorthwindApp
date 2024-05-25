@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Northwind.Application.Models.PageModels;
 using Northwind.Application.Enums;
 using Northwind.Application.Extensions;
+using Northwind.Bll.Services.Extensions;
 
 namespace Northwind.Application.Controllers
 {
@@ -44,6 +45,7 @@ namespace Northwind.Application.Controllers
 
             var orderDetails = await _orderDetailRepository.GetListForAsync(primaryKeys);
             var orderDetailDataModels = _mapper.Map<IEnumerable<OrderDetailIndexDataModel>>(orderDetails);
+            var columnWidths = orderDetailDataModels.GetColumnWidths();
 
             if (sortBy != null)
             {
@@ -89,6 +91,7 @@ namespace Northwind.Application.Controllers
 
             ViewBag.CategoryId = (await _productRepository.GetAsync(productId))?.CategoryId;
             ViewBag.PageStartNumbering = (page - 1) * pageSize + 1;
+            ViewBag.ColumnWidths = columnWidths;
 
             return View(orderDetailIndexModel);
         }

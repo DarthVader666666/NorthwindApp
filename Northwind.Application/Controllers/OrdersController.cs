@@ -14,6 +14,8 @@ using Northwind.Application.Extensions;
 using Northwind.Application.Enums;
 using Northwind.Application.Models.Product;
 using Northwind.Bll.Services;
+using Northwind.Bll.Services.Extensions;
+using System.Globalization;
 
 namespace Northwind.Application.Controllers
 {
@@ -54,6 +56,7 @@ namespace Northwind.Application.Controllers
             var foreignKeys = Tuple.Create(customerId == "0" ? "" : customerId, employeeId?.ToString());
             var orders = await _orderRepository.GetListForAsync(foreignKeys);
             var orderDataModels = _mapper.Map<IEnumerable<OrderIndexDataModel>>(orders);
+            var columnWidths = orderDataModels.GetColumnWidths();
 
             if (sortBy != null)
             {
@@ -103,6 +106,7 @@ namespace Northwind.Application.Controllers
 
             ViewBag.PageStartNumbering = (page - 1) * pageSize + 1;
             ViewBag.SelectListName = selectListName.ToString();
+            ViewBag.ColumnWidths = columnWidths;
 
             return View(orderIndexModel);
         }
@@ -221,6 +225,28 @@ namespace Northwind.Application.Controllers
 
         [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Owner}")]
         [HttpGet]
+        public async Task<ActionResult> Update(int? orderId, int? employeeId)
+        {
+            if (orderId == null || employeeId == null)
+            {
+                return BadRequest();
+            }
+
+            var order = await _orderRepository.GetAsync(orderId);
+
+            if (order == null)
+            { 
+                return NotFound();
+            }
+
+            order.EmployeeId = employeeId;
+            await _orderRepository.UpdateAsync(order);
+
+            return Ok();
+        }
+
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Owner}")]
+        [HttpGet]
         public async Task<IActionResult> Delete([FromQuery] int[] ids)
         {
             var orders = await _orderRepository.GetRangeAsync(ids);
@@ -242,7 +268,7 @@ namespace Northwind.Application.Controllers
         }
 
         [Authorize(Roles = $"{UserRoles.Customer}")]
-        public async Task<IActionResult> Confirm(int? orderId, int? categoryId)
+        public async Task<IActionResult> Confirm(int? orderId)
         {
             if (orderId == null && !await OrderExists(orderId))
             { 
@@ -284,7 +310,6 @@ namespace Northwind.Application.Controllers
             this.HttpContext.Session.Remove(SessionValues.OrderId);
             this.HttpContext.Session.Remove(SessionValues.OrderStatus);
 
-            ViewBag.PreviousPage = Url.ActionLink("Index", "Products", new { categoryId = categoryId });
             return View();
         }
 
@@ -305,6 +330,37 @@ namespace Northwind.Application.Controllers
             this.HttpContext.Session.Remove(SessionValues.OrderStatus);
 
             return RedirectToAction(nameof(Index), new { customerId = customerId });
+        }
+
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Owner}")]
+        public async Task<IActionResult> Workflow(string? sortBy = null)
+        {
+            var orders = (await _orderRepository.GetListAsync()).Where(x => x != null && (x.RequiredDate == null || x.ShippedDate == null));
+            var orderWorkflowModels = _mapper.Map<IEnumerable<OrderWorkflowModel>>(orders);
+
+            foreach (var order in orderWorkflowModels)
+            {
+                order.EmployeeList = _selectListFiller.GetEmployeeIdSelectList(employeeId: order.EmployeeId);
+            }
+            
+            var columnWidths = orderWorkflowModels.GetColumnWidths();
+
+            if (sortBy != null)
+            {
+                SortBy? sort = Enum.TryParse(sortBy, out SortBy sortByValue) ? sortByValue : null;
+
+                Desc = Sort == sort ? !Desc : Desc;
+                Sort = sort;
+            }
+
+            if (Sort != null)
+            {
+                orderWorkflowModels = orderWorkflowModels.SortSequence(Sort, Desc);
+            }
+
+            ViewBag.ColumnWidths = columnWidths;
+
+            return View(orderWorkflowModels);
         }
 
         private async Task<bool> OrderExists(int? id)

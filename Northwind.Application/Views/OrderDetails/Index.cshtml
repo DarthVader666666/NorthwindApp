@@ -5,8 +5,8 @@
     ViewData["PreviousPage"] = ViewBag.PreviousPage;
     ViewData["ControllerName"] = "OrderDetails";
     ViewData["ActionName"] = "Delete";
-    ViewData["ForeignKeyValue"] = ViewBag.OrderId ?? ViewBag.ProductId;
-    ViewData["ForeignKeyName"] = ViewBag.OrderId != null ? "orderId" : "productId";
+    ViewData["ForeignKeyValue"] = ViewBag.ForeignKeyValue;
+    ViewData["ForeignKeyName"] = ViewBag.ForeignKeyName;
     ViewData["PageStartNumbering"] = ViewBag.PageStartNumbering;
 }
 
@@ -42,6 +42,8 @@
                 Confirm
             </button>
         }
+
+        <span style="padding-left:40px;font-size:22px;font-weight:bold">Total price: @(Model.OrderDetails.Sum(x => x.TotalPrice).ToString("f2")) $</span>
 
         <button class="btn btn-danger pl-5 float-end" onclick="@($"location.href = '{Url.ActionLink("Cancel", "Orders", new { id = OrderId })}'")" @hidden>
             Cancel

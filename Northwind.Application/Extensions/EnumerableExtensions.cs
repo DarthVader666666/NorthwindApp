@@ -22,6 +22,16 @@ namespace Northwind.Application.Extensions
                 });
             }
 
+            if (sequence is IEnumerable<OrderWorkflowModel> orderWorkflowSequence)
+            {
+                return (IEnumerable<T>)(orderBy switch
+                {
+                    SortBy.OrderStatus => desc ? orderWorkflowSequence.OrderByDescending(x => x.OrderStatus) : orderWorkflowSequence.OrderBy(x => x.OrderStatus),
+                    SortBy.TotalCost => desc ? orderWorkflowSequence.OrderByDescending(x => x.TotalCost) : orderWorkflowSequence.OrderBy(x => x.TotalCost),
+                    _ => orderWorkflowSequence,
+                });
+            }
+
             if (sequence is IEnumerable<ProductIndexDataModel> productSequence)
             {
                 return (IEnumerable<T>)(orderBy switch

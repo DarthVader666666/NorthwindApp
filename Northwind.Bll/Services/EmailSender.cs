@@ -20,8 +20,7 @@ namespace Northwind.Bll.Services
 
             var client = new EmailClient(connectionString);
             
-            var emailSendOperation = await client.SendAsync(Azure.WaitUntil.Completed, sender, email, subject, message);
-            //EmailSendResult status = emailSendOperation.Value;
+            await client.SendAsync(Azure.WaitUntil.Completed, sender, email, subject, message);
         }
     }
 }
