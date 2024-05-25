@@ -22,6 +22,11 @@ namespace Northwind.Bll.Services
             return await DbContext.Orders.AsNoTracking().Include(x => x.OrderDetails).Include(x => x.Customer).FirstOrDefaultAsync(x => x.OrderId == (int)id);
         }
 
+        public override Task<IEnumerable<Order>> GetListAsync()
+        {
+            return Task.FromResult(DbContext.Orders.Include(x => x.OrderDetails).AsEnumerable());
+        }
+
         public override Task<IEnumerable<Order>> GetListForAsync(object? foreignKeys)
         {
             var ids = (Tuple<string?, string?>)(foreignKeys ?? (null as string, null as string));

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Northwind.Application.Constants;
 using Northwind.Application.Enums;
 using Northwind.Application.Extensions;
@@ -11,7 +12,7 @@ using Northwind.Application.Models.PageModels;
 using Northwind.Application.Models.Product;
 using Northwind.Application.Services;
 using Northwind.Bll.Interfaces;
-using Northwind.Bll.Services;
+using Northwind.Bll.Services.Extensions;
 using Northwind.Data.Entities;
 
 namespace Northwind.Application.Controllers
@@ -22,7 +23,7 @@ namespace Northwind.Application.Controllers
         private static SelectListName? selectListName = SelectListName.CategoryList;
         private static bool Desc = false;
 
-        private const int pageSize = 7;
+        private const int pageSize = 6;
 
         private readonly IMapper _mapper;
         private readonly IRepository<Product> _productRepository;
@@ -43,9 +44,10 @@ namespace Northwind.Application.Controllers
         public async Task<IActionResult> Index(int? categoryId, int? supplierId, int page = 1, string? sortBy = null)
         {
             var foreignKeys = Tuple.Create(categoryId, supplierId);
+            var products = await _productRepository.GetListForAsync(foreignKeys);            
 
-            var products = await _productRepository.GetListForAsync(foreignKeys);
             var productDataModels = _mapper.Map<IEnumerable<ProductIndexDataModel>>(products);
+            var columnWidths = productDataModels.GetColumnWidths();
 
             if (sortBy != null)
             {
@@ -93,6 +95,7 @@ namespace Northwind.Application.Controllers
 
             ViewBag.SelectListName = selectListName.ToString();
             ViewBag.PageStartNumbering = (page - 1) * pageSize + 1;
+            ViewBag.ColumnWidths = columnWidths;
 
             return View(productIndexModel);
         }

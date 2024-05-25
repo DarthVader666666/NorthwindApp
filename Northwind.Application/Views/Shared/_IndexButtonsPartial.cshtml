@@ -57,7 +57,7 @@
             }            
         </div>
         <div class="col-6">
-            <select onchange="onCategorySelectListChange(value)" class="form-select">
+            <select onchange="onSelectListChange(value)" class="form-select">
                 @foreach (var option in Model ?? new SelectList(Enumerable.Empty<object>()))
                 {
                     if (option.Selected)
@@ -86,7 +86,7 @@
 </div>
 
 <script>
-    function onCategorySelectListChange(value) {
+    function onSelectListChange(value) {
         const url = `@UrlForSelectedItem${value}`;
         window.location.href = window.location.origin.concat(url);
     }

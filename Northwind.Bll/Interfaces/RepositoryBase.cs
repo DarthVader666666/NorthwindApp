@@ -65,7 +65,7 @@ namespace Northwind.Bll.Interfaces
             return await DbContext.FindAsync<TEntity>(id);
         }
 
-        public Task<IEnumerable<TEntity?>> GetListAsync()
+        public virtual Task<IEnumerable<TEntity?>> GetListAsync()
         {
             return Task.Run(() => DbContext.Set<TEntity?>().AsEnumerable());
         }
