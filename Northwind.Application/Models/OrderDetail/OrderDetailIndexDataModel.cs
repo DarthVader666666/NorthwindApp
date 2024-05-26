@@ -8,7 +8,7 @@ namespace Northwind.Application.Models.OrderDetail
 
         public int ProductId { get; set; }
 
-        public decimal TotalPrice { get; set; }
+        public decimal Price { get; set; }
 
         public short Quantity { get; set; }
 

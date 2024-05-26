@@ -17,7 +17,7 @@ namespace Northwind.Application.Extensions
                 {
                     SortBy.OrderDate => desc ? orderSequence.OrderByDescending(x => x.OrderDate) : orderSequence.OrderBy(x => x.OrderDate),
                     SortBy.OrderStatus => desc ? orderSequence.OrderByDescending(x => x.OrderStatus) : orderSequence.OrderBy(x => x.OrderStatus),
-                    SortBy.TotalCost => desc ? orderSequence.OrderByDescending(x => x.TotalCost) : orderSequence.OrderBy(x => x.TotalCost),
+                    SortBy.TotalCost => desc ? orderSequence.OrderByDescending(x => x.TotalPrice) : orderSequence.OrderBy(x => x.TotalPrice),
                     _ => orderSequence,
                 });
             }
@@ -59,7 +59,7 @@ namespace Northwind.Application.Extensions
             {
                 return (IEnumerable<T>)(orderBy switch
                 {
-                    SortBy.TotalPrice => desc ? orderDetailSequence.OrderByDescending(x => x.TotalPrice) : orderDetailSequence.OrderBy(x => x.TotalPrice),
+                    SortBy.TotalPrice => desc ? orderDetailSequence.OrderByDescending(x => x.Price) : orderDetailSequence.OrderBy(x => x.Price),
                     SortBy.Quantity => desc ? orderDetailSequence.OrderByDescending(x => x.Quantity) : orderDetailSequence.OrderBy(x => x.Quantity),
                     SortBy.Discount => desc ? orderDetailSequence.OrderByDescending(x => x.Discount) : orderDetailSequence.OrderBy(x => x.Discount),
                     SortBy.ProductName => desc ? orderDetailSequence.OrderByDescending(x => x.ProductName) : orderDetailSequence.OrderBy(x => x.ProductName),

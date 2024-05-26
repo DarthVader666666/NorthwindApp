@@ -98,7 +98,7 @@ namespace NorthwindApp.ConfigureServices
 
 
                     autoMapperConfig.CreateMap<Order, OrderIndexDataModel>()
-                        .ForMember(dest => dest.TotalCost, opts => opts.MapFrom(
+                        .ForMember(dest => dest.TotalPrice, opts => opts.MapFrom(
                             src => src.OrderDetails.Select(x => x.Quantity * x.UnitPrice - x.Quantity * x.UnitPrice * (decimal)x.Discount).Sum()))
                         .ForMember(dest => dest.OrderStatus, opts => opts.MapFrom(src => GetStatus(src)));
 
@@ -140,7 +140,7 @@ namespace NorthwindApp.ConfigureServices
                     autoMapperConfig.CreateMap<OrderDetail, OrderDetailIndexDataModel>()
                         .ForMember(dest => dest.ProductName, opts => opts.MapFrom(src => src.Product.ProductName))
                         .ForMember(dest => dest.Discount, opts => opts.MapFrom(src => src.Discount * 100))
-                        .ForMember(dest => dest.TotalPrice, opts => opts.MapFrom(src => src.Quantity * src.UnitPrice - (src.Quantity * src.UnitPrice) * (decimal)src.Discount));
+                        .ForMember(dest => dest.Price, opts => opts.MapFrom(src => src.Quantity * src.UnitPrice - (src.Quantity * src.UnitPrice) * (decimal)src.Discount));
 
                     autoMapperConfig.CreateMap<OrderDetailCreateModel, OrderDetail>()
                         .ForMember(dest => dest.Discount, opts => opts.MapFrom(src => Math.Round((float)src.Discount / 100, 2)));
