@@ -319,9 +319,9 @@ namespace Northwind.Application.Controllers
         }
 
         [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Owner},{UserRoles.Customer}")]
-        public async Task<IActionResult> Cancel(int? id)
+        public async Task<IActionResult> Cancel(int? orderId, int? categoryId)
         {
-            var order = await _orderRepository.GetAsync(id);
+            var order = await _orderRepository.GetAsync(orderId);
             var customerId = this.HttpContext.Session.GetString(SessionValues.CustomerId);
 
             if (!User.IsInRole(UserRoles.Admin) && order?.CustomerId != customerId)
@@ -329,12 +329,12 @@ namespace Northwind.Application.Controllers
                 return Redirect("Identity/Account/AccessDenied");
             }
 
-            await _orderRepository.DeleteAsync(id);
+            await _orderRepository.DeleteAsync(orderId);
 
             this.HttpContext.Session.Remove(SessionValues.OrderId);
             this.HttpContext.Session.Remove(SessionValues.OrderStatus);
 
-            return RedirectToAction(nameof(Index), new { customerId = customerId });
+            return RedirectToAction("Index", "Products", new { categoryId = categoryId });
         }
 
         [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Owner}")]

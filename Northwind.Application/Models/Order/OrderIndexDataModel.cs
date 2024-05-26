@@ -12,6 +12,6 @@
 
         public string? OrderStatus { get; set; }
 
-        public decimal? TotalCost { get; set; }
+        public decimal? TotalPrice { get; set; }
     }
 }

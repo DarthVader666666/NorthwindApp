@@ -24,33 +24,46 @@
 
 @if (Model.OrderDetails.Any())
 {
+    var hidden = ViewData["ForeignKeyValue"] != null ? "" : "hidden";
+
     @await Html.PartialAsync("_TableFormPartial", Model.OrderDetails, ViewData)
+
+    <div>
+        <span style="font-size:22px;font-weight:bold" @hidden>
+            Total price: @(Model.OrderDetails.Sum(x => x.Price).ToString("f2")) $
+        </span>
+    </div>
 
     if (User.IsInRole(UserRoles.Customer))
     {
         var customerId = this.Context.Session.GetString(SessionValues.CustomerId);
-        var hidden = OrderId != null && (!ViewBag.Confirmed ?? true) ? "" : "hidden";
+        hidden = OrderId != null && !(ViewBag.Confirmed ?? true) ? "" : "hidden";
         var backLink = CategoryId != null ? Url.ActionLink("Index", "Products", new { categoryId = CategoryId }) : Url.ActionLink("Index", "Categories");
 
-        <button class="btn btn-primary fw-bold" onclick="@($"location.href = '{backLink}'")" @hidden>
-            Back To Shopping
-        </button>
+        <div class="pt-2">
+            <button class="btn btn-primary fw-bold" onclick="@($"location.href = '{backLink}'")" @hidden>
+                Back To Shopping
+            </button>
 
-        if (customerId == ViewBag.CustomerId)
-        {
+            @if (customerId == ViewBag.CustomerId)
+            {
             <button id="orderConfirmButton" class="btn btn-info pl-5" onclick="confirmOrder()" @hidden>
                 Confirm
             </button>
-        }
+            }
 
-        <span style="padding-left:40px;font-size:22px;font-weight:bold">Total price: @(Model.OrderDetails.Sum(x => x.TotalPrice).ToString("f2")) $</span>
-
-        <button class="btn btn-danger pl-5 float-end" onclick="@($"location.href = '{Url.ActionLink("Cancel", "Orders", new { id = OrderId })}'")" @hidden>
-            Cancel
-        </button>
+            <button class="btn btn-danger pl-5 float-end"
+                    onclick="@($"location.href = '{Url.ActionLink("Cancel", "Orders", new { orderId = OrderId, customerId = CategoryId })}'")" @hidden>
+                Cancel
+            </button>
+        </div>
+        
     }
 
-    <page-link page-model="Model.PageViewModel" page-action="Index" class="float-end"></page-link>
+    if (!User.IsInRole(UserRoles.Customer))
+    {
+        @* <page-link page-model="Model.PageViewModel" page-action="Index" class="float-end"></page-link> *@
+    }
 }
 else
 {

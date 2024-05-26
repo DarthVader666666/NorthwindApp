@@ -25,7 +25,5 @@
         public string? Fax { get; set; }
 
         public string? HomePage { get; set; }
-
-        public virtual ICollection<Northwind.Data.Entities.Product> Products { get; set; } = new List<Northwind.Data.Entities.Product>();
     }
 }
