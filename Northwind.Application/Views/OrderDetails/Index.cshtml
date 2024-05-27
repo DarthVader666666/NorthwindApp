@@ -28,11 +28,14 @@
 
     @await Html.PartialAsync("_TableFormPartial", Model.OrderDetails, ViewData)
 
-    <div>
-        <span style="font-size:22px;font-weight:bold" @hidden>
-            Total price: @(Model.OrderDetails.Sum(x => x.Price).ToString("f2")) $
-        </span>
-    </div>
+    if (User.IsInRole(UserRoles.Customer))
+    {
+        <div>
+            <span style="font-size:22px;font-weight:bold" @hidden>
+                Total price: @(Model.OrderDetails.Sum(x => x.Price).ToString("f2")) $
+            </span>
+        </div>
+    }
 
     if (User.IsInRole(UserRoles.Customer))
     {
@@ -59,10 +62,10 @@
         </div>
     }
 
-@*     if (!User.IsInRole(UserRoles.Customer))
+    if (!User.IsInRole(UserRoles.Customer))
     {
         <page-link page-model="Model.PageViewModel" page-action="Index" class="float-end"></page-link>
-    } *@
+    }
 }
 else
 {
