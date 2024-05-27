@@ -114,24 +114,33 @@ else
     }
 
     function onQuantityChange(value) {
-        if (String(value).match(/[^$,.\d]/) || Number(value) <= 0) {
+        if (String(value).match(/[^$,.\d]/) || value < 0) {
             value = 0;
             minus.disabled = true;
             addToOrderButton.disabled = true;
         }
-
-        if (value > unitsInStock) {
-            value = unitsInStock;
-            overloadQuantityError.style.color = 'red';            
-            minus.disabled = false;
-            plus.disabled = true;
-        }
-
-        if (value > 0 && value < unitsInStock) {
-            overloadQuantityError.style.color = 'transparent';
-            addToOrderButton.disabled = false;
-            minus.disabled = false;
-            plus.disabled = false;
+        else {
+            if (value > unitsInStock) {
+                value = unitsInStock;
+                overloadQuantityError.style.color = 'red';
+                minus.disabled = false;
+                plus.disabled = true;
+            }
+            else { 
+                if (value > 0 && value <= unitsInStock) {
+                    overloadQuantityError.style.color = 'transparent';
+                    addToOrderButton.disabled = false;
+                    minus.disabled = false;
+                    plus.disabled = false;
+                }
+                else { 
+                    if (value == 0) {
+                        addToOrderButton.disabled = true;
+                        minus.disabled = true;
+                        plus.disabled = false;
+                    }
+                }
+            }
         }
 
         quantity.value = value;
