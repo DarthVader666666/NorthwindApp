@@ -16,6 +16,7 @@
     string ForeignKeyValue => ViewData["ForeignKeyValue"]?.ToString() ?? "";
     int? PageStartNumbering => (int?)ViewData["PageStartNumbering"] ?? 1;
     string? BackButtonName => $"To {CultureInfo.CurrentCulture.TextInfo.ToTitleCase(ForeignKeyName.Replace("Id", ""))} Details";
+    bool IsOrderDetails => ControllerName! == "OrderDetails";
     Dictionary<string, int>? ColumnWidths => ViewData["ColumnWidths"] as Dictionary<string, int>;
 
     PropertyInfo[] Properties => Model.Any() ? Model.First().GetType().GetProperties() : new PropertyInfo[0];
@@ -57,7 +58,7 @@
         var primaryKeyTwo = Properties.FirstOrDefault(x => x.Name.Contains("Id") && !ControllerName!.Contains(x.Name[..^3]));
         var primaryKeyTwoValue = primaryKeyTwo == null ? null : primaryKeyTwo.GetValue(item);
 
-        return IsDetail ? $"{primaryKeyOneValue} {primaryKeyTwoValue}" : primaryKeyOneValue;
+        return IsOrderDetails ? $"{primaryKeyOneValue} {primaryKeyTwoValue}" : primaryKeyOneValue;
     }
 
     string GetLink(object id)
@@ -80,7 +81,7 @@
         return Url.ActionLink("Details", ControllerName, new { id = id }) ?? defaultRoute;
     }
 
-    bool IsDetail => ControllerName!.Contains("Detail");
+    
 }
 
 <div class="pt-1">
@@ -141,7 +142,7 @@
                         <input value="@GetId(item)" name="ids" type="hidden" />
                     }
 
-                    <tr class="@(!IsDetail ? "change-background-color" : "")" style="@(!IsDetail ? "cursor:pointer" : "")">
+                    <tr class="@(!IsOrderDetails ? "change-background-color" : "")" style="@(!IsOrderDetails ? "cursor:pointer" : "")">
 
                         <td class="align-content-center">@(number++)</td>
 
@@ -149,7 +150,7 @@
                         {
                             var style = ViewAdditions.GetOrderStatusStyle(value);
 
-                            <td class="align-content-center" style="@style" onclick=@(!IsDetail ? $"location.href='{GetLink(GetId(item)!)}'" : "")>
+                            <td class="align-content-center" style="@style" onclick=@(!IsOrderDetails ? $"location.href='{GetLink(GetId(item)!)}'" : "")>
                                 @if (value is byte[])
                                 {
                                    <img src="data:image/bmp;base64,@Convert.ToBase64String(value as byte[] ?? new byte[0])" style="height:60px;width:60px;" />
@@ -184,7 +185,8 @@
                         @if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner))
                         {
                             <td class="text-center align-content-center">
-                                <input name="ids" type="checkbox" id="@GetId(item)" value="@GetId(item)" style="margin-left:20px;" onclick="onChangeHandler(this)" @Disabled @Hidden />
+                                <input name="ids" type="checkbox" id="@GetId(item)" value="@GetId(item)" style="margin-left:20px;" 
+                                    onclick="onChangeHandler(this)" @Disabled @Hidden />
                             </td>
                         }
                     </tr>
@@ -195,7 +197,7 @@
     </table>
 </div>
 
-@if (ViewData["PreviousPage"] != null && (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner)))
+@if (ViewData["PreviousPage"] != null && (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner)) && !IsOrderDetails)
 {
     <button class="btn btn-primary fw-bold" onclick="location.href = '@ViewData["PreviousPage"]'" 
         @(ForeignKeyValue != "" && ForeignKeyValue != "0" ? "" : "hidden")>

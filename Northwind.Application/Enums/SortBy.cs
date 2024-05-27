@@ -5,7 +5,6 @@
         OrderStatus,
         OrderDate,
         OrderNumber,
-        TotalCost,
         ProductName,
         UnitsInStock,
         UnitPrice,
@@ -15,6 +14,7 @@
         Country,
         City,
         TotalPrice,
+        Price,
         Quantity,
         Discount
     }

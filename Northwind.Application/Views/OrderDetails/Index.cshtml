@@ -47,23 +47,22 @@
 
             @if (customerId == ViewBag.CustomerId)
             {
-            <button id="orderConfirmButton" class="btn btn-info pl-5" onclick="confirmOrder()" @hidden>
-                Confirm
-            </button>
+                <button id="orderConfirmButton" class="btn btn-info pl-5 fw-bold" onclick="confirmOrder()" @hidden>
+                    Confirm
+                </button>
             }
 
-            <button class="btn btn-danger pl-5 float-end"
+            <button class="btn btn-danger pl-5 fw-bold float-end"
                     onclick="@($"location.href = '{Url.ActionLink("Cancel", "Orders", new { orderId = OrderId, customerId = CategoryId })}'")" @hidden>
                 Cancel
             </button>
         </div>
-        
     }
 
-    if (!User.IsInRole(UserRoles.Customer))
+@*     if (!User.IsInRole(UserRoles.Customer))
     {
-        @* <page-link page-model="Model.PageViewModel" page-action="Index" class="float-end"></page-link> *@
-    }
+        <page-link page-model="Model.PageViewModel" page-action="Index" class="float-end"></page-link>
+    } *@
 }
 else
 {

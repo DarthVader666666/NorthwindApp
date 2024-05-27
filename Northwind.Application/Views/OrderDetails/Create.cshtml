@@ -7,9 +7,15 @@
     var categoryId = ViewBag.CategoryId;
 }
 
-<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+@if (Model.UnitsInStock == null || Model.UnitsInStock <= 0)
+{
+    <h1 class="fw-bold alert-danger">Sorry. Products are Out of Stock.</h1>
+}
+else
+{
+    <h1 class="fw-bold">Form "@ViewBag.ProductName" Order</h1>
+}
 
-<h1>Form "@ViewBag.ProductName" Order</h1>
 <hr />
 
 <div class="form-group" style="max-width:400px;">
@@ -41,29 +47,33 @@
             }
         </div>
 
-        <span id="overloadQuantityError" style="color:transparent">Not enough units in stock</span>
-        <div>
-            <label class="fw-bold">Quantity</label>
-            <button id="minus" onclick="onMinusClick()" type="button" class="btn btn-default btn-number" disabled="disabled" data-type="minus" data-field="Quantity">
-                <span class="glyphicon glyphicon-minus"></span>
-            </button>
+        @if (Model.UnitsInStock > 0)
+        {
+            <strong id="overloadQuantityError" style="color:transparent">Not enough units in stock</strong>
+            <div>
+                <label class="fw-bold">Quantity</label>
+                <button id="minus" onclick="onMinusClick()" style="width:30px;" type="button" disabled="disabled">
+                    <span class="fw-bold" style="font-size:large;">-</span>
+                </button>
 
-            <input id="quantity" name="Quantity" value="@Model.Quantity" onchange="onQuantityChange(value)" class="quantity-border" style="max-width:170px;"/>
+                <input id="quantity" value="@Model.Quantity" name="Quantity" onchange="onQuantityChange(value)" class="quantity-border" style="max-width:170px;" />
 
-            <button id="plus" onclick="onPlusClick()" type="button" class="btn btn-default btn-number" data-type="plus" data-field="Quantity">
-                <span class="glyphicon glyphicon-plus"></span>
-            </button>
-        </div>
+                <button id="plus" onclick="onPlusClick()" style="width:30px;" type="button">
+                    <span class="fw-bold" style="font-size:large;">+</span>
+                </button>
+            </div>
+
+            <div class="pt-3">
+                <label class="fw-bold">Total Cost: </label>
+                <span id="totalCostLabel" class="fw-normal"></span>
+                <label class="fw-normal"> $</label>
+            </div>
+        }
         
-        <div class="pt-3">
-            <label class="fw-bold">Total Cost: </label>
-            <span id="totalCostLabel" class="fw-normal"></span>
-            <label class="fw-normal"> $</label>
-        </div>
     </form>
 
     <div class="pt-3">
-        <button id="saveButton" type="submit" form="form" class="btn btn-primary fw-bold" disabled>Add To Order</button>
+        <button id="addToOrderButton" type="submit" form="form" class="btn btn-primary fw-bold" disabled>Add To Order</button>
         <button class="btn btn-primary fw-bold float-end" onclick="location.href='@Url.ActionLink("Index", "Products", new { categoryId = categoryId })'">
             Back
         </button>
@@ -75,26 +85,18 @@
     const quantity = document.getElementById('quantity');
     const discount = document.getElementById('discount');
     const minus = document.getElementById('minus');
+    const plus = document.getElementById('plus');
     const totalCostLabel = document.getElementById('totalCostLabel');
     const overloadQuantityError = document.getElementById('overloadQuantityError');
-    const saveButton = document.getElementById('saveButton');
+    const addToOrderButton = document.getElementById('addToOrderButton');
     const unitsInStock = @Model.UnitsInStock;
 
     function onMinusClick() {
-        if (Number(quantity.value) === 0) { 
-            minus.disabled = true;
-            return;
-        }
-        quantity.value = Number(quantity.value) - 1;
-        onQuantityChange(quantity.value)
+        onQuantityChange(Number(quantity.value) - 1);
     }
 
     function onPlusClick() {
-        if (Number(quantity.value) === 0) {
-            minus.disabled = false;
-        }
-        quantity.value = Number(quantity.value) + 1;
-        onQuantityChange(quantity.value)
+        onQuantityChange(Number(quantity.value) + 1);
     }
 
     function onDiscountChange(value) {
@@ -107,28 +109,38 @@
 
     function calculateCost(discountValue) {
         const cost = parseFloat(unitPrice) * parseFloat(quantity.value);
-        return cost - (cost / 100) * parseFloat(discountValue)
+        const result = cost - (cost / 100) * parseFloat(discountValue);
+        return roundNumber(result);
     }
 
     function onQuantityChange(value) {
-        if (Number(value) === 0) {
-            saveButton.disabled = true;
-            return;
+        if (String(value).match(/[^$,.\d]/) || Number(value) <= 0) {
+            value = 0;
+            minus.disabled = true;
+            addToOrderButton.disabled = true;
         }
 
-        if (Number(value) > unitsInStock) {
-            overloadQuantityError.style.color = 'red';
-            saveButton.disabled = true;
+        if (value > unitsInStock) {
+            value = unitsInStock;
+            overloadQuantityError.style.color = 'red';            
             minus.disabled = false;
             plus.disabled = true;
         }
-        else {
+
+        if (value > 0 && value < unitsInStock) {
             overloadQuantityError.style.color = 'transparent';
-            saveButton.disabled = false;
+            addToOrderButton.disabled = false;
+            minus.disabled = false;
             plus.disabled = false;
         }
 
-        totalCostLabel.textContent = calculateCost(discount.value);
+        quantity.value = value;
+        totalCostLabel.textContent = calculateCost(discount.value);  
+    }
+
+    function roundNumber(number) {
+        var multiplied = Math.pow(10, 2);
+        return Math.round(number * multiplied) / multiplied;
     }
 </script>
 
