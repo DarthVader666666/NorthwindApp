@@ -6,7 +6,7 @@
 @functions {
     string ControllerName => ViewData["ControllerName"].ToString().SplitForUpperCase(Model.FirstOrDefault());
     PropertyInfo[] Properties => base.Model.First().GetType().GetProperties();
-    string Disabled => User.IsInRole(UserRoles.Admin) ? "" : "disabled";
+    string Disabled => User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner) ? "" : "disabled";
 
     object? GetPropertyValue<T>(object item, params string[] search)
     {
@@ -37,7 +37,7 @@
     }
 }
 
-@if (User.IsInRole(UserRoles.Admin))
+@if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner))
 {
     <input onchange="onChangeSelectAllHandler(this.checked)" id="selectAllCheckbox" style="margin-left:120px;" type="checkbox" @Disabled />
     <label>Select all</label>
@@ -55,7 +55,7 @@
                     @(GetPropertyValue<string>(item, "Name") as string)
                 </div>
 
-                @if (User.IsInRole(UserRoles.Admin))
+                @if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner))
                 {
                     <div class="text-center align-content-center">
                         <input name="ids" type="checkbox" id="@GetId(item)" value="@GetId(item)" onclick="onChangeHandler(this)" @Disabled />
