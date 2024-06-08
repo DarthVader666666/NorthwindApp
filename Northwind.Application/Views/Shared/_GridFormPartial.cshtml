@@ -4,7 +4,7 @@
 @model IEnumerable<object>
 
 @functions {
-    string ControllerName => ViewData["ControllerName"].ToString().SplitForUpperCase(Model.FirstOrDefault());
+    string ControllerName => ViewData["ControllerName"]?.ToString()?.SplitForUpperCase(Model.FirstOrDefault()) ?? "";
     PropertyInfo[] Properties => base.Model.First().GetType().GetProperties();
     string Disabled => User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner) ? "" : "disabled";
 
@@ -37,27 +37,29 @@
     }
 }
 
-@if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner))
-{
-    <input onchange="onChangeSelectAllHandler(this.checked)" id="selectAllCheckbox" style="margin-left:120px;" type="checkbox" @Disabled />
-    <label>Select all</label>
-}
-
 <form id="form" method="get" asp-action=@ViewData["ActionName"]>
-    <div class="row">
+    @if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner))
+    {
+        <div class="select-all">
+            <input onchange="onChangeSelectAllHandler(this.checked)" id="selectAllCheckbox" type="checkbox" @Disabled />
+            <label>Select all</label>
+        </div>
+    }
+
+    <div class="container">
         @foreach (var item in Model)
         {
-            <div class="col p-3" style="text-align: center">
-                <div style="cursor:pointer;height:130px;" onclick="location.href = '@GetLink(GetId(item))'">
+            <div class="item">
+                <div onclick="location.href = '@GetLink(GetId(item))'">
                     <img src="data:image/bmp;base64,@Convert.ToBase64String(GetPropertyValue<byte[]>(item, "Picture", "Photo", "Image") as byte[] ?? new byte[0])" style="height:120px;width:120px;" />
                 </div>
-                <div class="text-xl-center fw-bold m-2">
+                <div class="fw-bold">
                     @(GetPropertyValue<string>(item, "Name") as string)
                 </div>
 
                 @if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner))
                 {
-                    <div class="text-center align-content-center">
+                    <div>
                         <input name="ids" type="checkbox" id="@GetId(item)" value="@GetId(item)" onclick="onChangeHandler(this)" @Disabled />
                     </div>
                 }
@@ -67,9 +69,40 @@
 </form>
 
 <style>
-    img:hover, img:active
-    {
+    .select-all {
+        display: flex;
+        flex-flow: row wrap;
+        align-items: center;
+        column-gap: 0.5rem;
+        margin: 0.2rem
+    }
+
+    img {
+        cursor: pointer;
+        height: 130px;
+    }
+
+    img:hover, img:active {
         height:130px !important;
         width:130px !important;
+    }
+
+    .container {
+        padding:10px;
+        display: flex;
+        flex-flow: row wrap;
+        max-height: 100%;
+        width: 100vw;
+        gap: 2rem;
+        place-content: center;
+    }
+
+    .item {
+        display: flex;
+        flex-flow: column wrap;
+        height: 180px;
+        width:130px;
+        place-items: center;
+        place-content: space-between;
     }
 </style>
