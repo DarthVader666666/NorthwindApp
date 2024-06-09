@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Northwind.Application.Constants;
 using Northwind.Application.Models.Category;
 using Northwind.Bll.Interfaces;
 using Northwind.Data.Entities;
@@ -49,14 +50,14 @@ namespace Northwind.Application.Controllers
             return View(categoryDetailsModel);
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Owner}")]
         public IActionResult Create()
         {
             ViewBag.PreviousPage = Url.ActionLink("Index", "Categories");
             return View(new CategoryCreateModel());
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Owner}")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CategoryCreateModel categoryCreateModel)
@@ -72,7 +73,7 @@ namespace Northwind.Application.Controllers
             return View(categoryCreateModel);
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Owner}")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -90,7 +91,7 @@ namespace Northwind.Application.Controllers
             return View(categoryEditModel);
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Owner}")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, CategoryEditModel categoryEditModel)
@@ -125,7 +126,7 @@ namespace Northwind.Application.Controllers
             return View(categoryEditModel);
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Owner}")]
         [HttpGet]
         public async Task<IActionResult> Delete([FromQuery] int[] ids)
         {
@@ -136,7 +137,7 @@ namespace Northwind.Application.Controllers
             return View(_mapper.Map<IEnumerable<CategoryIndexModel>>(categories));
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Owner}")]
         [HttpPost]
         public async Task<IActionResult> DeleteConfirmed([FromForm] int[] ids)
         {
