@@ -11,13 +11,10 @@ namespace Northwind.ModuleTests.RepositoryTests
         private readonly Random random = new Random();
         private readonly Mock<IRepository<Category>> repository = new Mock<IRepository<Category>>();
 
-        [Theory]
-        [InlineData(1)]
-        [InlineData(3)]
-        [InlineData(5)]
-        public async Task GetAllCategories_Test(int amount)
+        [Fact]
+        public async Task GetAllCategories_Test()
         {
-            repository.Setup(mock => mock.GetListAsync()).ReturnsAsync(await Task.FromResult(DatabaseSeeder.GenerateCategories(amount)));
+            repository.Setup(mock => mock.GetListAsync()).ReturnsAsync(await DatabaseSeeder.GenerateCategories());
 
             var categories = await repository.Object.GetListAsync();
 
@@ -74,7 +71,7 @@ namespace Northwind.ModuleTests.RepositoryTests
             {
                 var employees = new List<object[]>();
 
-                foreach (var item in DatabaseSeeder.GenerateCategories())
+                foreach (var item in DatabaseSeeder.GenerateCategories().Result)
                 {
                     employees.Add([item]);
                 }

@@ -17,7 +17,7 @@ namespace Northwind.ModuleTests.RepositoryTests
         [InlineData(5)]
         public async Task GetAllEmployees_Test(int amount)
         {
-            repository.Setup(mock => mock.GetListAsync()).ReturnsAsync(await Task.FromResult(DatabaseSeeder.GenerateEmployees(amount)));
+            repository.Setup(mock => mock.GetListAsync()).ReturnsAsync(await DatabaseSeeder.GenerateEmployees(count: amount));
 
             var employees = await repository.Object.GetListAsync();
 
@@ -78,7 +78,7 @@ namespace Northwind.ModuleTests.RepositoryTests
             {
                 var employees = new List<object[]>();
 
-                foreach (var item in DatabaseSeeder.GenerateEmployees())
+                foreach (var item in DatabaseSeeder.GenerateEmployees().Result)
                 {
                     employees.Add([item]);
                 }

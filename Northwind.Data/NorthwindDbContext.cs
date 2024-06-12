@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Northwind.Data.Entities;
 
@@ -68,14 +67,21 @@ namespace Northwind.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer();
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+            {
+                optionsBuilder.UseInMemoryDatabase("Northwind_Azure");
+            }
+            else
+            { 
+                optionsBuilder.UseSqlServer();
+            }
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(builder);
 
-            modelBuilder.Entity<AlphabeticalListOfProduct>(entity =>
+            builder.Entity<AlphabeticalListOfProduct>(entity =>
             {
                 entity
                     .HasNoKey()
@@ -90,7 +96,7 @@ namespace Northwind.Data
                 entity.Property(e => e.UnitPrice).HasColumnType("money");
             });
 
-            modelBuilder.Entity<Category>(entity =>
+            builder.Entity<Category>(entity =>
             {
                 entity.HasIndex(e => e.CategoryName, "CategoryName");
 
@@ -100,7 +106,7 @@ namespace Northwind.Data
                 entity.Property(e => e.Picture).HasColumnType("image");
             });
 
-            modelBuilder.Entity<CategorySalesFor1997>(entity =>
+            builder.Entity<CategorySalesFor1997>(entity =>
             {
                 entity
                     .HasNoKey()
@@ -110,7 +116,7 @@ namespace Northwind.Data
                 entity.Property(e => e.CategorySales).HasColumnType("money");
             });
 
-            modelBuilder.Entity<CurrentProductList>(entity =>
+            builder.Entity<CurrentProductList>(entity =>
             {
                 entity
                     .HasNoKey()
@@ -122,7 +128,7 @@ namespace Northwind.Data
                 entity.Property(e => e.ProductName).HasMaxLength(40);
             });
 
-            modelBuilder.Entity<Customer>(entity =>
+            builder.Entity<Customer>(entity =>
             {
                 entity.HasIndex(e => e.City, "City");
 
@@ -173,7 +179,7 @@ namespace Northwind.Data
                         });
             });
 
-            modelBuilder.Entity<CustomerAndSuppliersByCity>(entity =>
+            builder.Entity<CustomerAndSuppliersByCity>(entity =>
             {
                 entity
                     .HasNoKey()
@@ -187,7 +193,7 @@ namespace Northwind.Data
                     .IsUnicode(false);
             });
 
-            modelBuilder.Entity<CustomerDemographic>(entity =>
+            builder.Entity<CustomerDemographic>(entity =>
             {
                 entity.HasKey(e => e.CustomerTypeId).IsClustered(false);
 
@@ -198,7 +204,7 @@ namespace Northwind.Data
                 entity.Property(e => e.CustomerDesc).HasColumnType("ntext");
             });
 
-            modelBuilder.Entity<Employee>(entity =>
+            builder.Entity<Employee>(entity =>
             {
                 entity.HasIndex(e => e.LastName, "LastName");
 
@@ -248,7 +254,7 @@ namespace Northwind.Data
                         });
             });
 
-            modelBuilder.Entity<Invoice>(entity =>
+            builder.Entity<Invoice>(entity =>
             {
                 entity
                     .HasNoKey()
@@ -283,7 +289,7 @@ namespace Northwind.Data
                 entity.Property(e => e.UnitPrice).HasColumnType("money");
             });
 
-            modelBuilder.Entity<Order>(entity =>
+            builder.Entity<Order>(entity =>
             {
                 entity.HasIndex(e => e.CustomerId, "CustomerID");
 
@@ -333,7 +339,7 @@ namespace Northwind.Data
                     .HasConstraintName("FK_Orders_Shippers");
             });
 
-            modelBuilder.Entity<OrderDetail>(entity =>
+            builder.Entity<OrderDetail>(entity =>
             {
                 entity.HasKey(e => new { e.OrderId, e.ProductId }).HasName("PK_Order_Details");
 
@@ -363,7 +369,7 @@ namespace Northwind.Data
                     .HasConstraintName("FK_Order_Details_Products");
             });
 
-            modelBuilder.Entity<OrderDetailsExtended>(entity =>
+            builder.Entity<OrderDetailsExtended>(entity =>
             {
                 entity
                     .HasNoKey()
@@ -376,7 +382,7 @@ namespace Northwind.Data
                 entity.Property(e => e.UnitPrice).HasColumnType("money");
             });
 
-            modelBuilder.Entity<OrderSubtotal>(entity =>
+            builder.Entity<OrderSubtotal>(entity =>
             {
                 entity
                     .HasNoKey()
@@ -386,7 +392,7 @@ namespace Northwind.Data
                 entity.Property(e => e.Subtotal).HasColumnType("money");
             });
 
-            modelBuilder.Entity<OrdersQry>(entity =>
+            builder.Entity<OrdersQry>(entity =>
             {
                 entity
                     .HasNoKey()
@@ -416,7 +422,7 @@ namespace Northwind.Data
                 entity.Property(e => e.ShippedDate).HasColumnType("datetime");
             });
 
-            modelBuilder.Entity<Product>(entity =>
+            builder.Entity<Product>(entity =>
             {
                 entity.HasIndex(e => e.CategoryId, "CategoriesProducts");
 
@@ -449,7 +455,7 @@ namespace Northwind.Data
                     .HasConstraintName("FK_Products_Suppliers");
             });
 
-            modelBuilder.Entity<ProductSalesFor1997>(entity =>
+            builder.Entity<ProductSalesFor1997>(entity =>
             {
                 entity
                     .HasNoKey()
@@ -460,7 +466,7 @@ namespace Northwind.Data
                 entity.Property(e => e.ProductSales).HasColumnType("money");
             });
 
-            modelBuilder.Entity<ProductsAboveAveragePrice>(entity =>
+            builder.Entity<ProductsAboveAveragePrice>(entity =>
             {
                 entity
                     .HasNoKey()
@@ -470,7 +476,7 @@ namespace Northwind.Data
                 entity.Property(e => e.UnitPrice).HasColumnType("money");
             });
 
-            modelBuilder.Entity<ProductsByCategory>(entity =>
+            builder.Entity<ProductsByCategory>(entity =>
             {
                 entity
                     .HasNoKey()
@@ -481,7 +487,7 @@ namespace Northwind.Data
                 entity.Property(e => e.QuantityPerUnit).HasMaxLength(20);
             });
 
-            modelBuilder.Entity<QuarterlyOrder>(entity =>
+            builder.Entity<QuarterlyOrder>(entity =>
             {
                 entity
                     .HasNoKey()
@@ -496,7 +502,7 @@ namespace Northwind.Data
                     .HasColumnName("CustomerID");
             });
 
-            modelBuilder.Entity<Region>(entity =>
+            builder.Entity<Region>(entity =>
             {
                 entity.HasKey(e => e.RegionId).IsClustered(false);
 
@@ -510,7 +516,7 @@ namespace Northwind.Data
                     .IsFixedLength();
             });
 
-            modelBuilder.Entity<SalesByCategory>(entity =>
+            builder.Entity<SalesByCategory>(entity =>
             {
                 entity
                     .HasNoKey()
@@ -522,7 +528,7 @@ namespace Northwind.Data
                 entity.Property(e => e.ProductSales).HasColumnType("money");
             });
 
-            modelBuilder.Entity<SalesTotalsByAmount>(entity =>
+            builder.Entity<SalesTotalsByAmount>(entity =>
             {
                 entity
                     .HasNoKey()
@@ -534,14 +540,14 @@ namespace Northwind.Data
                 entity.Property(e => e.ShippedDate).HasColumnType("datetime");
             });
 
-            modelBuilder.Entity<Shipper>(entity =>
+            builder.Entity<Shipper>(entity =>
             {
                 entity.Property(e => e.ShipperId).HasColumnName("ShipperID");
                 entity.Property(e => e.CompanyName).HasMaxLength(40);
                 entity.Property(e => e.Phone).HasMaxLength(24);
             });
 
-            modelBuilder.Entity<SummaryOfSalesByQuarter>(entity =>
+            builder.Entity<SummaryOfSalesByQuarter>(entity =>
             {
                 entity
                     .HasNoKey()
@@ -552,7 +558,7 @@ namespace Northwind.Data
                 entity.Property(e => e.Subtotal).HasColumnType("money");
             });
 
-            modelBuilder.Entity<SummaryOfSalesByYear>(entity =>
+            builder.Entity<SummaryOfSalesByYear>(entity =>
             {
                 entity
                     .HasNoKey()
@@ -563,7 +569,7 @@ namespace Northwind.Data
                 entity.Property(e => e.Subtotal).HasColumnType("money");
             });
 
-            modelBuilder.Entity<Supplier>(entity =>
+            builder.Entity<Supplier>(entity =>
             {
                 entity.HasIndex(e => e.CompanyName, "CompanyName");
 
@@ -583,7 +589,7 @@ namespace Northwind.Data
                 entity.Property(e => e.Region).HasMaxLength(15);
             });
 
-            modelBuilder.Entity<Territory>(entity =>
+            builder.Entity<Territory>(entity =>
             {
                 entity.HasKey(e => e.TerritoryId).IsClustered(false);
 

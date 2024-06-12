@@ -15,9 +15,17 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddLogging(builder => builder.AddConsole());
 builder.Services.AddSession();
 
-var connectionString = config["ConnectionStrings:SQL_Server"];
+string? connectionString = config["ConnectionStrings:SQL_Server"];
 
-builder.Services.AddDbContext<NorthwindDbContext>(options => options.UseSqlServer(connectionString));
+if (connectionString == null)
+{
+    builder.Services.AddDbContext<NorthwindDbContext>(options => options.UseInMemoryDatabase("Northwind_Azure"));
+}
+else
+{
+    builder.Services.AddDbContext<NorthwindDbContext>(options => options.UseSqlServer(connectionString));
+}
+
 builder.Services.AddDefaultIdentity<NorthwindUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<NorthwindDbContext>();
@@ -50,6 +58,20 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+    var dbContext = services.GetRequiredService<NorthwindDbContext>();
+
+    if (app.Environment.IsDevelopment())
+    {
+        await dbContext.SeedDatabase();
+    }
+    else
+    { 
+        await Migrate(dbContext, config);
+    }
+}
+
+async Task Migrate(NorthwindDbContext dbContext, ConfigurationManager config)
+{
     var seedScriptPath = config["SeedScriptPath"];
     var ownerScriptPath = config["OwnerScriptPath"];
     var url = config["ScriptUrl"];
@@ -61,8 +83,6 @@ using (var scope = app.Services.CreateScope())
 
     await FileDownloader.DownloadScriptFileAsync(url, seedScriptPath);
     SqlScriptGenerator.GenerateOwnerScript(ownerScriptPath!, ownerEmail!, ownerPasswordHash!, ownerSecurityStamp!, ownerConcurrencyStamp!);
-
-    var dbContext = services.GetRequiredService<NorthwindDbContext>();
 
     var count = 10;
 
