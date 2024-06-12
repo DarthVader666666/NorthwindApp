@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Northwind.Application.Constants;
 using Northwind.Data.Entities;
 using NorthwindApp.Models;
 using System.Diagnostics;
@@ -35,8 +36,30 @@ namespace NorthwindApp.Controllers
                 };
 
                 await _userManager.CreateAsync(user);
-                await _roleManager.CreateAsync(new IdentityRole { Name = "owner", NormalizedName = "OWNER", ConcurrencyStamp = null });
-                await _userManager.AddToRoleAsync(user, "owner");
+                await _roleManager.CreateAsync(new IdentityRole { Name = UserRoles.Owner, NormalizedName = UserRoles.Owner.ToUpper(), ConcurrencyStamp = null });
+                await _userManager.AddToRoleAsync(user, UserRoles.Owner);
+
+                user = new NorthwindUser
+                {
+                    UserName = "admin@admin.com",
+                    Email = "admin@admin.com",
+                    EmailConfirmed = true
+                };
+
+                await _userManager.CreateAsync(user, "Admin_1");
+                await _roleManager.CreateAsync(new IdentityRole { Name = UserRoles.Admin, NormalizedName = UserRoles.Admin.ToUpper(), ConcurrencyStamp = null });
+                await _userManager.AddToRoleAsync(user, UserRoles.Admin);
+
+                user = new NorthwindUser
+                {
+                    UserName = "customer@customer.com",
+                    Email = "customer@customer.com",
+                    EmailConfirmed = true
+                };
+
+                await _userManager.CreateAsync(user, "Customer_1");
+                await _roleManager.CreateAsync(new IdentityRole { Name = UserRoles.Customer, NormalizedName = UserRoles.Customer.ToUpper(), ConcurrencyStamp = null });
+                await _userManager.AddToRoleAsync(user, UserRoles.Customer);
             }
 
             return RedirectToAction("Index", "Categories");
