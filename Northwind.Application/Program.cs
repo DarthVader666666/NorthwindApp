@@ -60,12 +60,12 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     var dbContext = services.GetRequiredService<NorthwindDbContext>();
 
-    if (app.Environment.IsDevelopment())
+    if (app.Environment.EnvironmentName == "Production")
     {
         await dbContext.SeedDatabase();
     }
     else
-    { 
+    {
         await Migrate(dbContext, config);
     }
 }
