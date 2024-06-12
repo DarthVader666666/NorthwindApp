@@ -10,6 +10,7 @@ namespace Northwind.Bll.Services
         private static readonly Random random = new Random();
         private const int amountOfEmployees = 5;
         private const int amountOfProducts = 5;
+        private const int amountOfCustomers = 5;
         private static readonly string[] categoryNames = ["Beverages", "Condiments", "Confections", "Dairy Products", "GrainsCereals"];
 
         private static readonly string[] jobTitles =
@@ -32,6 +33,7 @@ namespace Northwind.Bll.Services
                 await GenerateEmployees(dbContext);
                 await GenerateCategories(dbContext);
                 await GenerateProducts(dbContext);
+                await GenerateCustomers(dbContext);
             }
             catch (Exception ex)
             {
@@ -125,7 +127,28 @@ namespace Northwind.Bll.Services
             }
         }
 
-        private static byte[]? DownloadPicture(string path, ImageHeaders? imageHeader = null)
+        public static async Task<List<Customer>> GenerateCustomers(NorthwindDbContext? dbContext = null, int count = amountOfCustomers)
+        {
+            var customers = new Faker<Customer>()
+                .RuleFor(c => c.CustomerId, f => Guid.NewGuid().ToString())
+                .RuleFor(c => c.CompanyName, f => f.Company.CompanyName())
+                .RuleFor(c => c.ContactName, f => $"{f.Name.FirstName()} {f.Name.LastName()}")
+                .RuleFor(c => c.Address, f => f.Address.SecondaryAddress())
+                .RuleFor(c => c.Country, f => f.Address.Country())
+                .RuleFor(c => c.City, f => f.Address.City())
+                .RuleFor(c => c.Phone, f => f.Phone.PhoneNumber())
+                .Generate(count);
+
+            if (dbContext != null)
+            {
+                dbContext.Customers.AddRange(customers);
+                await dbContext.SaveChangesAsync();
+            }
+
+            return customers;
+        }
+
+            private static byte[]? DownloadPicture(string path, ImageHeaders? imageHeader = null)
         {
             if (imageHeader == ImageHeaders.Category)
             {
