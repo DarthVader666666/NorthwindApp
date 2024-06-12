@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
+using System.Security.Policy;
 using Xunit;
 
 namespace Northwind.IntegrationTests
@@ -19,6 +20,7 @@ namespace Northwind.IntegrationTests
         public async Task EndpointIndex_Test(string url)
         {
             var client = _factory.CreateClient();
+            await client.GetAsync("/Home/Index");
 
             var response = await client.GetAsync(url);
 
