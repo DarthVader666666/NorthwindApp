@@ -76,13 +76,8 @@ async Task Migrate(NorthwindDbContext dbContext, ConfigurationManager config)
     var ownerScriptPath = config["OwnerScriptPath"];
     var url = config["ScriptUrl"];
 
-    var ownerEmail = config["OwnerEmail"];
-    var ownerPasswordHash = config["OwnerPasswordHash"];
-    var ownerSecurityStamp = config["OwnerSecurityStamp"];
-    var ownerConcurrencyStamp = config["OwnerConcurrencyStamp"];
-
     await FileDownloader.DownloadScriptFileAsync(url, seedScriptPath);
-    SqlScriptGenerator.GenerateOwnerScript(ownerScriptPath!, ownerEmail!, ownerPasswordHash!, ownerSecurityStamp!, ownerConcurrencyStamp!);
+    await FileDownloader.GenerateOwnerScriptAsync(config);
 
     var count = 10;
 
