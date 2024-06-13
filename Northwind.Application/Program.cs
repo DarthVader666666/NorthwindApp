@@ -38,6 +38,7 @@ builder.Services.AddScoped<IRepository<Customer>, CustomerRepository>();
 builder.Services.AddScoped<IRepository<Order>, OrderRepository>();
 builder.Services.AddScoped<IRepository<OrderDetail>, OrderDetailRepository>();
 builder.Services.AddScoped<IRepository<Shipper>, ShipperRepository>();
+builder.Services.AddScoped<RolesConfigurator>();
 
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddScoped<ISelectListFiller, SelectListFiller>();

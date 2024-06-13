@@ -13,7 +13,7 @@ using Northwind.Data.Entities;
 
 namespace Northwind.Application.Controllers
 {
-    [Authorize(Roles = $"{UserRoles.Owner},{UserRoles.Admin},{UserRoles.Customer},{UserRoles.Employee}")]
+    [Authorize(Roles = $"{UserRoles.Owner},{UserRoles.Admin},{UserRoles.Employee}")]
     public class CustomersController : Controller
     {
         private static SortBy? Sort;
