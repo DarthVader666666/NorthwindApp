@@ -20,6 +20,7 @@ using Northwind.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Northwind.Application.Constants;
+using Northwind.Application.Services;
 
 namespace Northwind.Application.Areas.Identity.Pages.Account
 {
@@ -27,16 +28,16 @@ namespace Northwind.Application.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<NorthwindUser> _signInManager;
         private readonly UserManager<NorthwindUser> _userManager;
-        private readonly IRepository<Customer> _customerRepository;
         private readonly ILogger<LoginModel> _logger;
+        private readonly RolesConfigurator _rolesConfigurator;
 
         public LoginModel(SignInManager<NorthwindUser> signInManager, UserManager<NorthwindUser> userManager, IRepository<Customer> customerRepository, 
-            ILogger<LoginModel> logger)
+            ILogger<LoginModel> logger, RolesConfigurator roleConfigurator)
         {
             _signInManager = signInManager;
             _userManager = userManager;
-            _customerRepository = customerRepository;
             _logger = logger;
+            _rolesConfigurator = roleConfigurator;
         }
 
         /// <summary>
@@ -114,6 +115,8 @@ namespace Northwind.Application.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
+            await _rolesConfigurator.ConfigureRolesAsync();
+
             returnUrl ??= Url.Content("~/");
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
