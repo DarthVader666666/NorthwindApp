@@ -1,6 +1,11 @@
 ﻿@using Northwind.Application.Constants
 @{
-    ViewData["Title"] = "Northwind";
+    ViewData["Title"] = "Northwind"; 
+}
+@functions{
+    string ProceedAsAdminHidden => Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production"
+                                    && !(User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner)) 
+                                    ? "" : "hidden";
 }
 
 <!DOCTYPE html>
@@ -79,6 +84,7 @@
                             }
                         }
                     </ul>
+                    <button onclick="logAsAdmin()" @ProceedAsAdminHidden>Proceed as Admin</button>
                     <ul class="navbar-nav float-end">
                         <li>
                             <partial name="_OwnerPartial" />
@@ -118,3 +124,17 @@
         font-weight:bold;
     }
 </style>
+
+<script>
+    async function  logAsAdmin() {
+        await fetch("/Identity/Account/Login/",
+            {
+                method: 'GET',
+                headers:
+                    {
+                        'Credentials': 'admin@admin.com,Admin_1'
+                    }
+            });
+        window.location.reload();
+    }
+</script>
