@@ -71,7 +71,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-async Task Migrate(NorthwindDbContext dbContext, ConfigurationManager config)
+async static Task Migrate(NorthwindDbContext dbContext, ConfigurationManager config)
 {
     var seedScriptPath = config["SeedScriptPath"];
     var ownerScriptPath = config["OwnerScriptPath"];

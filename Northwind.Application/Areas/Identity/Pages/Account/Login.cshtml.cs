@@ -98,6 +98,23 @@ namespace Northwind.Application.Areas.Identity.Pages.Account
 
         public async Task OnGetAsync(string returnUrl = null)
         {
+            var creds = Request.Headers["Credentials"];
+
+            if (!creds.IsNullOrEmpty())
+            {
+                var credentials = creds[0].Split(',');
+                if (credentials.Length == 2)
+                {
+                    Input = new InputModel
+                    {
+                        Email = credentials[0],
+                        Password = credentials[1]
+                    };                    
+
+                    await OnPostAsync();
+                }
+            }
+
             if (!string.IsNullOrEmpty(ErrorMessage))
             {
                 ModelState.AddModelError(string.Empty, ErrorMessage);
