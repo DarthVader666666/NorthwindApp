@@ -13,7 +13,7 @@ namespace Northwind.Bll.Services
         private const int amountOfCustomers = 5;
         private static readonly string[] categoryNames = ["Beverages", "Condiments", "Confections", "Dairy Products", "GrainsCereals"];
 
-        private static readonly string[] jobTitles =
+        private static readonly string[] jobTitles = 
         [
             "Sales Representative",
             "Vice President, Sales",
