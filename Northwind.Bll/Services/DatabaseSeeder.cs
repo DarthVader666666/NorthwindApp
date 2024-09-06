@@ -1,7 +1,9 @@
 ﻿using Bogus;
+using Bogus.DataSets;
 using Northwind.Bll.Enums;
 using Northwind.Data;
 using Northwind.Data.Entities;
+using System.IO;
 
 namespace Northwind.Bll.Services
 {
@@ -52,7 +54,7 @@ namespace Northwind.Bll.Services
                 .RuleFor(e => e.Title, f => jobTitles[random.Next(0, jobTitles.Length)])
                 .RuleFor(e => e.HireDate, f => f.Date.Between(DateTime.UtcNow.AddDays(-10), DateTime.UtcNow))
                 .RuleFor(e => e.BirthDate, f => f.Person.DateOfBirth)
-                .RuleFor(e => e.Photo, f => DownloadPicture(f.Person.Avatar))
+                .RuleFor(e => e.Photo, f => FileDownloader.DownloadImage($"wwwroot/pics/sellers/{employeeId}.png"))
                 .Generate(count);
 
             foreach (var item in employees)
@@ -92,7 +94,7 @@ namespace Northwind.Bll.Services
                 {
                     CategoryId = categoryId++,
                     CategoryName = name,
-                    Picture = DownloadPicture($"wwwroot/pics/categories/{name}.png", ImageHeaders.Category),
+                    Picture = FileDownloader.DownloadImage($"wwwroot/pics/categories/{name}.png"),
                     Description = new Faker().Commerce.ProductDescription()
                 });
             }
@@ -148,7 +150,8 @@ namespace Northwind.Bll.Services
             return customers;
         }
 
-            private static byte[]? DownloadPicture(string path, ImageHeaders? imageHeader = null)
+        // Currently unused
+        private static byte[]? DownloadPicture(string path, ImageHeaders? imageHeader = null)
         {
             if (imageHeader == ImageHeaders.Category)
             {
