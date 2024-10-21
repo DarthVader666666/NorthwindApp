@@ -10,7 +10,7 @@ namespace Northwind.Application.Models.Order
         [Required(ErrorMessage = "Please, choose Customer")]
         public string? CustomerId { get; set; }
 
-        public int? EmployeeId { get; set; }
+        public int? SellerId { get; set; }
 
         public DateTime? OrderDate { get; set; }
 
@@ -35,7 +35,7 @@ namespace Northwind.Application.Models.Order
 
         public string? ShipCountry { get; set; }
 
-        public SelectList? EmployeeIdList { get; set; }
+        public SelectList? SellerIdList { get; set; }
 
         public SelectList? CustomerIdList { get; set; }
 

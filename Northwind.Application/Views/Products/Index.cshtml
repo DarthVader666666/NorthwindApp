@@ -16,7 +16,7 @@
 
 <h1>@(selectListHeader != null && selectListHeader != "" ? $"\"{selectListHeader}\"" : string.Empty) Product List</h1>
 
-@if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner) || User.IsInRole(UserRoles.Employee))
+@if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner) || User.IsInRole(UserRoles.Seller))
 {
     @await Html.PartialAsync("_IndexButtonsPartial", Model.CategoryList ?? Model.SupplierList, ViewData)
 }

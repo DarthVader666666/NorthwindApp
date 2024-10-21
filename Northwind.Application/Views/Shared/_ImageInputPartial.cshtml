@@ -1,11 +1,11 @@
 ﻿@using Northwind.Application.Models.Category
-@using Northwind.Application.Models.Employee
+@using Northwind.Application.Models.Seller
 @model object
 
 @{
-    if (Model is EmployeeEditModel)
+    if (Model is SellerEditModel)
     {
-        <input type="hidden" asp-for=@(((EmployeeEditModel)Model).Photo) />
+        <input type="hidden" asp-for=@(((SellerEditModel)Model).Photo) />
     }
 
     if (Model is CategoryEditModel)

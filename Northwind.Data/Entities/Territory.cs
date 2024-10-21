@@ -13,5 +13,5 @@ public partial class Territory
 
     public virtual Region Region { get; set; } = null!;
 
-    public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>();
+    public virtual ICollection<Seller> Sellers { get; set; } = new List<Seller>();
 }

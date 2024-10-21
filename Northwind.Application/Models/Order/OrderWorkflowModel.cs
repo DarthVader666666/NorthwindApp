@@ -6,10 +6,10 @@ namespace Northwind.Application.Models.Order
     {
         public int? OrderNumber { get; set; }
 
-        public int? EmployeeId { get; set; }
+        public int? SellerId { get; set; }
 
         public string? OrderStatus { get; set; }
 
-        public SelectList? EmployeeList { get; set; }
+        public SelectList? SellerList { get; set; }
     }
 }

@@ -1,8 +1,8 @@
 ﻿namespace Northwind.Data.Entities;
 
-public partial class Employee
+public partial class Seller
 {
-    public int EmployeeId { get; set; }
+    public int SellerId { get; set; }
 
     public string LastName { get; set; } = null!;
 
@@ -38,11 +38,11 @@ public partial class Employee
 
     public string? PhotoPath { get; set; }
 
-    public virtual ICollection<Employee> InverseReportsToNavigation { get; set; } = new List<Employee>();
+    public virtual ICollection<Seller> InverseReportsToNavigation { get; set; } = new List<Seller>();
 
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
-    public virtual Employee? ReportsToNavigation { get; set; }
+    public virtual Seller? ReportsToNavigation { get; set; }
 
     public virtual ICollection<Territory> Territories { get; set; } = new List<Territory>();
 }

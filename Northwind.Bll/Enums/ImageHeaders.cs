@@ -2,7 +2,7 @@
 {
     public enum ImageHeaders
     {
-        Employee,
+        Seller,
         Category
     }
 }

@@ -34,7 +34,7 @@ namespace Northwind.Bll.Services
             var orders = ids switch
             {
                 (var x, var y) when !x.IsNullOrEmpty() && y == null => DbContext.Orders.AsNoTracking().Include(x => x.OrderDetails).Where(x => x.CustomerId == ids.Item1),
-                (var x, var y) when x.IsNullOrEmpty() && int.TryParse(y, out int employeeId) && employeeId > 0 => DbContext.Orders.AsNoTracking().Include(x => x.OrderDetails).Where(x => x.EmployeeId == int.Parse(ids.Item2 ?? "0")),
+                (var x, var y) when x.IsNullOrEmpty() && int.TryParse(y, out int sellerId) && sellerId > 0 => DbContext.Orders.AsNoTracking().Include(x => x.OrderDetails).Where(x => x.SellerId == int.Parse(ids.Item2 ?? "0")),
                 _ => DbContext.Orders.AsNoTracking().Include(x => x.OrderDetails)
             };
 

@@ -10,7 +10,7 @@ namespace Northwind.Bll.Services
     public static class DatabaseSeeder
     {
         private static readonly Random random = new Random();
-        private const int amountOfEmployees = 5;
+        private const int amountOfSellers = 5;
         private const int amountOfProducts = 5;
         private const int amountOfCustomers = 5;
         private static readonly string[] categoryNames = ["Beverages", "Condiments", "Confections", "Dairy Products", "GrainsCereals"];
@@ -32,7 +32,7 @@ namespace Northwind.Bll.Services
 
             try
             {              
-                await GenerateEmployees(dbContext);
+                await GenerateSellers(dbContext);
                 await GenerateCategories(dbContext);
                 await GenerateProducts(dbContext);
                 await GenerateCustomers(dbContext);
@@ -43,23 +43,23 @@ namespace Northwind.Bll.Services
             }
         }
 
-        public static async Task<List<Employee>> GenerateEmployees(NorthwindDbContext? dbContext = null, int count = amountOfEmployees)
+        public static async Task<List<Seller>> GenerateSellers(NorthwindDbContext? dbContext = null, int count = amountOfSellers)
         {
-            var employeeId = 1;
+            var sellerId = 1;
 
-            var employees = new Faker<Employee>()
-                .RuleFor(e => e.EmployeeId, f => employeeId++)
+            var sellers = new Faker<Seller>()
+                .RuleFor(e => e.SellerId, f => sellerId++)
                 .RuleFor(e => e.FirstName, f => f.Name.FirstName())
                 .RuleFor(e => e.LastName, f => f.Name.LastName())
                 .RuleFor(e => e.Title, f => jobTitles[random.Next(0, jobTitles.Length)])
                 .RuleFor(e => e.HireDate, f => f.Date.Between(DateTime.UtcNow.AddDays(-10), DateTime.UtcNow))
                 .RuleFor(e => e.BirthDate, f => f.Person.DateOfBirth)
-                .RuleFor(e => e.Photo, f => FileDownloader.DownloadImage($"wwwroot/pics/sellers/{employeeId}.png"))
+                .RuleFor(e => e.Photo, f => FileDownloader.DownloadImage($"wwwroot/pics/sellers/{sellerId}.png"))
                 .Generate(count);
 
-            foreach (var item in employees)
+            foreach (var item in sellers)
             {
-                var ids = employees.Select(e => e.EmployeeId).ToList();
+                var ids = sellers.Select(e => e.SellerId).ToList();
                 int? id = null;
 
                 if (ids.Count > 1)
@@ -68,7 +68,7 @@ namespace Northwind.Bll.Services
                     {
                         id = new Random().Next(ids.Min(), ids.Max());
                     }
-                    while (id == null || id == item.EmployeeId);
+                    while (id == null || id == item.SellerId);
                 }
                 
                 item.ReportsTo = id;
@@ -76,11 +76,11 @@ namespace Northwind.Bll.Services
 
             if (dbContext != null)
             {
-                dbContext.Employees.AddRange(employees);
+                dbContext.Sellers.AddRange(sellers);
                 await dbContext.SaveChangesAsync();
             }
 
-            return employees;
+            return sellers;
         }
 
         public static async Task<List<Category>> GenerateCategories(NorthwindDbContext? dbContext = null)

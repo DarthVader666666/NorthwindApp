@@ -34,10 +34,10 @@
                             }
                         </select>
                     }
-                    @if (role.Name == UserRoles.Employee)
+                    @if (role.Name == UserRoles.Seller)
                     {
-                        <select id="employeeSelectList" class="form-select" name="EmployeeId">
-                            @foreach (var option in Model.EmployeeList! as SelectList)
+                        <select id="sellerSelectList" class="form-select" name="SellerId">
+                            @foreach (var option in Model.SellerList! as SelectList)
                             {
                                 if (option.Selected)
                                 {
@@ -64,9 +64,9 @@
     const customerCheckBox = document.getElementById('customer');
     const customerSelectList = document.getElementById('customerSelectList');
     let customerId;
-    const employeeCheckBox = document.getElementById('employee');
-    const employeeSelectList = document.getElementById('employeeSelectList');
-    let employeeId;
+    const sellerCheckBox = document.getElementById('seller');
+    const sellerSelectList = document.getElementById('sellerSelectList');
+    let sellerId;
 
     if (!customerCheckBox.checked) {
         customerSelectList.value = null;
@@ -90,24 +90,24 @@
     });
 
 
-    if (!employeeCheckBox.checked) {
-        employeeSelectList.value = null;
-        employeeSelectList.hidden = true;
+    if (!sellerCheckBox.checked) {
+        sellerSelectList.value = null;
+        sellerSelectList.hidden = true;
     }
     else {
-        employeeId = employeeSelectList.value;
+        sellerId = sellerSelectList.value;
     }
 
-    employeeCheckBox.addEventListener('change', (event) => {
+    sellerCheckBox.addEventListener('change', (event) => {
         const checked = event.target.checked;
 
         if (checked === true) {
-            employeeSelectList.value = customerId;
-            employeeSelectList.hidden = false;
+            sellerSelectList.value = customerId;
+            sellerSelectList.hidden = false;
         }
         else {
-            employeeSelectList.value = null;
-            employeeSelectList.hidden = true;
+            sellerSelectList.value = null;
+            sellerSelectList.hidden = true;
         }
     });
 </script>

@@ -1,10 +1,10 @@
 ﻿using Northwind.Data.Entities;
 
-namespace Northwind.Application.Models.Employee
+namespace Northwind.Application.Models.Seller
 {
-    public class EmployeeDetailsModel
+    public class SellerDetailsModel
     {
-        public int EmployeeId { get; set; }
+        public int SellerId { get; set; }
 
         public string LastName { get; set; } = null!;
 
@@ -38,6 +38,6 @@ namespace Northwind.Application.Models.Employee
 
         public string? PhotoPath { get; set; }
 
-        public Northwind.Data.Entities.Employee? ReportsToNavigation { get; set; }
+        public Northwind.Data.Entities.Seller? ReportsToNavigation { get; set; }
     }
 }

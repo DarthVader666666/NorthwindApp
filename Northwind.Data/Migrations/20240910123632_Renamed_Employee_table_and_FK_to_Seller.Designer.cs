@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Northwind.Data;
 
@@ -11,9 +12,11 @@ using Northwind.Data;
 namespace Northwind.Data.Migrations
 {
     [DbContext(typeof(NorthwindDbContext))]
-    partial class NorthwindDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240910123632_Renamed_Employee_table_and_FK_to_Seller")]
+    partial class Renamed_Employee_table_and_FK_to_Seller
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -274,7 +277,7 @@ namespace Northwind.Data.Migrations
 
                     b.HasIndex(new[] { "CategoryName" }, "CategoryName");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("Northwind.Data.Entities.CategorySalesFor1997", b =>
@@ -368,7 +371,7 @@ namespace Northwind.Data.Migrations
 
                     b.HasIndex(new[] { "Region" }, "Region");
 
-                    b.ToTable("Customers", (string)null);
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("Northwind.Data.Entities.CustomerAndSuppliersByCity", b =>
@@ -412,7 +415,7 @@ namespace Northwind.Data.Migrations
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("CustomerTypeId"), false);
 
-                    b.ToTable("CustomerDemographics", (string)null);
+                    b.ToTable("CustomerDemographics");
                 });
 
             modelBuilder.Entity("Northwind.Data.Entities.Employee", b =>
@@ -762,7 +765,7 @@ namespace Northwind.Data.Migrations
 
                     b.HasIndex(new[] { "ShipVia" }, "ShippersOrders");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("Northwind.Data.Entities.OrderDetail", b =>
@@ -992,7 +995,7 @@ namespace Northwind.Data.Migrations
 
                     b.HasIndex(new[] { "SupplierId" }, "SuppliersProducts");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("Northwind.Data.Entities.ProductSalesFor1997", b =>
@@ -1167,7 +1170,7 @@ namespace Northwind.Data.Migrations
 
                     b.HasKey("ShipperId");
 
-                    b.ToTable("Shippers", (string)null);
+                    b.ToTable("Shippers");
                 });
 
             modelBuilder.Entity("Northwind.Data.Entities.SummaryOfSalesByQuarter", b =>
@@ -1263,7 +1266,7 @@ namespace Northwind.Data.Migrations
 
                     b.HasIndex(new[] { "PostalCode" }, "PostalCode");
 
-                    b.ToTable("Suppliers", (string)null);
+                    b.ToTable("Suppliers");
                 });
 
             modelBuilder.Entity("Northwind.Data.Entities.Territory", b =>
@@ -1289,7 +1292,7 @@ namespace Northwind.Data.Migrations
 
                     b.HasIndex("RegionId");
 
-                    b.ToTable("Territories", (string)null);
+                    b.ToTable("Territories");
                 });
 
             modelBuilder.Entity("CustomerCustomerDemo", b =>

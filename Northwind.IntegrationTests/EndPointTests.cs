@@ -15,7 +15,7 @@ namespace Northwind.IntegrationTests
         }
 
         [Theory]
-        [InlineData("/Employees/Index")]
+        [InlineData("/Sellers/Index")]
         [InlineData("/Categories/Index")]
         public async Task EndpointIndex_Test(string url)
         {

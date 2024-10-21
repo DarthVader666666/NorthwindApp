@@ -1,14 +1,11 @@
-﻿using AutoMapper.Configuration.Annotations;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Northwind.Bll.Validation;
 using System.ComponentModel.DataAnnotations;
 
-namespace Northwind.Application.Models.Employee
+namespace Northwind.Application.Models.Seller
 {
-    public class EmployeeEditModel
+    public class SellerCreateModel
     {
-        public int EmployeeId { get; set; }
-
         [Required(ErrorMessage = "Last Name is required")]
         public string LastName { get; set; } = null!;
 
@@ -19,7 +16,8 @@ namespace Northwind.Application.Models.Employee
 
         public string? TitleOfCourtesy { get; set; }
 
-        [DateValidation(MinYears = 18, MaxYears = 90)]
+        [DateValidation(MinYears = 18, MaxYears = 60)]
+
         public DateTime? BirthDate { get; set; }
 
         [DateValidation(MinYears = 0, MaxYears = 60)]
@@ -37,9 +35,9 @@ namespace Northwind.Application.Models.Employee
 
         public string? HomePhone { get; set; }
 
-        public byte[]? Photo { get; set; }
-
         public IFormFile? FormFile { get; set; }
+
+        public byte[]? Photo { get; set; } = null;
 
         public string? Notes { get; set; }
 

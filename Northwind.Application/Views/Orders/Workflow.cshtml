@@ -13,7 +13,7 @@
     IEnumerable<string> PropertyNames => Properties.Select(x => x.Name).Where(x => !x.Contains("Id"));
     Dictionary<string, int>? ColumnWidths => ViewData["ColumnWidths"] as Dictionary<string, int>;
 
-    async Task<Order?> UpdateOrder(int? employeeId, int? orderId)
+    async Task<Order?> UpdateOrder(int? sellerId, int? orderId)
     {
         var order = await orderRepository.GetAsync(orderId);
 
@@ -22,7 +22,7 @@
             return null;    
         }
 
-        order.EmployeeId = employeeId;
+        order.SellerId = sellerId;
 
         return await orderRepository.UpdateAsync(order);
     }
@@ -127,7 +127,7 @@
 
 <script>
     function onSelectListChange(value, orderId) {
-        const url = window.location.origin.concat(`/Orders/Update?orderId=${orderId}&employeeId=${value}`);
+        const url = window.location.origin.concat(`/Orders/Update?orderId=${orderId}&sellerId=${value}`);
         fetch(url).then(response => 
         {
             const modifiedSpan = document.getElementById(orderId);

@@ -25,7 +25,7 @@ namespace Northwind.Data
 
         public virtual DbSet<CustomerDemographic> CustomerDemographics { get; set; }
 
-        public virtual DbSet<Employee> Employees { get; set; }
+        public virtual DbSet<Seller> Sellers { get; set; }
 
         public virtual DbSet<Invoice> Invoices { get; set; }
 
@@ -204,13 +204,13 @@ namespace Northwind.Data
                 entity.Property(e => e.CustomerDesc).HasColumnType("ntext");
             });
 
-            builder.Entity<Employee>(entity =>
+            builder.Entity<Seller>(entity =>
             {
                 entity.HasIndex(e => e.LastName, "LastName");
 
                 entity.HasIndex(e => e.PostalCode, "PostalCode");
 
-                entity.Property(e => e.EmployeeId).HasColumnName("EmployeeID");
+                entity.Property(e => e.SellerId).HasColumnName("SellerID");
                 entity.Property(e => e.Address).HasMaxLength(60);
                 entity.Property(e => e.BirthDate).HasColumnType("datetime");
                 entity.Property(e => e.City).HasMaxLength(15);
@@ -230,28 +230,28 @@ namespace Northwind.Data
 
                 entity.HasOne(d => d.ReportsToNavigation).WithMany(p => p.InverseReportsToNavigation)
                     .HasForeignKey(d => d.ReportsTo)
-                    .HasConstraintName("FK_Employees_Employees");
+                    .HasConstraintName("FK_Sellers_Sellers");
 
-                entity.HasMany(d => d.Territories).WithMany(p => p.Employees)
+                entity.HasMany(d => d.Territories).WithMany(p => p.Sellers)
                     .UsingEntity<Dictionary<string, object>>(
                         "EmployeeTerritory",
                         r => r.HasOne<Territory>().WithMany()
                             .HasForeignKey("TerritoryId")
                             .OnDelete(DeleteBehavior.ClientSetNull)
-                            .HasConstraintName("FK_EmployeeTerritories_Territories"),
-                        l => l.HasOne<Employee>().WithMany()
-                            .HasForeignKey("EmployeeId")
+                            .HasConstraintName("FK_SellerTerritories_Territories"),
+                        l => l.HasOne<Seller>().WithMany()
+                            .HasForeignKey("SellerId")
                             .OnDelete(DeleteBehavior.ClientSetNull)
-                            .HasConstraintName("FK_EmployeeTerritories_Employees"),
+                            .HasConstraintName("FK_SellerTerritories_Sellers"),
                         j =>
                         {
-                            j.HasKey("EmployeeId", "TerritoryId").IsClustered(false);
-                            j.ToTable("EmployeeTerritories");
-                            j.IndexerProperty<int>("EmployeeId").HasColumnName("EmployeeID");
+                            j.HasKey("SellerId", "TerritoryId").IsClustered(false);
+                            j.ToTable("SellerTerritories");
+                            j.IndexerProperty<int>("SellerId").HasColumnName("SellerID");
                             j.IndexerProperty<string>("TerritoryId")
                                 .HasMaxLength(20)
                                 .HasColumnName("TerritoryID");
-                        });
+                        }).ToTable("Sellers");
             });
 
             builder.Entity<Invoice>(entity =>
@@ -295,9 +295,9 @@ namespace Northwind.Data
 
                 entity.HasIndex(e => e.CustomerId, "CustomersOrders");
 
-                entity.HasIndex(e => e.EmployeeId, "EmployeeID");
+                entity.HasIndex(e => e.SellerId, "SellerID");
 
-                entity.HasIndex(e => e.EmployeeId, "EmployeesOrders");
+                entity.HasIndex(e => e.SellerId, "SellersOrders");
 
                 entity.HasIndex(e => e.OrderDate, "OrderDate");
 
@@ -312,7 +312,7 @@ namespace Northwind.Data
                     .HasMaxLength(5)
                     .IsFixedLength()
                     .HasColumnName("CustomerID");
-                entity.Property(e => e.EmployeeId).HasColumnName("EmployeeID");
+                entity.Property(e => e.SellerId).HasColumnName("SellerID");
                 entity.Property(e => e.Freight)
                     .HasDefaultValue(0m)
                     .HasColumnType("money");
@@ -330,9 +330,9 @@ namespace Northwind.Data
                     .HasForeignKey(d => d.CustomerId)
                     .HasConstraintName("FK_Orders_Customers");
 
-                entity.HasOne(d => d.Employee).WithMany(p => p.Orders)
-                    .HasForeignKey(d => d.EmployeeId)
-                    .HasConstraintName("FK_Orders_Employees");
+                entity.HasOne(d => d.Seller).WithMany(p => p.Orders)
+                    .HasForeignKey(d => d.SellerId)
+                    .HasConstraintName("FK_Orders_Sellers");
 
                 entity.HasOne(d => d.ShipViaNavigation).WithMany(p => p.Orders)
                     .HasForeignKey(d => d.ShipVia)
@@ -406,7 +406,7 @@ namespace Northwind.Data
                     .HasMaxLength(5)
                     .IsFixedLength()
                     .HasColumnName("CustomerID");
-                entity.Property(e => e.EmployeeId).HasColumnName("EmployeeID");
+                entity.Property(e => e.SellerId).HasColumnName("SellerID");
                 entity.Property(e => e.Freight).HasColumnType("money");
                 entity.Property(e => e.OrderDate).HasColumnType("datetime");
                 entity.Property(e => e.OrderId).HasColumnName("OrderID");

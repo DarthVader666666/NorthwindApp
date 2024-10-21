@@ -69,14 +69,14 @@ namespace Northwind.ModuleTests.RepositoryTests
         {
             get
             {
-                var employees = new List<object[]>();
+                var sellers = new List<object[]>();
 
                 foreach (var item in DatabaseSeeder.GenerateCategories().Result)
                 {
-                    employees.Add([item]);
+                    sellers.Add([item]);
                 }
 
-                return employees;
+                return sellers;
             }
         }
     }

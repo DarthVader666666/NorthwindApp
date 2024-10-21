@@ -11,17 +11,17 @@ namespace Northwind.Application.Services
 {
     internal class SelectListFiller : ISelectListFiller
     {
-        private readonly IRepository<Employee> _employeeRepository;
+        private readonly IRepository<Seller> _sellerRepository;
         private readonly IRepository<Customer> _customerRepository;
         private readonly IRepository<Shipper> _shipperRepository;
         private readonly IRepository<Supplier> _supplierRepository;
         private readonly IRepository<Category> _categoryRepository;
         private readonly UserManager<NorthwindUser> _userManager;
 
-        public SelectListFiller(IRepository<Employee> employeeRepository, IRepository<Customer> customerRepository, IRepository<Shipper> shipperRepository,
+        public SelectListFiller(IRepository<Seller> sellerRepository, IRepository<Customer> customerRepository, IRepository<Shipper> shipperRepository,
             IRepository<Supplier> supplierRepository, IRepository<Category> categoryRepository, UserManager<NorthwindUser> userManager)
         {
-            _employeeRepository = employeeRepository;
+            _sellerRepository = sellerRepository;
             _customerRepository = customerRepository;
             _shipperRepository = shipperRepository;
             _supplierRepository = supplierRepository;
@@ -29,7 +29,7 @@ namespace Northwind.Application.Services
             _userManager = userManager;
         }
 
-        public void FillSelectLists<TModel>(TModel? model, int? employeeId = null, int? shipperId = null, string? customerId = null, int? categoryId = null, 
+        public void FillSelectLists<TModel>(TModel? model, int? sellerId = null, int? shipperId = null, string? customerId = null, int? categoryId = null, 
             int? supplierId = null, string? userId = null) where TModel : class
         {
             if (model == null)
@@ -41,7 +41,7 @@ namespace Northwind.Application.Services
             {
                 var orderEditModel = model as OrderEditModel;
 
-                orderEditModel!.EmployeeIdList = GetEmployeeIdSelectList(employeeId);
+                orderEditModel!.SellerIdList = GetSellerIdSelectList(sellerId);
                 orderEditModel.CustomerIdList = GetCustomerIdSelectList(customerId);
                 orderEditModel.ShipperIdList = GetShipperIdSelectList(shipperId);
             }
@@ -50,7 +50,7 @@ namespace Northwind.Application.Services
             {
                 var orderCreateModel = model as OrderCreateModel;
 
-                orderCreateModel!.EmployeeIdList = GetEmployeeIdSelectList(employeeId);
+                orderCreateModel!.SellerIdList = GetSellerIdSelectList(sellerId);
                 orderCreateModel.CustomerIdList = GetCustomerIdSelectList(customerId);
                 orderCreateModel.ShipperIdList = GetShipperIdSelectList(shipperId);
             }
@@ -91,24 +91,24 @@ namespace Northwind.Application.Services
                 var roleChangeModel = model as RoleChangeModel;
 
                 roleChangeModel!.CustomerList = GetCustomerIdSelectList(userId: userId);
-                roleChangeModel!.EmployeeList = GetEmployeeIdSelectList(userId: userId);
+                roleChangeModel!.SellerList = GetSellerIdSelectList(userId: userId);
             }
         }
 
-        public SelectList? GetEmployeeIdSelectList(int? employeeId = null, string? userId = null, bool all = false)
+        public SelectList? GetSellerIdSelectList(int? sellerId = null, string? userId = null, bool all = false)
         {
             if (!userId.IsNullOrEmpty())
             {
                 var user = _userManager.FindByIdAsync(userId!).Result;
-                employeeId = user?.EmployeeId;
+                sellerId = user?.EmployeeId;
             }
 
-            var employees = _employeeRepository.GetListAsync();
-            Task.WaitAny(employees);
+            var sellers = _sellerRepository.GetListAsync();
+            Task.WaitAny(sellers);
 
-            var dictionary = employees.Result.ToDictionary(e => e?.EmployeeId ?? 0, e => $"{e.FirstName} {e.LastName} - {e.Title}");
+            var dictionary = sellers.Result.ToDictionary(e => e?.SellerId ?? 0, e => $"{e.FirstName} {e.LastName} - {e.Title}");
 
-            return GetSelectList(dictionary, employeeId, all);
+            return GetSelectList(dictionary, sellerId, all);
         }
 
         public SelectList? GetCustomerIdSelectList(string? customerId = null, string? userId = null, bool all = false)

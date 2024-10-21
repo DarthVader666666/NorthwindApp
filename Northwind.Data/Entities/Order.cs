@@ -9,7 +9,7 @@ public partial class Order
 
     public string? CustomerId { get; set; }
 
-    public int? EmployeeId { get; set; }
+    public int? SellerId { get; set; }
 
     public DateTime? OrderDate { get; set; }
 
@@ -35,7 +35,7 @@ public partial class Order
 
     public virtual Customer? Customer { get; set; }
 
-    public virtual Employee? Employee { get; set; }
+    public virtual Seller? Seller { get; set; }
 
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 

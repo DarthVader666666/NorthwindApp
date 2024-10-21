@@ -3,12 +3,12 @@
     public class OrderPageModel : PageModelBase
     {
         public string? CustomerId { get; }
-        public int? EmployeeId { get; }
+        public int? SellerId { get; }
 
-        public OrderPageModel(int count, int pageNumber, int pageSize, string? customerId, int? employeeId) : base(count, pageNumber, pageSize)
+        public OrderPageModel(int count, int pageNumber, int pageSize, string? customerId, int? sellerId) : base(count, pageNumber, pageSize)
         {
             CustomerId = customerId;
-            EmployeeId = employeeId;
+            SellerId = sellerId;
         }
     }
 }

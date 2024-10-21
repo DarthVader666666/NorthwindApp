@@ -3,7 +3,16 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
 WORKDIR /app
-ENV ASPNETCORE_URLS=http://+:80
+
+ENV ASPNETCORE_URLS=http://+:80;https://+:443
+ENV ASPNETCORE_ENVIRONMENT=Docker
+ENV ASPNETCORE_HTTP_PORTS=8080
+ENV ASPNETCORE_HTTPS_PORTS=8081
+ENV ASPNETCORE_Kestrel__Certificates__Default__Path=../https/Northwind.Application.pfx
+ENV ASPNETCORE_Kestrel__Certificates__Default__Password=Haemorr_8421
+
+EXPOSE 80
+EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release

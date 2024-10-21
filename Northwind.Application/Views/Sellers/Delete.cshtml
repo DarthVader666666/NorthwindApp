@@ -1,7 +1,7 @@
-﻿@model IEnumerable<Northwind.Application.Models.Employee.EmployeeIndexModel>
+﻿@model IEnumerable<Northwind.Application.Models.Seller.SellerIndexModel>
 @{
     ViewData["PreviousPage"] = ViewBag.PreviousPage;
-    ViewData["ControllerName"] = "Employees";
+    ViewData["ControllerName"] = "Sellers";
     ViewData["ActionName"] = "DeleteConfirmed";
     ViewData["FormMethod"] = "post";
     ViewData["Hidden"] = "hidden";
@@ -9,7 +9,7 @@
     var count = Model.Count();
 }
 
-<h1>Are you sure you want to delete @(count > 1 ? "these" : "this") @(count > 1 ? "Employees" : "Employee")?</h1>
+<h1>Are you sure you want to delete @(count > 1 ? "these" : "this") @(count > 1 ? "Sellers" : "Seller")?</h1>
 <hr />
 
 @await Html.PartialAsync("_TableFormPartial")

@@ -2,7 +2,7 @@
 @addTagHelper *, Northwind.Application
 @model Northwind.Application.Models.Order.OrderIndexModel
 @{
-    var selectListHeader = ViewBag.CompanyName ?? ViewBag.EmployeeName;
+    var selectListHeader = ViewBag.CompanyName ?? ViewBag.SellerName;
 
     ViewData["PreviousPage"] = ViewBag.PreviousPage;
     ViewData["ControllerName"] = "Orders";
@@ -15,9 +15,9 @@
 
 <h1>@(selectListHeader != null && selectListHeader != "" ? $"\"{selectListHeader}\"" : string.Empty) Order List</h1>
 
-@if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner) || User.IsInRole(UserRoles.Employee))
+@if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner) || User.IsInRole(UserRoles.Seller))
 {
-    @await Html.PartialAsync("_IndexButtonsPartial", Model.CustomerList ?? Model.EmployeeList, ViewData)
+    @await Html.PartialAsync("_IndexButtonsPartial", Model.CustomerList ?? Model.SellerList, ViewData)
 }
 
 @if (Model.Orders.Any())

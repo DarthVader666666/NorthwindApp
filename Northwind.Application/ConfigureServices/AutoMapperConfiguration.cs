@@ -2,7 +2,7 @@
 using Northwind.Application.Constants;
 using Northwind.Application.Models.Category;
 using Northwind.Application.Models.Customer;
-using Northwind.Application.Models.Employee;
+using Northwind.Application.Models.Seller;
 using Northwind.Application.Models.Order;
 using Northwind.Application.Models.OrderDetail;
 using Northwind.Application.Models.Product;
@@ -20,27 +20,27 @@ namespace NorthwindApp.ConfigureServices
             {
                 var config = new MapperConfiguration(autoMapperConfig =>
                 {
-                    autoMapperConfig.CreateMap<Employee, EmployeeEditModel>()
+                    autoMapperConfig.CreateMap<Seller, SellerEditModel>()
                         .ForMember(dest => dest.Photo, opts => opts.MapFrom(
                             src => ImageConverter.ConvertNorthwindPhoto(src.Photo!)));
 
-                    autoMapperConfig.CreateMap<EmployeeEditModel, Employee>()
+                    autoMapperConfig.CreateMap<SellerEditModel, Seller>()
                         .ForMember(dest => dest.Photo, opts => opts.MapFrom(
                             src => src.FormFile != null && src.FormFile.Length > 0 ? ImageConverter.ConvertFormFileToByteArray(src.FormFile!) : src.Photo))
                         .ForMember(dest => dest.ReportsTo, opts => opts.MapFrom(
                             src => src.ReportsTo == 0 ? null : src.ReportsTo));
 
-                    autoMapperConfig.CreateMap<Employee, EmployeeIndexModel>()
+                    autoMapperConfig.CreateMap<Seller, SellerIndexModel>()
                         .ForMember(dest => dest.FullName, opts => opts.MapFrom(src => src.FirstName + " " + src.LastName))
                         .ForMember(dest => dest.Photo, opts => opts.MapFrom(src => ImageConverter.ConvertNorthwindPhoto(src.Photo!)));
 
-                    autoMapperConfig.CreateMap<EmployeeIndexModel, Employee>();
+                    autoMapperConfig.CreateMap<SellerIndexModel, Seller>();
 
-                    autoMapperConfig.CreateMap<EmployeeCreateModel, Employee>()
+                    autoMapperConfig.CreateMap<SellerCreateModel, Seller>()
                         .ForMember(dest => dest.Photo, opts => opts.MapFrom(src => ImageConverter.ConvertFormFileToByteArray(src.FormFile!)))
                         .ForMember(dest => dest.ReportsTo, opts => opts.MapFrom(src => src.ReportsTo == 0 ? null : src.ReportsTo));
 
-                    autoMapperConfig.CreateMap<Employee, EmployeeDetailsModel>();
+                    autoMapperConfig.CreateMap<Seller, SellerDetailsModel>();
 
 
 
@@ -112,7 +112,7 @@ namespace NorthwindApp.ConfigureServices
                     autoMapperConfig.CreateMap<Order, OrderEditModel>()
                         .ForMember(dest => dest.ShipperId, opts => opts.MapFrom(src => src.ShipVia))
                         .ForMember(dest => dest.CustomerIdList, opts => opts.Ignore())
-                        .ForMember(dest => dest.EmployeeIdList, opts => opts.Ignore());
+                        .ForMember(dest => dest.SellerIdList, opts => opts.Ignore());
 
                     autoMapperConfig.CreateMap<Order, OrderCreateModel>()
                         .ForMember(dest => dest.ShipperId, opts => opts.MapFrom(src => src.ShipVia));
@@ -122,14 +122,14 @@ namespace NorthwindApp.ConfigureServices
 
                     autoMapperConfig.CreateMap<OrderEditModel, Order>()
                         .ForMember(dest => dest.ShipVia, opts => opts.MapFrom(src => src.ShipperId == 0 ? null : src.ShipperId))
-                        .ForMember(dest => dest.EmployeeId, opts => opts.MapFrom(src => src.EmployeeId == 0 ? null : src.EmployeeId))
+                        .ForMember(dest => dest.SellerId, opts => opts.MapFrom(src => src.SellerId == 0 ? null : src.SellerId))
                         .ForMember(dest => dest.CustomerId, opts => opts.MapFrom(src => src.CustomerId == "" ? null : src.CustomerId))
                         .ForMember(dest => dest.Customer, opts => opts.Ignore())
-                        .ForMember(dest => dest.Employee, opts => opts.Ignore());
+                        .ForMember(dest => dest.Seller, opts => opts.Ignore());
 
                     autoMapperConfig.CreateMap<OrderCreateModel, Order>()
                         .ForMember(dest => dest.ShipVia, opts => opts.MapFrom(src => src.ShipperId == 0 ? null : src.ShipperId))
-                        .ForMember(dest => dest.EmployeeId, opts => opts.MapFrom(src => src.EmployeeId == 0 ? null : src.EmployeeId))
+                        .ForMember(dest => dest.SellerId, opts => opts.MapFrom(src => src.SellerId == 0 ? null : src.SellerId))
                         .ForMember(dest => dest.CustomerId, opts => opts.MapFrom(src => src.CustomerId == "" ? null : src.CustomerId))
                         .ForMember(dest => dest.OrderDate, opts => opts.MapFrom(src => DateTime.UtcNow));
 

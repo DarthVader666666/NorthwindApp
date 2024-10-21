@@ -5,6 +5,6 @@
         CategoryList,
         SupplierList,
         CustomerList,
-        EmployeeList
+        SellerList
     }
 }

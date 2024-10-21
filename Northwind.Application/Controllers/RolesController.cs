@@ -119,7 +119,7 @@ namespace Northwind.Application.Controllers
                 await _userManager.RemoveFromRolesAsync(user, removedRoles);
 
                 user.CustomerId = roleChangeModel.CustomerId;
-                user.EmployeeId = roleChangeModel.EmployeeId;
+                user.EmployeeId = roleChangeModel.SellerId;
                 await _userManager.UpdateAsync(user);
 
                 return RedirectToAction("UserList");

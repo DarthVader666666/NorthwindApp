@@ -8,7 +8,7 @@ namespace Northwind.Application.Models.Order
 
         public string? CustomerId { get; set; }
 
-        public int? EmployeeId { get; set; }
+        public int? SellerId { get; set; }
 
         public DateTime? OrderDate { get; set; }
 

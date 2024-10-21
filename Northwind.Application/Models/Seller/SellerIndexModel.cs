@@ -1,8 +1,8 @@
-﻿namespace Northwind.Application.Models.Employee
+﻿namespace Northwind.Application.Models.Seller
 {
-    public class EmployeeIndexModel
+    public class SellerIndexModel
     {
-        public int EmployeeId { get; set; }
+        public int SellerId { get; set; }
 
         public string FullName { get; set; } = null!;
 

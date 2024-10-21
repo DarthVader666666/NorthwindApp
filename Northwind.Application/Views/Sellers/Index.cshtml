@@ -1,15 +1,15 @@
 ﻿@using Northwind.Application.Constants
-@model IEnumerable<Northwind.Application.Models.Employee.EmployeeIndexModel>
+@model IEnumerable<Northwind.Application.Models.Seller.SellerIndexModel>
 @{
     ViewData["PreviousPage"] = ViewBag.PreviousPage;
-    ViewData["ControllerName"] = "Employees";
+    ViewData["ControllerName"] = "Sellers";
     ViewData["ActionName"] = "Delete";
     ViewData["PageStartNumbering"] = ViewBag.PageStartNumbering;
 }
 
-<h1>Employees</h1>
+<h1>Sellers</h1>
 
-@if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner) || User.IsInRole(UserRoles.Employee))
+@if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner) || User.IsInRole(UserRoles.Seller))
 {
     @await Html.PartialAsync("_IndexButtonsPartial", null as SelectList)
 }

@@ -36,7 +36,7 @@
         if (ControllerName == "Orders")
         {
             ViewData["SelectListName"] = SelectListHeader == SelectListName.CustomerList.ToString() ?
-                SelectListName.EmployeeList.ToString() :
+                SelectListName.SellerList.ToString() :
                 SelectListName.CustomerList.ToString();
         }
 
@@ -73,7 +73,7 @@
             </select>
         </div>
     }
-    @if (!(User.IsInRole(UserRoles.Employee) || User.IsInRole(UserRoles.Customer)))
+    @if (!(User.IsInRole(UserRoles.Seller) || User.IsInRole(UserRoles.Customer)))
     {
         <div class="col-2">
             <button class="btn btn-primary fw-bold" @(ControllerName == "OrderDetails" ? "disabled" : "") onclick="location.href = '@Link'" id="createButton">

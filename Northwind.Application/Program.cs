@@ -30,7 +30,7 @@ builder.Services.AddDefaultIdentity<NorthwindUser>(options => options.SignIn.Req
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<NorthwindDbContext>();
 
-builder.Services.AddScoped<IRepository<Employee>, EmployeeRepository>();
+builder.Services.AddScoped<IRepository<Seller>, SellerRepository>();
 builder.Services.AddScoped<IRepository<Category>, CategoryRepository>();
 builder.Services.AddScoped<IRepository<Product>, ProductRepository>();
 builder.Services.AddScoped<IRepository<Supplier>, SupplierRepository>();
@@ -80,7 +80,7 @@ async static Task Migrate(NorthwindDbContext dbContext, ConfigurationManager con
     await FileDownloader.DownloadScriptFileAsync(url, seedScriptPath);
     await FileDownloader.GenerateOwnerScriptAsync(config);
 
-    var count = 10;
+    var count = 3;
 
     while (count > 0)
     {
@@ -91,7 +91,7 @@ async static Task Migrate(NorthwindDbContext dbContext, ConfigurationManager con
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Database request timed out. " + ex.Message);
+            Console.WriteLine($"Database request timed out. \nEnvironment={Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")};\nConnectionString={config["ConnectionStrings:SQL_Server"]}\n" + ex.Message);
             count--;
 
             if (count == 0)

@@ -19,7 +19,7 @@ using System.Globalization;
 
 namespace Northwind.Application.Controllers
 {
-    [Authorize(Roles = $"{UserRoles.Owner},{UserRoles.Admin},{UserRoles.Customer},{UserRoles.Employee}")]
+    [Authorize(Roles = $"{UserRoles.Owner},{UserRoles.Admin},{UserRoles.Customer},{UserRoles.Seller}")]
     public class OrdersController : Controller
     {
         private static SortBy? Sort;
@@ -32,28 +32,28 @@ namespace Northwind.Application.Controllers
         private readonly IRepository<Order> _orderRepository;
         private readonly IRepository<Customer> _customerRepository;
         private readonly IRepository<Product> _productRepository;
-        private readonly IRepository<Employee> _employeeRepository;
+        private readonly IRepository<Seller> _sellerRepository;
         private readonly ISelectListFiller _selectListFiller;
 
         public OrdersController(IRepository<Order> orderRepository, IRepository<Customer> customerRepository, IRepository<Product> productRepository,
-            IRepository<Employee> employeeRepository, ISelectListFiller selectListFiller, IMapper mapper)
+            IRepository<Seller> sellerRepository, ISelectListFiller selectListFiller, IMapper mapper)
         {
             _mapper = mapper;
             _orderRepository = orderRepository;
             _customerRepository = customerRepository;
             _productRepository = productRepository;
             _selectListFiller = selectListFiller;
-            _employeeRepository = employeeRepository;
+            _sellerRepository = sellerRepository;
         }
         
-        public async Task<IActionResult> Index(string? customerId, int? employeeId, int page = 1, string? sortBy = null)
+        public async Task<IActionResult> Index(string? customerId, int? sellerId, int page = 1, string? sortBy = null)
         {
-            if (!(User.IsInRole(UserRoles.Owner) || User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Employee)) && (customerId == null || customerId != this.HttpContext.Session.GetString(SessionValues.CustomerId)))
+            if (!(User.IsInRole(UserRoles.Owner) || User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Seller)) && (customerId == null || customerId != this.HttpContext.Session.GetString(SessionValues.CustomerId)))
             {
                 return Redirect("Identity/Account/AccessDenied");
             }
 
-            var foreignKeys = Tuple.Create(customerId == "0" ? "" : customerId, employeeId?.ToString());
+            var foreignKeys = Tuple.Create(customerId == "0" ? "" : customerId, sellerId?.ToString());
             var orders = await _orderRepository.GetListForAsync(foreignKeys);
             var orderDataModels = _mapper.Map<IEnumerable<OrderIndexDataModel>>(orders);
             var columnWidths = orderDataModels.GetColumnWidths();
@@ -73,13 +73,13 @@ namespace Northwind.Application.Controllers
             
             orderDataModels = orderDataModels.Skip((page - 1) * pageSize).Take(pageSize);
 
-            var pageModel = new OrderPageModel(orders.Count(), page, pageSize, customerId, employeeId);
+            var pageModel = new OrderPageModel(orders.Count(), page, pageSize, customerId, sellerId);
             var orderIndexModel = new OrderIndexModel(orderDataModels, pageModel);
 
-            selectListName = (customerId, employeeId) switch
+            selectListName = (customerId, sellerId) switch
             {
                 ("0", null) => SelectListName.CustomerList,
-                (null, >= 0) => SelectListName.EmployeeList,
+                (null, >= 0) => SelectListName.SellerList,
                 (null, null) => page > 1 ? selectListName : SelectListName.CustomerList,
                 _ => SelectListName.CustomerList
             };
@@ -94,14 +94,14 @@ namespace Northwind.Application.Controllers
                 ViewBag.CompanyName = (await _customerRepository.GetAsync(customerId))?.CompanyName ?? "";
             }
 
-            if (selectListName == SelectListName.EmployeeList)
+            if (selectListName == SelectListName.SellerList)
             {
-                ViewBag.PreviousPage = Url.ActionLink("Details", "Employees", new { id = employeeId });
-                orderIndexModel.EmployeeList = _selectListFiller.GetEmployeeIdSelectList(employeeId, all: true);
-                ViewBag.ForeignKeyValue = employeeId;
-                ViewBag.ForeignKeyName = "employeeId";
-                var emloyee = await _employeeRepository.GetAsync(employeeId);
-                ViewBag.EmployeeName = emloyee != null ? $"{emloyee?.FirstName} {emloyee?.LastName}" : null;
+                ViewBag.PreviousPage = Url.ActionLink("Details", "Sellers", new { id = sellerId });
+                orderIndexModel.SellerList = _selectListFiller.GetSellerIdSelectList(sellerId, all: true);
+                ViewBag.ForeignKeyValue = sellerId;
+                ViewBag.ForeignKeyName = "sellerId";
+                var emloyee = await _sellerRepository.GetAsync(sellerId);
+                ViewBag.SellerName = emloyee != null ? $"{emloyee?.FirstName} {emloyee?.LastName}" : null;
             }
 
             ViewBag.PageStartNumbering = (page - 1) * pageSize + 1;
@@ -158,7 +158,7 @@ namespace Northwind.Application.Controllers
                 return RedirectToAction(nameof(Index), new { customerId = order.CustomerId });
             }
 
-            _selectListFiller.FillSelectLists(orderCreateModel, employeeId: orderCreateModel.EmployeeId, shipperId: orderCreateModel.ShipperId, 
+            _selectListFiller.FillSelectLists(orderCreateModel, sellerId: orderCreateModel.SellerId, shipperId: orderCreateModel.ShipperId, 
                 customerId: orderCreateModel.CustomerId);
 
             return View(orderCreateModel);
@@ -179,7 +179,7 @@ namespace Northwind.Application.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            _selectListFiller.FillSelectLists(orderEditModel, employeeId: orderEditModel.EmployeeId, shipperId: orderEditModel.ShipperId, 
+            _selectListFiller.FillSelectLists(orderEditModel, sellerId: orderEditModel.SellerId, shipperId: orderEditModel.ShipperId, 
                 customerId: orderEditModel.CustomerId);
 
             return View(orderEditModel);
@@ -217,7 +217,7 @@ namespace Northwind.Application.Controllers
                 return RedirectToAction(nameof(Index), new { customerId = orderEditModel.CustomerId });
             }
 
-            _selectListFiller.FillSelectLists(orderEditModel, employeeId: orderEditModel.EmployeeId, shipperId: orderEditModel.ShipperId, 
+            _selectListFiller.FillSelectLists(orderEditModel, sellerId: orderEditModel.SellerId, shipperId: orderEditModel.ShipperId, 
                 customerId: orderEditModel.CustomerId);
 
             return View(orderEditModel);
@@ -225,16 +225,16 @@ namespace Northwind.Application.Controllers
 
         [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Owner}")]
         [HttpGet]
-        public async Task<ActionResult> Update(int? orderId, int? employeeId)
+        public async Task<ActionResult> Update(int? orderId, int? sellerId)
         {
-            if (orderId == null || employeeId == null)
+            if (orderId == null || sellerId == null)
             {
                 return BadRequest();
             }
 
-            if (employeeId == 0)
+            if (sellerId == 0)
             {
-                employeeId = null;
+                sellerId = null;
             }
 
             var order = await _orderRepository.GetAsync(orderId);
@@ -244,7 +244,7 @@ namespace Northwind.Application.Controllers
                 return NotFound();
             }
 
-            order.EmployeeId = employeeId;
+            order.SellerId = sellerId;
             await _orderRepository.UpdateAsync(order);
 
             return Ok();
@@ -345,7 +345,7 @@ namespace Northwind.Application.Controllers
 
             foreach (var order in orderWorkflowModels)
             {
-                order.EmployeeList = _selectListFiller.GetEmployeeIdSelectList(employeeId: order.EmployeeId);
+                order.SellerList = _selectListFiller.GetSellerIdSelectList(sellerId: order.SellerId);
             }
             
             var columnWidths = orderWorkflowModels.GetColumnWidths();

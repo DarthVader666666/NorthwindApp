@@ -1,17 +1,16 @@
-version: '3.4'
-
 networks:
- dev:
+ northwindnetwork:
   driver: bridge
+
+name: northwindapp
 
 services:
   northwindapp:
-    image: ${DOCKER_REGISTRY-}northwindapp
     build:
       dockerfile: Northwind.Application/Dockerfile
     container_name: northwindapp-container
     networks: 
-        - dev
+        - northwindnetwork
 
   sql-server:
     image: mcr.microsoft.com/mssql/server:latest
@@ -22,4 +21,4 @@ services:
     ports: 
         - 8082:1433
     networks: 
-        - dev
+        - northwindnetwork

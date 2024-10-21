@@ -10,7 +10,7 @@
 
 <h1>Customers</h1>
 
-@if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner) || User.IsInRole(UserRoles.Employee))
+@if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner) || User.IsInRole(UserRoles.Seller))
 {
     @await Html.PartialAsync("_IndexButtonsPartial", null as SelectList)
 }

@@ -13,6 +13,6 @@ namespace Northwind.Data.Entities
 
         public virtual Customer? Customer { get; set; }
 
-        public virtual Employee? Employee { get; set; }
+        public virtual Seller? Employee { get; set; }
     }
 }

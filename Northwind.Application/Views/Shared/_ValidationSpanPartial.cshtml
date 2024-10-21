@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
 @using Northwind.Application.Models.Category
 @using Northwind.Application.Models.Customer
-@using Northwind.Application.Models.Employee
+@using Northwind.Application.Models.Seller
 @using System.Reflection
 @using Northwind.Application.Models.Order
 @using Northwind.Application.Models.Product
@@ -18,53 +18,53 @@
     }
 }
 
-@if (Model is EmployeeEditModel)
+@if (Model is SellerEditModel)
 {
-    var employeeEditModel = Model as EmployeeEditModel;
+    var sellerEditModel = Model as SellerEditModel;
 
     if (PropertyName == "FirstName")
     {
-        <span asp-validation-for="@employeeEditModel!.FirstName" class="text-danger float-end"></span>
+        <span asp-validation-for="@sellerEditModel!.FirstName" class="text-danger float-end"></span>
     }
 
     if (PropertyName == "LastName")
     {
-        <span asp-validation-for="@(@employeeEditModel!.LastName)" class="text-danger float-end"></span>
+        <span asp-validation-for="@(sellerEditModel!.LastName)" class="text-danger float-end"></span>
     }
 
     if (PropertyName == "HireDate")
     {
-        <span asp-validation-for="@(@employeeEditModel!.HireDate)" class="text-danger float-end"></span>
+        <span asp-validation-for="@(sellerEditModel!.HireDate)" class="text-danger float-end"></span>
     }
 
     if (PropertyName == "BirthDate")
     {
-        <span asp-validation-for="@(@employeeEditModel!.BirthDate)" class="text-danger float-end"></span>
+        <span asp-validation-for="@(sellerEditModel!.BirthDate)" class="text-danger float-end"></span>
     }
 }
 
-@if (Model is EmployeeCreateModel)
+@if (Model is SellerCreateModel)
 {
-    var employeeCreateModel = Model as EmployeeCreateModel;
+    var sellerCreateModel = Model as SellerCreateModel;
 
     if (PropertyName == "FirstName")
     {
-        <span asp-validation-for="@(employeeCreateModel!.FirstName)" class="text-danger float-end"></span>
+        <span asp-validation-for="@(sellerCreateModel!.FirstName)" class="text-danger float-end"></span>
     }
 
     if (PropertyName == "LastName")
     {
-        <span asp-validation-for="@(employeeCreateModel!.LastName)" class="text-danger float-end"></span>
+        <span asp-validation-for="@(sellerCreateModel!.LastName)" class="text-danger float-end"></span>
     }
 
     if (PropertyName == "HireDate")
     {
-        <span asp-validation-for="@(employeeCreateModel!.HireDate)" class="text-danger float-end"></span>
+        <span asp-validation-for="@(sellerCreateModel!.HireDate)" class="text-danger float-end"></span>
     }
 
     if (PropertyName == "BirthDate")
     {
-        <span asp-validation-for="@(employeeCreateModel!.BirthDate)" class="text-danger float-end"></span>
+        <span asp-validation-for="@(sellerCreateModel!.BirthDate)" class="text-danger float-end"></span>
     }
 }
 
