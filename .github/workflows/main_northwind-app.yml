@@ -22,10 +22,16 @@ jobs:
           dotnet-version: '8.x'
 
       - name: Build with dotnet
-        run: dotnet build --configuration Release
+        run: dotnet build NorthwindApp.sln --configuration Release
 
-      - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+      - name: Integration Tests
+        run: dotnet test Northwind.IntegrationTests/Northwind.IntegrationTests.csproj --no-build --verbosity normal --configuration Release
+
+      - name: Module Tests
+        run: dotnet test Northwind.ModuleTests/Northwind.ModuleTests.csproj --no-build --verbosity normal --configuration Release
+
+      - name: Dotnet publish
+        run: dotnet publish Northwind.Application/Northwind.Application.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
