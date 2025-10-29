@@ -14,7 +14,7 @@ namespace Northwind.ModuleTests.RepositoryTests
         [Fact]
         public async Task GetAllCategories_Test()
         {
-            repository.Setup(mock => mock.GetListAsync()).ReturnsAsync(await DatabaseSeeder.GenerateCategories());
+            repository.Setup(mock => mock.GetListAsync()).ReturnsAsync(await DatabaseSeeder.SeedCategories());
 
             var categories = await repository.Object.GetListAsync();
 
@@ -71,7 +71,7 @@ namespace Northwind.ModuleTests.RepositoryTests
             {
                 var sellers = new List<object[]>();
 
-                foreach (var item in DatabaseSeeder.GenerateCategories().Result)
+                foreach (var item in DatabaseSeeder.SeedCategories().Result)
                 {
                     sellers.Add([item]);
                 }

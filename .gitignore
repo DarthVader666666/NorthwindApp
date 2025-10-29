@@ -483,3 +483,4 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+/Northwind.Application/Downloaded_Script.sql

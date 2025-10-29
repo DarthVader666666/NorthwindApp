@@ -30,7 +30,7 @@ namespace Northwind.Bll.Services
 
         public static byte[] ConvertNorthwindPhoto(byte[] source)
         {
-            if (source.Length >= headerLength && (source[..headerLength].SequenceEqual(OleSellerHeader) || source[..headerLength].SequenceEqual(OleCategoryHeader)))
+            if (source != null && source.Length >= headerLength && (source[..headerLength].SequenceEqual(OleSellerHeader) || source[..headerLength].SequenceEqual(OleCategoryHeader)))
             {
                 return source[headerLength..];
             }

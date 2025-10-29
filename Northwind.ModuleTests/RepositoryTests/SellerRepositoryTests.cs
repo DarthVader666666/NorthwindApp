@@ -17,7 +17,7 @@ namespace Northwind.ModuleTests.RepositoryTests
         [InlineData(5)]
         public async Task GetAllSellers_Test(int amount)
         {
-            repository.Setup(mock => mock.GetListAsync()).ReturnsAsync(await DatabaseSeeder.GenerateSellers(count: amount));
+            repository.Setup(mock => mock.GetListAsync()).ReturnsAsync(await DatabaseSeeder.SeedSellers(count: amount));
 
             var sellers = await repository.Object.GetListAsync();
 
@@ -78,7 +78,7 @@ namespace Northwind.ModuleTests.RepositoryTests
             {
                 var sellers = new List<object[]>();
 
-                foreach (var item in DatabaseSeeder.GenerateSellers().Result)
+                foreach (var item in DatabaseSeeder.SeedSellers().Result)
                 {
                     sellers.Add([item]);
                 }
