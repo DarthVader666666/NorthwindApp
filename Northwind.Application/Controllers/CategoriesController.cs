@@ -70,6 +70,7 @@ namespace Northwind.Application.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            ViewBag.PreviousPage = Url.ActionLink("Index", "Categories");
             return View(categoryCreateModel);
         }
 

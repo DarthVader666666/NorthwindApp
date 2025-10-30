@@ -1,17 +1,19 @@
-﻿namespace Northwind.Application.Models.Supplier
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Northwind.Application.Models.Supplier
 {
     public class SupplierCreateModel
     {
         public int SupplierId { get; set; }
-
+        [Required]
         public string CompanyName { get; set; } = null!;
 
         public string? ContactName { get; set; }
 
         public string? ContactTitle { get; set; }
-
+        [Required]
         public string? Address { get; set; }
-
+        [Required]
         public string? City { get; set; }
 
         public string? Region { get; set; }

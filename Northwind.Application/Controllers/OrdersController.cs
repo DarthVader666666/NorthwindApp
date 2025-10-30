@@ -161,6 +161,7 @@ namespace Northwind.Application.Controllers
             _selectListFiller.FillSelectLists(orderCreateModel, sellerId: orderCreateModel.SellerId, shipperId: orderCreateModel.ShipperId, 
                 customerId: orderCreateModel.CustomerId);
 
+            ViewBag.PreviousPage = Url.ActionLink("Index", "Orders");
             return View(orderCreateModel);
         }
 

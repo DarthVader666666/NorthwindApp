@@ -10,7 +10,7 @@ namespace Northwind.Application.Models.Order
         public string? CustomerId { get; set; }
 
         public int? SellerId { get; set; }
-
+        [Required]
         public DateTime? RequiredDate { get; set; }
 
         public DateTime? ShippedDate { get; set; }
@@ -21,9 +21,9 @@ namespace Northwind.Application.Models.Order
         public decimal? Freight { get; set; }
 
         public string? ShipName { get; set; }
-
+        [Required]
         public string? ShipAddress { get; set; }
-
+        [Required]
         public string? ShipCity { get; set; }
 
         public string? ShipRegion { get; set; }

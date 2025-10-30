@@ -14,12 +14,6 @@
     string Disabled => User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Owner) ? "" : "disabled";
     string? FormFile => FormFileProperty == null ? null : FormFileProperty.Name;
 
-    object SetPropertyName(string name)
-    {
-        ViewData["PropertyName"] = name;
-        return ViewData;
-    }
-
     bool IsImage(PropertyInfo propertyInfo)
     {
         if (propertyInfo == null)
@@ -35,7 +29,6 @@
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create" id="form" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             @{
                 if (Image != null)
                 {
@@ -59,7 +52,7 @@
 
                 <div class="form-group">
                     <label class="control-label" @hidden>@item.Name.Replace("List", "").Replace("Id", "").SplitForUpperCase()</label>
-                    @await Html.PartialAsync("_ValidationSpanPartial", Model, SetPropertyName(item.Name) as ViewDataDictionary)
+                    @Html.ValidationMessage(item.Name, "", new { @class = "text-danger" })
 
                     @if (type?.Contains("SelectList") ?? false)
                     {

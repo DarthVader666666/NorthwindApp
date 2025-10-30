@@ -93,7 +93,7 @@ namespace Northwind.Application.Controllers
         {
             ViewBag.PreviousPage = Url.ActionLink("Index", "Suppliers");
 
-            var supplierCreateModel = new SupplierCreateModel();
+            var supplierCreateModel = new SupplierCreateModel();            
 
             return View(supplierCreateModel);
         }
@@ -109,6 +109,8 @@ namespace Northwind.Application.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
+
+            ViewBag.PreviousPage = Url.ActionLink("Index", "Suppliers");
 
             return View(supplierCreateModel);
         }

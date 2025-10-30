@@ -12,19 +12,11 @@
     object IdValue => Properties.First(x => ControllerName.Contains(x.Name[..^3]) && x.Name.Contains("Id")).GetValue(Model);
     PropertyInfo Image => Properties.FirstOrDefault(x => (x.Name.Contains("Image") || x.Name.Contains("Picture") || x.Name.Contains("Photo")) && x.PropertyType.FullName.Contains("Byte"));
     PropertyInfo[] SelectLists => Properties.Where(x => x.PropertyType.FullName.Contains("SelectList")).ToArray();
-
-    object SetPropertyName(string name)
-    {
-        ViewData["PropertyName"] = name;
-        return ViewData;
-    }
 }
 
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
             @{
                 if (Image != null)
                 {
@@ -49,7 +41,7 @@
 
                 <div class="form-group">
                     <label class="control-label" @hidden>@item.Name.Replace("List", "").Replace("Id", "").SplitForUpperCase()</label>
-                    @await Html.PartialAsync("_ValidationSpanPartial", Model, SetPropertyName(item.Name) as ViewDataDictionary)
+                    @Html.ValidationMessage(item.Name, new { @class = "text-danger" })
 
                     @if (type.Contains("SelectList"))
                     {

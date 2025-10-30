@@ -78,6 +78,7 @@ namespace Northwind.Application.Controllers
             }
 
             sellerCreateModel.ReportsToList = GetReportsToSelectList();
+            ViewBag.PreviousPage = Url.ActionLink("Index", "Sellers");
 
             return View(sellerCreateModel);
         }

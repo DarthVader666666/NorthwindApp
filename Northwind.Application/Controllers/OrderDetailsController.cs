@@ -199,6 +199,7 @@ namespace Northwind.Application.Controllers
                 return RedirectToAction("Index", "OrderDetails", new { orderId = orderDetailCreateModel.OrderId, productId = orderDetailCreateModel.ProductId });
             }
 
+            ViewBag.PreviousPage = Url.ActionLink("Index", "OrderDetails");
             return View(orderDetailCreateModel);
         }
 
