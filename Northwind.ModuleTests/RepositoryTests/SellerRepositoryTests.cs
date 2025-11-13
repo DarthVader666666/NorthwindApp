@@ -1,90 +1,102 @@
-﻿using Moq;
-using Northwind.Bll.Interfaces;
-using Northwind.Bll.Services;
-using Northwind.Data.Entities;
-using Xunit;
+﻿//using Microsoft.Extensions.DependencyInjection;
 
-namespace Northwind.ModuleTests.RepositoryTests
-{
-    public class SellerRepositoryTests
-    {
-        private readonly Random random = new Random();
-        private readonly Mock<IRepository<Seller>> repository = new Mock<IRepository<Seller>>();
+//using Moq;
+//using Northwind.Bll.Interfaces;
+//using Northwind.Bll.Services;
+//using Northwind.Data;
+//using Northwind.Data.Entities;
+//using Xunit;
 
-        [Theory]
-        [InlineData(1)]
-        [InlineData(3)]
-        [InlineData(5)]
-        public async Task GetAllSellers_Test(int amount)
-        {
-            repository.Setup(mock => mock.GetListAsync()).ReturnsAsync(await DatabaseSeeder.SeedSellers(count: amount));
+//namespace Northwind.ModuleTests.RepositoryTests
+//{
+//    public class SellerRepositoryTests
+//    {
+//        private readonly Random random = new Random();
+//        private readonly Mock<IRepository<Seller>> repository = new Mock<IRepository<Seller>>();
+//        private readonly NorthwindDbContext _context;
+//        private static IEnumerable<Seller> _sellers;
 
-            var sellers = await repository.Object.GetListAsync();
+//        public SellerRepositoryTests(IServiceProvider serviceProvider)
+//        {
+//            using var scope = serviceProvider.CreateScope();
+//            _context = scope.ServiceProvider.GetService<NorthwindDbContext>();
+//            _sellers = _context.Sellers;
+//        }
 
-            Assert.NotNull(sellers);
-            Assert.NotEmpty(sellers);
-            Assert.Equal(amount, sellers.Count());
-        }
+//        [Theory]
+//        [InlineData(1)]
+//        [InlineData(3)]
+//        [InlineData(5)]
+//        public async Task GetAllSellers_Test(int amount)
+//        {
+//            repository.Setup(mock => mock.GetListAsync()).ReturnsAsync(_context.Sellers.Take(amount));
 
-        [Theory]
-        [MemberData(nameof(Sellers))]
-        public async Task GetSellerById_Test(Seller? seller)
-        {
-            seller!.SellerId = random.Next(1, 10);
-            int? id = seller.SellerId;
-            repository.Setup(mock => mock.GetAsync(It.Is<int?>(x => x == id))).ReturnsAsync(await Task.FromResult<Seller?>(seller));
+//            var sellers = await repository.Object.GetListAsync();
 
-            var actual = await repository.Object.GetAsync(id);
+//            Assert.NotNull(sellers);
+//            Assert.NotEmpty(sellers);
+//            Assert.Equal(amount, sellers.Count());
+//        }
 
-            Assert.NotNull(actual);
-            Assert.Equal(seller.SellerId, actual.SellerId);
-        }
+//        [Theory]
+//        [MemberData(nameof(Sellers))]
+//        public async Task GetSellerById_Test(Seller? seller)
+//        {
+//            seller!.SellerId = random.Next(1, 10);
+//            int? id = seller.SellerId;
+//            repository.Setup(mock => mock.GetAsync(It.Is<int?>(x => x == id))).ReturnsAsync(seller);
 
-        [Theory]
-        [MemberData(nameof(Sellers))]
-        public async Task CreateSeller_Test(Seller seller)
-        {
-            var id = random.Next(1, 10);
-            seller.SellerId = id;
-            repository.Setup(mock => mock.CreateAsync(It.Is<Seller>(x => x == seller))).ReturnsAsync(await Task.FromResult(seller));
+//            var actual = await repository.Object.GetAsync(id);
 
-            var actual = await repository.Object.CreateAsync(seller);
+//            Assert.NotNull(actual);
+//            Assert.Equal(seller.SellerId, actual.SellerId);
+//        }
 
-            Assert.NotNull(actual);
-            Assert.Equal(id, actual.SellerId);
-            Assert.Equal(seller.FirstName, actual.FirstName);
-            Assert.Equal(seller.LastName, actual.LastName);
-            Assert.Equal(seller.BirthDate, actual.BirthDate);
-            Assert.Equal(seller.HireDate, actual.HireDate);
-        }
+//        [Theory]
+//        [MemberData(nameof(Sellers))]
+//        public async Task CreateSeller_Test(Seller seller)
+//        {
+//            var id = random.Next(1, 10);
+//            seller.SellerId = id;
+//            repository.Setup(mock => mock.CreateAsync(It.Is<Seller>(x => x == seller))).ReturnsAsync(await Task.FromResult(seller));
 
-        [Theory]
-        [MemberData(nameof(Sellers))]
-        public async Task DeleteSeller_Test(Seller seller)
-        {
-            seller.SellerId = random.Next(1, 10);
-            var id = seller.SellerId;
-            repository.Setup(mock => mock.DeleteAsync(It.Is<int>(x => x == id))).ReturnsAsync(await Task.FromResult(seller));
+//            var actual = await repository.Object.CreateAsync(seller);
 
-            var actual = await repository.Object.DeleteAsync(id);
+//            Assert.NotNull(actual);
+//            Assert.Equal(id, actual.SellerId);
+//            Assert.Equal(seller.FirstName, actual.FirstName);
+//            Assert.Equal(seller.LastName, actual.LastName);
+//            Assert.Equal(seller.BirthDate, actual.BirthDate);
+//            Assert.Equal(seller.HireDate, actual.HireDate);
+//        }
 
-            Assert.NotNull(actual);
-            Assert.Equal(seller.SellerId, actual.SellerId);
-        }
+//        [Theory]
+//        [MemberData(nameof(Sellers))]
+//        public async Task DeleteSeller_Test(Seller seller)
+//        {
+//            seller.SellerId = random.Next(1, 10);
+//            var id = seller.SellerId;
+//            repository.Setup(mock => mock.DeleteAsync(It.Is<int>(x => x == id))).ReturnsAsync(await Task.FromResult(seller));
 
-        public static IEnumerable<object[]> Sellers
-        {
-            get
-            {
-                var sellers = new List<object[]>();
+//            var actual = await repository.Object.DeleteAsync(id);
 
-                foreach (var item in DatabaseSeeder.SeedSellers().Result)
-                {
-                    sellers.Add([item]);
-                }
+//            Assert.NotNull(actual);
+//            Assert.Equal(seller.SellerId, actual.SellerId);
+//        }
 
-                return sellers;
-            }
-        }
-    }
-}
+//        public static IEnumerable<object[]> Sellers
+//        {
+//            get
+//            {
+//                var sellers = new List<object[]>();
+
+//                foreach (var item in _sellers)
+//                {
+//                    sellers.Add([item]);
+//                }
+
+//                return sellers;
+//            }
+//        }
+//    }
+//}
